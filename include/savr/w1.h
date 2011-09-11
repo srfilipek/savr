@@ -51,13 +51,13 @@ public:
     /**
      * @brief 64-bit 1-Wire device address type
      *
-     * Internally, the address is stored with the MSB at byte 0
+     * Internally, the address is stored with the Family code at byte 0
      *
      * The 8-byte address looks like:
-     *  [ CRC | 48-bit serial | Fam Code ]
-     *     0    1 2 3 4 5 6 7    8
+     *  [ Fam Code | 48-bit serial | CRC ]
+     *        0       1 2 3 4 5 6     7
      *
-     * This is going along with AN187.
+     * This is also the order printed using PrintAddress()
      */
     typedef union {
         uint64_t raw;
