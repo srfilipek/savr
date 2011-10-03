@@ -1,5 +1,5 @@
-MCU     := atmega328p
-F_CPU   := 16000000
+MCU     ?= atmega328p
+F_CPU   ?= 16000000
 
 ifneq "$(MAKECMDGOALS)" "clean"
 ifndef MCU
@@ -18,7 +18,7 @@ CXX         = avr-g++
 TARGETS     = $(TARGET) $(TARGET:%.elf=%.lss) $(TARGET:%.elf=%.hex) $(TARGET:%.elf=%.eep)
 
 ## Options common to compile, link and assembly rules
-LIBNAME     = savr_$(MCU)
+LIBNAME     = savr_$(MCU)_$(F_CPU)
 
 ## Include/lib Directories
 INCLUDES   += -I../../include
@@ -27,7 +27,7 @@ LIBDIRS    += -L../../lib
 
 ## Options common to compile, link and assembly rules
 ARCHFLAGS = -mmcu=$(MCU)
-COMMON    = $(ARCHFLAGS) -Wall -g -DF_CPU=$(F_CPU)UL -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wl,-u,vfprintf -lprintf_flt -lm
+COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wl,-u,vfprintf -lprintf_flt -lm
 
 
 ## Compile options common for all C compilation units.

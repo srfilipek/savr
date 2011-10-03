@@ -41,12 +41,12 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t sysClock, uint32_t outputFreq)
+TWI::Init(uint32_t outputFreq)
 {
 
-    // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) ) 
+    // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
     // TWBR =  ((CPU Freq / SCL Freq) - 16) / 2 / (PrescalerValue)
-    TWBR = ((sysClock/outputFreq) - 16) / 2;
+    TWBR = ((F_CPU/outputFreq) - 16) / 2;
 
     // Enable interrupt, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
@@ -136,7 +136,7 @@ uint8_t
 TWI::GetAck(void)
 {
     TWI::Wait();
-    TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA); // Enable ACK 
+    TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA); // Enable ACK
     TWI::Wait();
     return TWDR;
 }
@@ -149,7 +149,7 @@ uint8_t
 TWI::Get(void)
 {
     TWI::Wait();
-    TWCR = _BV(TWINT) | _BV(TWEN); // No ACK 
+    TWCR = _BV(TWINT) | _BV(TWEN); // No ACK
     TWI::Wait();
     return TWDR;
 }
@@ -178,7 +178,7 @@ TWI::Address(uint8_t address, uint8_t rw)
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
         return 1;
     }
-    
+
     return 0;
 }
 

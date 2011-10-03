@@ -28,6 +28,7 @@
  * @brief 1-Wire interface using a single GPIO pin.
  */
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -36,12 +37,6 @@
 
 
 #define W1_EMPTY_TOKEN 0
-
-namespace DelayIndex {
-typedef enum {
-    A=0, B, C, D, E, F, G, H, I, J, NUM_DELAY_INDEXES
-} Index;
-};
 
 
 
@@ -71,14 +66,10 @@ public:
     /**
      * Create a 1-Wire interface on the given port and pin.
      *
-     * Note that 'sysClock' is used to compute necessary bus delays. The delay values are shared
-     * between W1 objects. This is set only once by the first object created.
-     *
-     * @param sysClock  System clock speed, in Hz.
      * @param pin       GPIO Pin to use for the bus.
      */
-    W1(uint32_t sysClock, GPIO::Pin pin) {
-        __W1(sysClock, pin);
+    W1(GPIO::Pin pin) {
+        __W1(pin);
     }
 
 
@@ -251,19 +242,14 @@ public:
 protected:
 
     bool _Searcher(uint8_t command, Address &address, Token &token);
-    void _Delay(DelayIndex::Index index);
     void _DriveLow();
     void _Release();
     bool _ReadState();
 
 private:
-    void __W1(uint32_t sysClock, GPIO::Pin pin);
+    void __W1(GPIO::Pin pin);
 
     GPIO::Pin           _pin;   ///< GPIO Pin to control for this bus
-
-    // 4-cycle delay count conversion, one per system.
-    static uint16_t     _delayCount[DelayIndex::NUM_DELAY_INDEXES];
-    static bool         _delaySet;
 };
 
 

@@ -2,19 +2,22 @@ ifneq "$(MAKECMDGOALS)" "clean"
 ifndef MCU
 $(error MCU not defined)
 endif
+ifndef F_CPU
+$(error F_CPU not defined)
+endif
 endif
 
 
 ## General Flags
 DIRNAME     = $(shell pwd | sed "s/.*\\///g")
-TARGET      = libsavr_$(MCU).a
+TARGET      = libsavr_$(MCU)_$(F_CPU).a
 CC          = avr-gcc
 AR          = avr-ar
 CXX         = avr-g++
 LSS_TARGET  = $(TARGET:%.a=%.lss)
 
 ## Options common to compile, link and assembly rules
-COMMON  = -mmcu=$(MCU) -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+COMMON  = -mmcu=$(MCU) -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -DF_CPU=$(F_CPU)
 
 ## Include Directories
 INCLUDES += -I../include

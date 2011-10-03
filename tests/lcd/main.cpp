@@ -59,14 +59,14 @@ static int PutChar(char input, FILE * stream) {
  */
 int main(void) {
 
-    SCI::Init(F_CPU, 38400);  // bps
+    SCI::Init(38400);  // bps
 
     GPIO::Out(GPIO::B1);
     GPIO::Low(GPIO::B1);
     GPIO::Out(GPIO::B2);
     GPIO::Low(GPIO::B2);
 
-    LCD locallcd(F_CPU, GPIO::D3, GPIO::D5, GPIO::D2, GPIO::D4, GPIO::B0, GPIO::D7, GPIO::D6);
+    LCD locallcd(GPIO::D3, GPIO::D5, GPIO::D2, GPIO::D4, GPIO::B0, GPIO::D7, GPIO::D6);
     lcd = &locallcd;
     locallcd.SetBlink(false);
     locallcd.SetCursor(false);

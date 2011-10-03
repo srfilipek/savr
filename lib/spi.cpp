@@ -132,7 +132,7 @@ uint8_t highestBit(uint32_t word)
  * @par Implementation Notes:
  */
 void
-SPI::Init(uint32_t sysClock, uint32_t spiFreq)
+SPI::Init(uint32_t spiFreq)
 {
     uint8_t divExp = 0;
 
@@ -144,7 +144,7 @@ SPI::Init(uint32_t sysClock, uint32_t spiFreq)
     SPI_PORT |= _BV(SPI_MISO);
 
     // Round down divider and find 2^x (highest bit)
-    divExp = highestBit(sysClock/spiFreq);
+    divExp = highestBit(F_CPU/spiFreq);
 
     // Bounds. divExp to be subtracted by one in a few lines...
     // Sooo, our bounds are [1, FREQ_CFG_SIZE], not the normal [0, FREQ_CFG_SIZE-1] (both inclusive)

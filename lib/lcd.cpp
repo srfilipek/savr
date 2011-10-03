@@ -22,7 +22,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/delay_basic.h>
+#include <util/delay.h>
 #include <stdio.h>
 
 #include <savr/gpio.h>
@@ -60,26 +60,6 @@
 
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
-
-
-/**
- * @par Implementation notes:
- * Sloppy and slow
- */
-static void
-MsDelay(uint32_t sysClock, double ms)
-{
-    static const uint16_t maxDelayLoops = 65535;
-
-    // How many 4-cycle loops to delay?
-    uint32_t loops = ms * (0.001 / (4.0 / sysClock));
-
-    while(loops) {
-        uint16_t delay = MIN(loops, maxDelayLoops);
-        loops -= delay;
-        _delay_loop_2(delay);
-    }
-}
 
 
 /**
@@ -148,8 +128,7 @@ LCD::_SetDataNibble(uint8_t nibble)
  * @par Implementation notes:
  */
 void
-LCD::__LCD( uint32_t sysClock,
-            GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
+LCD::__LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
             GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e)
 {
 
@@ -171,11 +150,11 @@ LCD::__LCD( uint32_t sysClock,
     _SetDataOut();
 
     // Init for 4 data lines...
-    MsDelay(sysClock, 50); // Power-on delay
+    _delay_ms(50); // Power-on delay
     _OutNib(0x03);
-    MsDelay(sysClock, 5);
+    _delay_ms(5);
     _OutNib(0x03);
-    MsDelay(sysClock, 5);
+    _delay_ms(5);
     _OutNib(0x03);
 
     _OutNib(0x02);

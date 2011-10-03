@@ -37,10 +37,9 @@ namespace SPI {
     /**
      * Initialize the SPI subsystem
      *
-     * @param sysClock  Clock speed of the chip
-     * @param spiFreq   Desired SPI clock frequency    
+     * @param spiFreq   Desired SPI clock frequency
      */
-    void        Init(uint32_t sysClock, uint32_t spiFreq);
+    void        Init(uint32_t spiFreq);
 
 
     /**
@@ -60,8 +59,8 @@ namespace SPI {
      * @param filler a byte to send continuously while reading
      */
     void        GetBlock(uint8_t *input, size_t length, uint8_t filler);
-    
-    
+
+
     /**
      * Tx/Rx a byte
      *

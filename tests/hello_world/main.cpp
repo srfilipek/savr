@@ -51,7 +51,7 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::Init(F_CPU, 38400); // bps
+    SCI::Init(38400); // bps
 
     Term::Init(welcomeMessage, promptString);
 

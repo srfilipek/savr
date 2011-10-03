@@ -128,10 +128,10 @@ GetChar(FILE * stream)
  * stdin and stdout to the serial port.
  */
 void
-SCI::Init(uint32_t sysClock, uint32_t baud)
+SCI::Init(uint32_t baud)
 {
     // Set Baud Rate.
-    uint16_t brate = (uint16_t)__GETBAUD(sysClock, baud);
+    uint16_t brate = (uint16_t)__GETBAUD(F_CPU, baud);
     __BAUD_HIGH = (uint8_t)(brate>>8);
     __BAUD_LOW  = (uint8_t)(brate);
 

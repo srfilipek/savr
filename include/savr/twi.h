@@ -31,10 +31,9 @@ namespace TWI {
     /**
      * Inltialize the TWI subsystem
      *
-     * @param sysClock      The system clock frequency in Hz
      * @param outputFreq    The desired TWI bus frequency in Hz
      */
-    void    Init(uint32_t sysClock, uint32_t outputFreq);
+    void    Init(uint32_t outputFreq);
 
 
     /**

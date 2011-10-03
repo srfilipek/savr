@@ -30,23 +30,27 @@
 
 
 /**
- * After examining the code, each call to _Delay() requires this many cycles of setup
- * 10 for call setup and return, 11 for function setup...
+ * After examining the code, and some testing, adjusting by the given number of cycles accounts
+ * for call and setup time for delays and GPIO read/writes
  */
-#define DELAY_CYCLE_ADJ     21
+#define DELAY_CALL_ADJ      4
+#define MAYBE_ADJ(val, by)  ((val) < (by) ? 0 : (val) - (by))
+#define DELAY_FOR(x)        ((0.000001*F_CPU)/4 * (x))
+#define CALC_DELAY(x)       MAYBE_ADJ(DELAY_FOR(x), DELAY_CALL_ADJ)
+
+#define DELAY(x) _delay_loop_2(DELAY_##x)
 
 
-//! Initial us delay values used to calculate clock delays based on sysClock
-static const uint16_t CPP_PROGMEM usDelay[DelayIndex::NUM_DELAY_INDEXES] = {
-//  A,  B,  C,  D, E,  F, G,   H,  I,   J
-    6, 64, 60, 10, 9, 55, 0, 480, 70, 410,
-};
-
-
-// One instance for all class objects
-uint16_t    W1::_delayCount[DelayIndex::NUM_DELAY_INDEXES];
-bool        W1::_delaySet = false;
-
+static uint16_t DELAY_A = CALC_DELAY(6);
+static uint16_t DELAY_B = CALC_DELAY(64);
+static uint16_t DELAY_C = CALC_DELAY(60);
+static uint16_t DELAY_D = CALC_DELAY(10);
+static uint16_t DELAY_E = CALC_DELAY(9);
+static uint16_t DELAY_F = CALC_DELAY(55);
+static uint16_t DELAY_G = CALC_DELAY(0);
+static uint16_t DELAY_H = CALC_DELAY(480);
+static uint16_t DELAY_I = CALC_DELAY(70);
+static uint16_t DELAY_J = CALC_DELAY(410);
 
 
 /**
@@ -57,30 +61,13 @@ bool        W1::_delaySet = false;
  * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3187
  */
 void
-W1::__W1(uint32_t sysClock, GPIO::Pin pin)
+W1::__W1(GPIO::Pin pin)
 {
     _pin  = pin;
 
     // Set to tristate
     GPIO::Low(_pin);
     GPIO::In(_pin);
-
-    // Pre-compute for more accurate delays (calc how many 4-cycle periods to delay)
-    if(!_delaySet) {
-        _delaySet = true;
-        double delayFactor = 0.000001*sysClock/4;
-
-        memcpy_P(_delayCount, usDelay, sizeof(usDelay));
-        for(uint8_t i=0; i<DelayIndex::NUM_DELAY_INDEXES; ++i) {
-            _delayCount[i] = _delayCount[i]*delayFactor;
-
-            if(_delayCount[i] > DELAY_CYCLE_ADJ) {
-                _delayCount[i] -= DELAY_CYCLE_ADJ;
-            }else{
-                _delayCount[i] = 0;
-            }
-        }
-    }
 }
 
 
@@ -102,13 +89,13 @@ W1::Reset()
     bool presence = false;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        _Delay(DelayIndex::G);
+        DELAY(G);
         _DriveLow();
-        _Delay(DelayIndex::H);
+        DELAY(H);
         _Release();
-        _Delay(DelayIndex::I);
+        DELAY(I);
         presence = (_ReadState() == 0);
-        _Delay(DelayIndex::J);
+        DELAY(J);
     }
     return presence;
 }
@@ -257,11 +244,11 @@ W1::ReadBit()
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         _DriveLow();
-        _Delay(DelayIndex::A);
+        DELAY(A);
         _Release();
-        _Delay(DelayIndex::E);
+        DELAY(E);
         state = _ReadState();
-        _Delay(DelayIndex::F);
+        DELAY(F);
     }
     return (uint8_t)state;
 }
@@ -278,14 +265,14 @@ W1::WriteBit(bool bit)
     {
         if(bit) {
             _DriveLow();
-            _Delay(DelayIndex::A);
+            DELAY(A);
             _Release();
-            _Delay(DelayIndex::B);
+            DELAY(B);
         }else{
             _DriveLow();
-            _Delay(DelayIndex::C);
+            DELAY(C);
             _Release();
-            _Delay(DelayIndex::D);
+            DELAY(D);
         }
     }
 }
@@ -344,24 +331,6 @@ W1::WriteBytes(uint8_t *byte, size_t size)
     for(size_t i=0; i<size; ++i) {
         WriteByte(byte[i]);
     }
-}
-
-
-/**
- * @par Implementation notes:
- */
-__attribute__ ((noinline)) void
-W1::_Delay(DelayIndex::Index index)
-{
-    // How many clock cycles do we need to delay?
-    // 4 clock cycles per count given
-    uint16_t count = _delayCount[index];
-    __asm__ volatile (
-        "loop: sbiw %0,1" "\n\t"
-        "brne loop"
-        : "=w" (count)
-        : "0" (count)
-    );
 }
 
 

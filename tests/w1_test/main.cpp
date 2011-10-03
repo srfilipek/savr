@@ -24,19 +24,23 @@
 #define Interrupts_Enable() sei()
 
 
+// If you are running on a 16k device or lower, you might want to comment this out...
+#define HAVE_SOME_MEMORY
+
+
 static W1 *wire = NULL;
 
 static bool ParseAddress(W1::Address &address, char *text) {
-    uint8_t i=8;
+    uint8_t i=0;
     char temp[3];
     temp[2] = 0;
 
-    while(i-->0 && *text && *(text+1)) {
+    while(i<8 && *text && *(text+1)) {
         temp[0] = *text++;
         temp[1] = *text++;
-        address.array[i] = strtoul(temp, NULL, 16);
+        address.array[i++] = strtoul(temp, NULL, 16);
     }
-    if(i != 0xff) {
+    if(i != 8) {
         return false;
     }
     printf_P(PSTR("Address: "));
@@ -45,6 +49,15 @@ static bool ParseAddress(W1::Address &address, char *text) {
     return true;
 }
 
+
+uint8_t wrap_W1_Reset(char *args) {
+    if(!wire->Reset()) {
+        printf_P(PSTR("No "));
+    }
+    printf_P(PSTR("Presence!\n"));
+
+    return 0;
+}
 
 uint8_t wrap_W1_Search(char *args) {
 
@@ -77,6 +90,68 @@ uint8_t wrap_W1_Alarm(char *args) {
     return 0;
 }
 
+
+uint8_t
+wrap_GetTemp(char *args)
+{
+    double dtemp;
+
+    W1::Address address;
+
+    if(!ParseAddress(address, args)) {
+        printf_P(PSTR("Invalid address\n"));
+        return 1;
+    }
+    DSTherm therm(*wire, address);
+
+    therm.StartConversion();
+
+    dtemp = therm.GetTemp(false);
+    printf_P(PSTR("  C Temp: %f\n"), dtemp);
+
+    dtemp = 1.8*dtemp + 32;
+    printf_P(PSTR("  F Temp: %f\n"), dtemp);
+
+    return 0;
+}
+
+
+uint8_t wrap_GetAll(char *args) {
+    const size_t MAX_COUNT = 5000;
+    size_t count = 0;
+    double dtemp;
+
+
+    if(!wire->Reset()) {
+        printf_P(PSTR("No presence detected.\n"));
+        return 1;
+    }
+
+    // Make all devices start a conversion
+    wire->WriteByte(0xCC);
+    wire->WriteByte(0x44);
+
+
+    while(wire->ReadByte() == 0x00) {
+        if(count++ > MAX_COUNT) {
+            printf_P(PSTR("Device took too long to perform measurement.\n"));
+            return 1;
+        }
+    }
+
+    W1::Address address;
+    W1::Token   token = W1_EMPTY_TOKEN;
+    while(wire->SearchROM(address, token)) {
+        W1::PrintAddress(address);
+        DSTherm therm(*wire, address);
+        dtemp = therm.GetTemp(true);
+        printf_P(PSTR(": %f F\n"), dtemp);
+    }
+    return 0;
+}
+
+
+#ifdef HAVE_SOME_MEMORY
 uint8_t wrap_W1_MatchROM(char *args) {
     W1::Address address;
 
@@ -85,15 +160,6 @@ uint8_t wrap_W1_MatchROM(char *args) {
         return 1;
     }
     wire->MatchROM(address);
-    return 0;
-}
-
-uint8_t wrap_W1_Reset(char *args) {
-    if(!wire->Reset()) {
-        printf_P(PSTR("No "));
-    }
-    printf_P(PSTR("Presence!\n"));
-
     return 0;
 }
 
@@ -133,31 +199,6 @@ uint8_t wrap_W1_WriteByte(char *args) {
     return 0;
 }
 
-
-uint8_t
-wrap_GetTemp(char *args)
-{
-    double dtemp;
-
-    W1::Address address;
-
-    if(!ParseAddress(address, args)) {
-        printf_P(PSTR("Invalid address\n"));
-        return 1;
-    }
-    DSTherm therm(*wire, address);
-
-    therm.StartConversion();
-
-    dtemp = therm.GetTemp(false);
-    printf_P(PSTR("  C Temp: %f\n"), dtemp);
-
-    dtemp = 1.8*dtemp + 32;
-    printf_P(PSTR("  F Temp: %f\n"), dtemp);
-
-    return 0;
-}
-
 uint8_t wrap_PollTemp(char *args) {
     double dtemp;
 
@@ -177,41 +218,6 @@ uint8_t wrap_PollTemp(char *args) {
 }
 
 
-uint8_t wrap_GetAll(char *args) {
-    const size_t MAX_COUNT = 5000;
-    size_t count = 0;
-    double dtemp;
-
-
-    if(!wire->Reset()) {
-        printf_P(PSTR("No presence detected.\n"));
-        return 1;
-    }
-
-    // Make all devices start a conversion
-    wire->WriteByte(0xCC);
-    wire->WriteByte(0x44);
-
-
-    while(wire->ReadByte() == 0x00) {
-        if(count++ > MAX_COUNT) {
-            printf_P(PSTR("Device took too long to perform measurement.\n"));
-            return 1;
-        }
-    }
-
-    W1::Address address;
-    W1::Token   token = W1_EMPTY_TOKEN;
-    while(wire->SearchROM(address, token)) {
-        W1::PrintAddress(address);
-        DSTherm therm(*wire, address);
-        dtemp = therm.GetTemp(true);
-        printf_P(PSTR(": %f F\n"), dtemp);
-    }
-    return 0;
-}
-
-
 uint8_t wrap_PollAll(char *args) {
     while(1) {
         wrap_GetAll(args);
@@ -219,6 +225,7 @@ uint8_t wrap_PollAll(char *args) {
     }
     return 0;
 }
+#endif
 
 
 /**
@@ -230,13 +237,15 @@ static CMD::CommandList cmdList = {
     {"Reset",           wrap_W1_Reset,          "Resets the 1-Wire bus and looks for presence."},
     {"Search",          wrap_W1_Search,         "Scans the bus and prints any addresses found"},
     {"Alarm",           wrap_W1_Alarm,          "Scans the bus and prints any addresses found using AlarmSearch"},
+    {"GetTemp",         wrap_GetTemp,           "Setup a temp conversion and read the result (GetTemp <address>)"},
+    {"GetAll",          wrap_GetAll,            "Get temps from all devices once"},
+#ifdef HAVE_SOME_MEMORY
     {"Match",           wrap_W1_MatchROM,       "Select a device using MatchROM (Select <address>)"},
     {"Read",            wrap_W1_ReadByte,       "Read a byte from the bus (Read [num bytes])"},
     {"Write",           wrap_W1_WriteByte,      "Write at least one byte to the bus (Write <byte> [byte] ...)"},
-    {"GetTemp",         wrap_GetTemp,           "Setup a temp conversion and read the result (GetTemp <address>)"},
     {"PollTemp",        wrap_PollTemp,          "Continually perform temp conversion -- never returns (PollTemp <address>)"},
-    {"GetAll",          wrap_GetAll,            "Get temps from all devices once"},
     {"PollAll",         wrap_PollAll,           "Continually get temps from all devices -- never returns"},
+#endif
 
 };
 static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
@@ -252,9 +261,9 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::Init(F_CPU, 38400);  // bps
+    SCI::Init(38400);  // bps
 
-    W1 localWire(F_CPU, GPIO::C0);
+    W1 localWire(GPIO::C0);
     wire = &localWire;
 
     Term::Init(welcomeMessage, promptString);

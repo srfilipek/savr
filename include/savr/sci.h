@@ -41,10 +41,9 @@ namespace SCI {
     /**
      * Initialize the SCI subsystem
      *
-     * @param sysClock  The clock frequency of the system
      * @param baud      The desired baud rate
      */
-    void Init(uint32_t sysClock, uint32_t baud);
+    void Init(uint32_t baud);
 
 };
 

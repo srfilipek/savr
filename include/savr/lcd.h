@@ -41,7 +41,6 @@ public:
     /**
      * Initialize the LCD
      *
-     * @param sysClock  System clock frequency in Hz, used for initial delays
      * @param d4        GPIO::Pin for DB4
      * @param d5        GPIO::Pin for DB5
      * @param d6        GPIO::Pin for DB6
@@ -50,10 +49,9 @@ public:
      * @param rw        GPIO::Pin for the R/W line
      * @param e         GPIO::Pin for the Enable line
      */
-    LCD(uint32_t sysClock,
-        GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
+    LCD(GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
         GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e) {
-        __LCD(sysClock, d4, d5, d6, d7, rs, rw, e);
+        __LCD(d4, d5, d6, d7, rs, rw, e);
     }
 
 
@@ -155,8 +153,7 @@ public:
 
 
 private:
-    void __LCD( uint32_t sysClock,
-                GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
+    void __LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
                 GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e);
 
 
