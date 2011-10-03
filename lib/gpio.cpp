@@ -71,17 +71,6 @@ static const PortBank portBanks[] = {
 
 namespace GPIO {
 
-typedef enum {
-    OP_GET,
-    OP_HIGH,
-    OP_LOW,
-    OP_IN,
-    OP_OUT,
-} __OP;
-
-
-static uint8_t __IOP(GPIO::Pin pin, GPIO::__OP op);
-
 
 /**
  * @par Implementation notes:
@@ -103,7 +92,9 @@ Set(GPIO::Pin pin, uint8_t set)
 uint8_t
 Get(GPIO::Pin pin)
 {
-    return __IOP(pin, OP_GET);
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    return ((PINOF(_port) & _pin) ? 1 : 0);
 }
 
 
@@ -113,7 +104,9 @@ Get(GPIO::Pin pin)
 void
 High(GPIO::Pin pin)
 {
-    __IOP(pin, OP_HIGH);
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    PORTOF(_port) |= _pin;
 }
 
 
@@ -123,7 +116,9 @@ High(GPIO::Pin pin)
 void
 Low(GPIO::Pin pin)
 {
-    __IOP(pin, OP_LOW);
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    PORTOF(_port) &= ~_pin;
 }
 
 
@@ -133,7 +128,9 @@ Low(GPIO::Pin pin)
 void
 In(GPIO::Pin pin)
 {
-    __IOP(pin, OP_IN);
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    DDROF(_port) &= ~_pin;
 }
 
 
@@ -143,41 +140,9 @@ In(GPIO::Pin pin)
 void
 Out(GPIO::Pin pin)
 {
-    __IOP(pin, OP_OUT);
-}
-
-
-/**
- * @par Implementation notes:
- * Having a common area to do math and stuff saves about 34 program bytes at the expense of speed
- */
-uint8_t
-__IOP(GPIO::Pin pin, GPIO::__OP op)
-{
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
-
-    switch(op) {
-    case OP_GET:
-        return ((PINOF(_port) & _pin) ? 1 : 0);
-
-    case OP_HIGH:
-        PORTOF(_port) |= _pin;
-        break;
-
-    case OP_LOW:
-        PORTOF(_port) &= ~_pin;
-        break;
-
-    case OP_IN:
-        DDROF(_port) &= ~_pin;
-        break;
-
-    case OP_OUT:
-        DDROF(_port) |= _pin;
-        break;
-    }
-    return 0;
+    DDROF(_port) |= _pin;
 }
 
 
