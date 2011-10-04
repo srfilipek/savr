@@ -26,12 +26,12 @@ uint8_t ScanTWI(char *args) {
     uint8_t res=0;
     uint8_t state=0;
 
-    printf("Devices found:\n");
+    printf_P(PSTR("Devices found:\n"));
     for(i=0; i<0x7F; ++i) {
         // Try to read from the address...
         res = TWI::Address(i, 1);
         if(res == 0) {
-            printf("  0x%02X\n", i);
+            printf_P(PSTR("  0x%02X\n"), i);
         }
 
         // If we get an ACK, read out a byte or else errors can occur
@@ -82,9 +82,9 @@ uint8_t GetTime(char *args) {
     }
     buff[7] = TWI::Get(); // Last read has no ACK
 
-    printf("Raw: ");
+    printf_P(PSTR("Raw: "));
     Utils::PrintHex(buff, 8);
-    printf("\n");
+    putchar('\n');
 
     printf_P(PSTR(" Year    :   xx%d%d\n"), buff[6]>>4, buff[6]&0xF);
     printf_P(PSTR(" Month   :   %d%d\n"),   buff[5]>>4, buff[5]&0xF);
