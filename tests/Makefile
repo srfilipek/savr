@@ -1,4 +1,4 @@
-SUBDIRS= hello_world w1_test clock_test eth lcd
+SUBDIRS= hello_world w1_test clock_test lcd
 
 .PHONY: all clean $(SUBDIRS)
 
