@@ -29,6 +29,7 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/twi.h>
 
+
 #if defined(TWBR) && defined(TWCR) // Not everything has a TWI
 
 
@@ -51,7 +52,7 @@ TWI::Init(uint32_t outputFreq)
     // TWBR =  ((CPU Freq / SCL Freq) - 16) / 2 / (PrescalerValue)
     TWBR = ((F_CPU/outputFreq) - 16) / 2;
 
-    // Enable interrupt, enable the TWI
+    // Clear interrupt flag, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
 }
 
