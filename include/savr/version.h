@@ -26,8 +26,8 @@
  * @file version.h
  */
 
-#define SAVR_MAJOR   ((uint8_t)0)  ///< Major version number
-#define SAVR_MINOR   ((uint8_t)3)  ///< Minor version number
+#define SAVR_MAJOR   ((uint8_t)1)  ///< Major version number
+#define SAVR_MINOR   ((uint8_t)0)  ///< Minor version number
 #define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
 
 #endif /* _version_h_Included_ */
