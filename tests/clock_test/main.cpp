@@ -193,7 +193,7 @@ static CMD::CommandList cmdList = {
     {"Start",           wrap_TWI_Start,         "Bus Start (rarely needed)"},
     {"Stop",            wrap_TWI_Stop,          "Bus Stop"},
     {"State",           wrap_TWI_State,         "Get bus status byte"},
-  
+
 
 };
 static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
@@ -209,8 +209,8 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::Init(F_CPU, 38400);  // bps
-    TWI::Init(F_CPU, 500000); // Bus freq in Hz
+    SCI::Init(38400);  // bps
+    TWI::Init(100000); // Bus freq in Hz
 
     Term::Init(welcomeMessage, promptString);
 
