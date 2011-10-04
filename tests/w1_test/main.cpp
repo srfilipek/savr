@@ -24,11 +24,22 @@
 #define Interrupts_Enable() sei()
 
 
-// If you are running on a 16k device or lower, you might want to comment this out...
-#define HAVE_SOME_MEMORY
+// Choose features!
+// Base feature set is Reset + Search
+
+#define FEATURESET_1            // MatchROM + ReadByte + WriteByte
+//#define FEATURESET_2            // Alarm + GetTemp + GetAll + PollTemp + PollAll
+//#define INCLUDE_DESCRIPTIONS    // May save space by removing command descriptions
+
+#if defined(INCLUDE_DESCRIPTIONS)
+#define DESC(x) x
+#else
+#define DESC(x) NULL
+#endif
 
 
 static W1 *wire = NULL;
+
 
 static bool ParseAddress(W1::Address &address, char *text) {
     uint8_t i=0;
@@ -74,7 +85,57 @@ uint8_t wrap_W1_Search(char *args) {
     return 0;
 }
 
+#if defined(FEATURESET_1)
+uint8_t wrap_W1_MatchROM(char *args) {
+    W1::Address address;
 
+    if(!ParseAddress(address, args)) {
+        printf_P(PSTR("Invalid address\n"));
+        return 1;
+    }
+    wire->MatchROM(address);
+    return 0;
+}
+
+uint8_t wrap_W1_ReadByte(char *args) {
+    char *token;
+    char *currentArg;
+
+    uint8_t b = 1;
+    currentArg = strtok_r(args, " ", &token);
+    if(currentArg != NULL) {
+        b = strtoul(currentArg, (char**) NULL, 0);
+    }
+
+    printf_P(PSTR("Reading %d bytes:"), b);
+    while(b --> 0) {
+        printf_P(PSTR(" 0x%02X"), wire->ReadByte());
+    }
+    putchar('\n');
+    return 0;
+}
+
+uint8_t wrap_W1_WriteByte(char *args) {
+    char *token;
+    char *currentArg;
+
+    uint8_t b;
+    currentArg = strtok_r(args, " ", &token);
+
+
+    while(currentArg != NULL) {
+        b = strtoul(currentArg, (char**) NULL, 0);
+        currentArg = strtok_r(NULL, " ", &token);
+
+        printf_P(PSTR("Sending: 0x%02X\n"), b);
+        wire->WriteByte(b);
+    }
+    return 0;
+}
+#endif
+
+
+#if defined(FEATURESET_2)
 uint8_t wrap_W1_Alarm(char *args) {
 
     printf_P(PSTR("Devices found (Alarm):\n"));
@@ -89,7 +150,6 @@ uint8_t wrap_W1_Alarm(char *args) {
 
     return 0;
 }
-
 
 uint8_t
 wrap_GetTemp(char *args)
@@ -151,54 +211,6 @@ uint8_t wrap_GetAll(char *args) {
 }
 
 
-#ifdef HAVE_SOME_MEMORY
-uint8_t wrap_W1_MatchROM(char *args) {
-    W1::Address address;
-
-    if(!ParseAddress(address, args)) {
-        printf_P(PSTR("Invalid address\n"));
-        return 1;
-    }
-    wire->MatchROM(address);
-    return 0;
-}
-
-uint8_t wrap_W1_ReadByte(char *args) {
-    char *token;
-    char *currentArg;
-
-    uint8_t b = 1;
-    currentArg = strtok_r(args, " ", &token);
-    if(currentArg != NULL) {
-        b = strtoul(currentArg, (char**) NULL, 0);
-    }
-
-    printf_P(PSTR("Reading %d bytes:"), b);
-    while(b --> 0) {
-        printf(" 0x%02X", wire->ReadByte());
-    }
-    putchar('\n');
-    return 0;
-}
-
-uint8_t wrap_W1_WriteByte(char *args) {
-    char *token;
-    char *currentArg;
-
-    uint8_t b;
-    currentArg = strtok_r(args, " ", &token);
-
-
-    while(currentArg != NULL) {
-        b = strtoul(currentArg, (char**) NULL, 0);
-        currentArg = strtok_r(NULL, " ", &token);
-
-        printf_P(PSTR("Sending: 0x%02X\n"), b);
-        wire->WriteByte(b);
-    }
-    return 0;
-}
-
 uint8_t wrap_PollTemp(char *args) {
     double dtemp;
 
@@ -225,7 +237,11 @@ uint8_t wrap_PollAll(char *args) {
     }
     return 0;
 }
+
+
+
 #endif
+
 
 
 /**
@@ -234,18 +250,23 @@ uint8_t wrap_PollAll(char *args) {
 
 // Command list
 static CMD::CommandList cmdList = {
-    {"Reset",           wrap_W1_Reset,          "Resets the 1-Wire bus and looks for presence."},
-    {"Search",          wrap_W1_Search,         "Scans the bus and prints any addresses found"},
-    {"Alarm",           wrap_W1_Alarm,          "Scans the bus and prints any addresses found using AlarmSearch"},
-    {"GetTemp",         wrap_GetTemp,           "Setup a temp conversion and read the result (GetTemp <address>)"},
-    {"GetAll",          wrap_GetAll,            "Get temps from all devices once"},
-#ifdef HAVE_SOME_MEMORY
-    {"Match",           wrap_W1_MatchROM,       "Select a device using MatchROM (Select <address>)"},
-    {"Read",            wrap_W1_ReadByte,       "Read a byte from the bus (Read [num bytes])"},
-    {"Write",           wrap_W1_WriteByte,      "Write at least one byte to the bus (Write <byte> [byte] ...)"},
-    {"PollTemp",        wrap_PollTemp,          "Continually perform temp conversion -- never returns (PollTemp <address>)"},
-    {"PollAll",         wrap_PollAll,           "Continually get temps from all devices -- never returns"},
+    {"Reset",           wrap_W1_Reset,          DESC("Reset 1-Wire bus, look for presence.")},
+    {"Search",          wrap_W1_Search,         DESC("Scan bus and print any addresses found")},
+
+#if defined(FEATURESET_1)
+    {"Match",           wrap_W1_MatchROM,       DESC("Select device using MatchROM (Select <address>)")},
+    {"Read",            wrap_W1_ReadByte,       DESC("Read a byte (Read [num bytes])")},
+    {"Write",           wrap_W1_WriteByte,      DESC("Write one+ byte to the bus (Wrte <byte> [byte] ..)")},
 #endif
+
+#if defined(FEATURESET_2)
+    {"Alarm",           wrap_W1_Alarm,          DESC("Scan bus and print addresses found (AlarmSearch)")},
+    {"GetTemp",         wrap_GetTemp,           DESC("Setup a temp conversion and read the result (GetTemp <address>)")},
+    {"GetAll",          wrap_GetAll,            DESC("Get temps from all devices once")},
+    {"PollTemp",        wrap_PollTemp,          DESC("Continually perform temp conversion -- never returns (PollTemp <address>)")},
+    {"PollAll",         wrap_PollAll,           DESC("Continually get temps from all devices -- never returns")},
+#endif
+
 
 };
 static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
