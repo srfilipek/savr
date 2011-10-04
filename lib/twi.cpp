@@ -20,6 +20,7 @@
  THE SOFTWARE.
 *********************************************************************************/
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <avr/io.h>
@@ -27,6 +28,8 @@
 
 #include <savr/cpp_pgmspace.h>
 #include <savr/twi.h>
+
+#if defined(TWBR) && defined(TWCR) // Not everything has a TWI
 
 
 static const char CPP_PROGMEM SentData[]    = "Send data, got";
@@ -212,4 +215,5 @@ TWI::State(void)
     return (TWSR & TW_STATUS_MASK);
 }
 
+#endif
 

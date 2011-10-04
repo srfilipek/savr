@@ -27,8 +27,9 @@
 
 #include <savr/sci.h>
 #include <savr/queue.h>
+#include <savr/utils.h>
 
-#if defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
+#if     ISAVR(ATmega16) || ISAVR(ATmega32) || ISAVR(ATmega8)
     #define __BAUD_HIGH    UBRRH
     #define __BAUD_LOW     UBRRL
     #define __CTRLA        UCSRA
@@ -44,8 +45,28 @@
     #define __DATAR        UDR
     #define __RX_VECT      USART_RXC_vect
     #define __TX_VECT      USART_UDRE_vect
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__) \
-   || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega168__)
+
+#elif   ISAVR(ATmega8515)
+    #define __BAUD_HIGH    UBRRH
+    #define __BAUD_LOW     UBRRL
+    #define __CTRLA        UCSRA
+    #define __CTRLB        UCSRB
+    #define __CTRLC        UCSRC
+    #define __CTRLB_UDRIE  UDRIE
+    #define __CTRLB_RXCIE  RXCIE
+    #define __CTRLB_RXEN   RXEN
+    #define __CTRLB_TXEN   TXEN
+    #define __CTRLC_ENABLE _BV(URSEL)
+    #define __CTRLC_UCSZ1  UCSZ1
+    #define __CTRLC_UCSZ0  UCSZ0
+    #define __DATAR        UDR
+    #define __RX_VECT      USART_RX_vect
+    #define __TX_VECT      USART_UDRE_vect
+
+#elif   ISAVR(ATmega168)  || ISAVR(ATmega328)  || \
+        ISAVR(ATmega168P) || ISAVR(ATmega328P) || \
+        ISAVR(ATmega48)   || ISAVR(ATmega88)   || ISAVR(ATmega168) || \
+        ISAVR(ATmega48P)  || ISAVR(ATmega88P)  || ISAVR(ATmega168P)
     #define __BAUD_HIGH    UBRR0H
     #define __BAUD_LOW     UBRR0L
     #define __CTRLA        UCSR0A
@@ -61,6 +82,26 @@
     #define __DATAR        UDR0
     #define __RX_VECT      USART_RX_vect
     #define __TX_VECT      USART_UDRE_vect
+
+
+#elif   ISAVR(ATmega164P) || ISAVR(ATmega324P) || ISAVR(ATmega644P) || \
+        ISAVR(ATmega164)  || ISAVR(ATmega324)  || ISAVR(ATmega644)
+    #define __BAUD_HIGH    UBRR0H
+    #define __BAUD_LOW     UBRR0L
+    #define __CTRLA        UCSR0A
+    #define __CTRLB        UCSR0B
+    #define __CTRLC        UCSR0C
+    #define __CTRLB_UDRIE  UDRIE0
+    #define __CTRLB_RXCIE  RXCIE0
+    #define __CTRLB_RXEN   RXEN0
+    #define __CTRLB_TXEN   TXEN0
+    #define __CTRLC_ENABLE 0
+    #define __CTRLC_UCSZ1  UCSZ01
+    #define __CTRLC_UCSZ0  UCSZ00
+    #define __DATAR        UDR0
+    #define __RX_VECT      USART0_RX_vect
+    #define __TX_VECT      USART0_UDRE_vect
+
 #else
 #error Unsupported AVR target for SCI interface
 #endif

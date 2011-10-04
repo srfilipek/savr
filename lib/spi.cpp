@@ -27,16 +27,23 @@
 
 #include <savr/cpp_pgmspace.h>
 #include <savr/spi.h>
+#include <savr/utils.h>
 
 
-#if defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
+#if     ISAVR(ATmega16)   || ISAVR(ATmega32)   || ISAVR(ATmega8)    || \
+        ISAVR(ATmega48)   || ISAVR(ATmega88)   || ISAVR(ATmega168)  || \
+        ISAVR(ATmega48P)  || ISAVR(ATmega88P)  || ISAVR(ATmega168P)
 #define SPI_DDR  DDRB
 #define SPI_PORT PORTB
 #define SPI_MOSI PB3
 #define SPI_MISO PB4
 #define SPI_SCK  PB5
-#elif defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__) \
-   || defined(__AVR_ATmega168P__) || defined(__AVR_ATmega168__)
+
+#elif   ISAVR(ATmega168)  || ISAVR(ATmega328)  || \
+        ISAVR(ATmega168P) || ISAVR(ATmega328P) || \
+        ISAVR(ATmega8515) || \
+        ISAVR(ATmega164P) || ISAVR(ATmega324P) || ISAVR(ATmega644P) || \
+        ISAVR(ATmega164)  || ISAVR(ATmega324)  || ISAVR(ATmega644)
 #define SPI_DDR  DDRB
 #define SPI_PORT PORTB
 #define SPI_MOSI PB5

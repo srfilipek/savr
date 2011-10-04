@@ -35,6 +35,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * Helpful macros
+ */
+#define ISAVR(x) defined(__AVR_ ## x ## __)
+
+
+
 namespace Utils {
 
 /**

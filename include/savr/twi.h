@@ -26,6 +26,8 @@
 #include <util/twi.h>
 
 
+#if defined(TWBR) && defined(TWCR) // Not everything has a TWI
+
 namespace TWI {
 
     /**
@@ -108,5 +110,6 @@ namespace TWI {
 
 };
 
+#endif /* defined(TWBR) && defined(TWCR) */
 #endif /*_twi_h_Included_ */
 
