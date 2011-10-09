@@ -55,7 +55,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
-.PHONY: clean all size load 
+.PHONY: clean all size load cleanload
 .INTERMEDIATE: $(OBJECTS)
 
 ## Build
@@ -91,4 +91,9 @@ load: $(TARGET:%.elf=%.hex)
 ## Clean target
 clean:
 	-rm -rf *.o *.a *.lss *.hex *.elf dep *.map *.eep
+
+cleanload:
+	@$(MAKE) clean
+	@$(MAKE) all
+	@$(MAKE) load
 
