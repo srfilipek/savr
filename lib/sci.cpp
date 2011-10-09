@@ -115,9 +115,10 @@ static int GetChar(FILE *);
 #define __GETBAUD(base, baud) (base/16/(baud)-1)
 
 //! Circular recieve buffer
-static Queue TxBuffer;
+static Queue<uint8_t, 8> TxBuffer;
+
 //! Circular transmit buffer
-static Queue RxBuffer;
+static Queue<uint8_t, 8> RxBuffer;
 
 
 
