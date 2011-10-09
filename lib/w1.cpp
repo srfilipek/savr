@@ -168,7 +168,6 @@ W1::_Searcher(uint8_t command, Address &address, Token &token)
     }
 
     // Begin search
-    last_zero_path = 0;
     WriteByte(command);
 
 
@@ -238,7 +237,7 @@ W1::_Searcher(uint8_t command, Address &address, Token &token)
 uint8_t
 W1::ReadBit()
 {
-    bool state = false;
+    bool state;
 
     // These operations are time sensitive...
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)

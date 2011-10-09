@@ -230,7 +230,7 @@ LCD::SetDisplay(bool on)
 uint8_t
 LCD::_GetByte(uint8_t mode)
 {
-    uint8_t x = 0;
+    uint8_t x;
 
     _SetDataIn();
 

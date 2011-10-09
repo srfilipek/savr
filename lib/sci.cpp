@@ -130,7 +130,7 @@ static Queue<uint8_t, 8> RxBuffer;
 int
 PutChar(char input, FILE * stream)
 {
-    uint8_t err = 0;
+    uint8_t err;
     if(input == '\n')
         PutChar('\r', stream);
 
@@ -152,8 +152,8 @@ PutChar(char input, FILE * stream)
 int
 GetChar(FILE * stream)
 {
-    char ret_val = 0;
-    uint8_t err  = 0;
+    char ret_val;
+    uint8_t err;
     do{
         cli();
         err = RxBuffer.Deq((uint8_t *)&ret_val);
@@ -207,7 +207,8 @@ ISR(__RX_VECT)
 ISR(__TX_VECT)
 {
     uint8_t tx_data;
-    uint8_t err = 0;
+    uint8_t err;
+
     err = TxBuffer.Deq(&tx_data);
     if(err)
         __CTRLB &= ~_BV(__CTRLB_UDRIE);

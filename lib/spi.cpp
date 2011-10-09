@@ -79,7 +79,7 @@ static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
 void
 SPI::SendBlock(uint8_t * input, size_t length)
 {
-    uint16_t i = 0;
+    size_t i = 0;
     while(i < length)
         SPI::TrxByte(input[i++]);
 }
@@ -91,7 +91,7 @@ SPI::SendBlock(uint8_t * input, size_t length)
 void
 SPI::GetBlock(uint8_t * input, size_t length, uint8_t filler)
 {
-    uint16_t i = 0;
+    size_t i = 0;
     while(i < length)
         input[i++] = SPI::TrxByte(filler);
 }
@@ -141,7 +141,7 @@ uint8_t highestBit(uint32_t word)
 void
 SPI::Init(uint32_t spiFreq)
 {
-    uint8_t divExp = 0;
+    uint8_t divExp;
 
     /* Master mode: MISO is Input; MOSI, and SCK is output */
     SPI_DDR &= ~(_BV(SPI_MISO));

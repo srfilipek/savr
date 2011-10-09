@@ -41,12 +41,9 @@ void
 PrintHex(void *data, size_t size)
 {
 
-    uint8_t * input;
-    size_t i;
+    uint8_t *input = (uint8_t *)data;
 
-    input = (uint8_t *)data;
-
-    for(i=0; i<size; i++) {
+    for(size_t i=0; i<size; i++) {
         printf_P(BYTEwPAD, input[i]);
     }
 
@@ -60,17 +57,13 @@ void
 PrintBlock(void *data, size_t size, uint32_t index, size_t width)
 {
 
-    uint8_t * input;
-    size_t i;
-    size_t j;
+    uint8_t *input  = (uint8_t *)data;
 
-    input = (uint8_t *)data;
-
-    for(i=0; i<size; i+=width, index+=width) {
+    for(size_t i=0; i<size; i+=width, index+=width) {
         printf_P(PSTR("0x%08lX:"), index);
         printf_P(dPAD);
 
-        for(j=0; j<width; j++) {
+        for(size_t j=0; j<width; j++) {
             if(i+j < size) {
                 printf_P(BYTEwPAD, input[i+j]);
             } else {
@@ -80,7 +73,7 @@ PrintBlock(void *data, size_t size, uint32_t index, size_t width)
 
         printf_P(dPAD);
 
-        for(j=0; j<width; j++) {
+        for(size_t j=0; j<width; j++) {
             if(i+j < size) {
                 putchar((isprint(input[i+j]) ? input[i+j] : '.'));
             } else {
