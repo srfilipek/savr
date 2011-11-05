@@ -23,11 +23,9 @@ COMMON  = -mmcu=$(MCU) -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpac
 INCLUDES += -I../include
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions
-CXXFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions $(INCLUDES)
 
-CFLAGS    = $(COMMON) -std=gnu99
-CFLAGS   += -MD -MP -MT $(*F).o -MF dep/$(@F).d $(INCLUDES)
+CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 
 ## Objects that must be built in order to link
 CINPUTS     = $(wildcard *.c)
@@ -56,10 +54,5 @@ size: $(TARGET)
 
 ## Clean target
 clean:
-	-rm -rf *.o *.a *.lss dep
+	-rm -rf *.o *.a *.lss
 
-
-ifneq "$(MAKECMDGOALS)" "clean"
-## Other dependencies
--include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)
-endif
