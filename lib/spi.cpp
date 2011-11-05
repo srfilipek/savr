@@ -30,25 +30,58 @@
 #include <savr/utils.h>
 
 
-#if     ISAVR(ATmega16)   || ISAVR(ATmega32)   || ISAVR(ATmega8)    || \
-        ISAVR(ATmega48)   || ISAVR(ATmega88)   || ISAVR(ATmega168)  || \
-        ISAVR(ATmega48P)  || ISAVR(ATmega88P)  || ISAVR(ATmega168P)
+#if     ISAVR(ATmega8)      || \
+        ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
+        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
+        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
 #define SPI_DDR  DDRB
 #define SPI_PORT PORTB
 #define SPI_MOSI PB3
 #define SPI_MISO PB4
 #define SPI_SCK  PB5
 
-#elif   ISAVR(ATmega168)  || ISAVR(ATmega328)  || \
-        ISAVR(ATmega168P) || ISAVR(ATmega328P) || \
-        ISAVR(ATmega8515) || \
-        ISAVR(ATmega164P) || ISAVR(ATmega324P) || ISAVR(ATmega644P) || \
-        ISAVR(ATmega164)  || ISAVR(ATmega324)  || ISAVR(ATmega644)
+#elif   ISAVR(ATmega16)     || \
+        ISAVR(ATmega32)     || \
+        ISAVR(ATmega644)    || \
+        ISAVR(ATmega8515)   || \
+        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
+        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
+        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
 #define SPI_DDR  DDRB
 #define SPI_PORT PORTB
 #define SPI_MOSI PB5
 #define SPI_MISO PB6
 #define SPI_SCK  PB7
+
+// This fixes improper register/field names in avr-libc for the atmega324pa
+#ifndef SPI2X
+#define SPI2X SPI2X0
+#endif
+#ifndef SPR0
+#define SPR0 SPR00
+#endif
+#ifndef SPR1
+#define SPR1 SPR10
+#endif
+#ifndef SPCR
+#define SPCR SPCR0
+#endif
+#ifndef SPSR
+#define SPSR SPSR0
+#endif
+#ifndef SPE
+#define SPE SPE0
+#endif
+#ifndef MSTR
+#define MSTR MSTR0
+#endif
+#ifndef SPDR
+#define SPDR SPDR0
+#endif
+#ifndef SPIF
+#define SPIF SPIF0
+#endif
+
 #else
 #error Unsupported AVR target for SPI interface
 #endif
@@ -58,6 +91,7 @@ typedef struct {
     uint8_t spcr;
     uint8_t spsr;
 } SPIConfig;
+
 
 //! For a divider of 2^x, use regFreqCfg[x-1]
 static const SPIConfig CPP_PROGMEM regFreqCfg[] = {

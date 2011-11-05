@@ -29,7 +29,9 @@
 #include <savr/queue.h>
 #include <savr/utils.h>
 
-#if     ISAVR(ATmega16) || ISAVR(ATmega32) || ISAVR(ATmega8)
+#if     ISAVR(ATmega8)      || \
+        ISAVR(ATmega16)     || \
+        ISAVR(ATmega32)
     #define __BAUD_HIGH    UBRRH
     #define __BAUD_LOW     UBRRL
     #define __CTRLA        UCSRA
@@ -63,10 +65,9 @@
     #define __RX_VECT      USART_RX_vect
     #define __TX_VECT      USART_UDRE_vect
 
-#elif   ISAVR(ATmega168)  || ISAVR(ATmega328)  || \
-        ISAVR(ATmega168P) || ISAVR(ATmega328P) || \
-        ISAVR(ATmega48)   || ISAVR(ATmega88)   || ISAVR(ATmega168) || \
-        ISAVR(ATmega48P)  || ISAVR(ATmega88P)  || ISAVR(ATmega168P)
+#elif   ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
+        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
+        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
     #define __BAUD_HIGH    UBRR0H
     #define __BAUD_LOW     UBRR0L
     #define __CTRLA        UCSR0A
@@ -84,8 +85,10 @@
     #define __TX_VECT      USART_UDRE_vect
 
 
-#elif   ISAVR(ATmega164P) || ISAVR(ATmega324P) || ISAVR(ATmega644P) || \
-        ISAVR(ATmega164)  || ISAVR(ATmega324)  || ISAVR(ATmega644)
+#elif   ISAVR(ATmega644)    || \
+        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
+        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
+        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
     #define __BAUD_HIGH    UBRR0H
     #define __BAUD_LOW     UBRR0L
     #define __CTRLA        UCSR0A
