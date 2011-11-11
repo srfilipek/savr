@@ -45,7 +45,7 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t outputFreq)
+TWI::init(uint32_t outputFreq)
 {
 
     // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
@@ -61,10 +61,10 @@ TWI::Init(uint32_t outputFreq)
  * @par Implementation notes:
  */
 void
-TWI::PrintState(void)
+TWI::printState(void)
 {
     char temp[5];
-    switch (TWI::State()) {
+    switch (TWI::state()) {
         case TW_MT_DATA_ACK:
             puts_P(SentData); puts_P(eACK);
             break;
@@ -124,12 +124,12 @@ TWI::PrintState(void)
  * @par Implementation notes:
  */
 void
-TWI::Send(uint8_t b)
+TWI::send(uint8_t b)
 {
-    TWI::Wait();
+    TWI::wait();
     TWDR = b;
     TWCR = _BV(TWINT) | _BV(TWEN);
-    TWI::Wait();
+    TWI::wait();
 }
 
 
@@ -137,11 +137,11 @@ TWI::Send(uint8_t b)
  * @par Implementation notes:
  */
 uint8_t
-TWI::GetAck(void)
+TWI::getAck(void)
 {
-    TWI::Wait();
+    TWI::wait();
     TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA); // Enable ACK
-    TWI::Wait();
+    TWI::wait();
     return TWDR;
 }
 
@@ -150,11 +150,11 @@ TWI::GetAck(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Get(void)
+TWI::get(void)
 {
-    TWI::Wait();
+    TWI::wait();
     TWCR = _BV(TWINT) | _BV(TWEN); // No ACK
-    TWI::Wait();
+    TWI::wait();
     return TWDR;
 }
 
@@ -163,22 +163,22 @@ TWI::Get(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Address(uint8_t address, uint8_t rw)
+TWI::address(uint8_t address, uint8_t rw)
 {
     // Create start condition
     uint8_t state;
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
-    TWI::Wait();
-    state = TWI::State();
+    TWI::wait();
+    state = TWI::state();
     if(state != TW_START && state != TW_REP_START) {
         return 1;
     }
 
     // Send address | RW (has waits...)
-    TWI::Send((address<<1) | (!!rw));
+    TWI::send((address<<1) | (!!rw));
 
-    state = TWI::State();
+    state = TWI::state();
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
         return 1;
     }
@@ -191,7 +191,7 @@ TWI::Address(uint8_t address, uint8_t rw)
  * @par Implementation notes:
  */
 void
-TWI::Stop(void)
+TWI::stop(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
 }
@@ -201,7 +201,7 @@ TWI::Stop(void)
  * @par Implementation notes:
  */
 void
-TWI::Start(void)
+TWI::start(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 }
@@ -211,7 +211,7 @@ TWI::Start(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::State(void)
+TWI::state(void)
 {
     return (TWSR & TW_STATUS_MASK);
 }

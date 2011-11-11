@@ -76,12 +76,12 @@ namespace GPIO {
  * @par Implementation notes:
  */
 void
-Set(GPIO::Pin pin, uint8_t set)
+set(GPIO::Pin pin, uint8_t set)
 {
     if(set) {
-        High(pin);
+        high(pin);
     }else{
-        Low(pin);
+        low(pin);
     }
 }
 
@@ -90,7 +90,7 @@ Set(GPIO::Pin pin, uint8_t set)
  * @par Implementation notes:
  */
 uint8_t
-Get(GPIO::Pin pin)
+get(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -102,7 +102,7 @@ Get(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-High(GPIO::Pin pin)
+high(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -114,7 +114,7 @@ High(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Low(GPIO::Pin pin)
+low(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -126,7 +126,7 @@ Low(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-In(GPIO::Pin pin)
+in(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -138,7 +138,7 @@ In(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Out(GPIO::Pin pin)
+out(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);

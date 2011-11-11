@@ -72,31 +72,31 @@
 #define FILL_BYTE                   0xFF
 #define START_BLOCK                 0xFE
 
-static void DelayBytes(uint16_t bytes);
-static void SendCommand(uint8_t command, uint32_t arg);
-static uint8_t CheckForCard(void);
-static uint8_t GetResponse(uint8_t *buf, uint16_t length);
-static uint8_t ReadData(uint8_t *buf, uint16_t length);
+static void delayBytes(uint16_t bytes);
+static void sendCommand(uint8_t command, uint32_t arg);
+static uint8_t checkForCard(void);
+static uint8_t getResponse(uint8_t *buf, uint16_t length);
+static uint8_t readData(uint8_t *buf, uint16_t length);
 
-static void DecodeR1(uint8_t res);
+static void decodeR1(uint8_t res);
 //static void DecodeR2(uint16_t res);
-static void DecodeDataRes(uint8_t res);
-static void DecodeDataErr(uint8_t res);
+static void decodeDataRes(uint8_t res);
+static void decodeDataErr(uint8_t res);
 
 
 #ifdef SD_USE_CRC
-static uint8_t CRC7 (uint8_t *bytes, uint32_t length);
-static uint16_t CRC16(uint8_t *bytes, uint32_t length);
-static uint16_t CRC16_Fill(uint16_t crc, uint8_t const_value, uint32_t length);
+static uint8_t crc7 (uint8_t *bytes, uint32_t length);
+static uint16_t crc16(uint8_t *bytes, uint32_t length);
+static uint16_t crc16_fill(uint16_t crc, uint8_t const_value, uint32_t length);
 #else
-#define CRC7(x, y)           ((uint8_t)0x4A)
-#define CRC16(x, y)          0xFFFF
-#define CRC16_Fill(x, y, z)  0xFFFF
+#define crc7(x, y)           ((uint8_t)0x4A)
+#define crc16(x, y)          0xFFFF
+#define crc16_fill(x, y, z)  0xFFFF
 #endif
 
 
 // Error printing used all over the place
-static void Error(uint8_t cmd, uint8_t res);
+static void error(uint8_t cmd, uint8_t res);
 
 
 // SD::* is already non-reentrant, so a global buffer is... OK...
@@ -109,7 +109,7 @@ static GPIO::Pin _ss;
  * @par Implementation Notes:
  */
 uint8_t
-SD::Init(GPIO::Pin ss)
+SD::init(GPIO::Pin ss)
 {
     uint16_t i;
     uint8_t res;
@@ -117,12 +117,12 @@ SD::Init(GPIO::Pin ss)
     _ss = ss;
 
     // Delay a buncha clocks
-    GPIO::Out(_ss);
-    GPIO::High(_ss);
-    DelayBytes(20);
+    GPIO::out(_ss);
+    GPIO::high(_ss);
+    delayBytes(20);
 
     // Check if the card is inserted
-    if(!CheckForCard())
+    if(!checkForCard())
     {
         printf_P(PSTR("Card NOT found\n"));
         return 0;
@@ -130,63 +130,63 @@ SD::Init(GPIO::Pin ss)
     printf_P(PSTR("Card found\n"));
 
     // Standard init commands
-    SendCommand(CMD_SEND_IF_COND, 0);
-    res = GetResponse(scratch, 5);
+    sendCommand(CMD_SEND_IF_COND, 0);
+    res = getResponse(scratch, 5);
 
-    SendCommand(CMD_READ_OCR, 0);
-    res = GetResponse(scratch, 5);
+    sendCommand(CMD_READ_OCR, 0);
+    res = getResponse(scratch, 5);
 
     // Wait for card to init fully
     i=0;
     do {
-        SendCommand(CMD_SEND_OP_COND, 0);
-        res = GetResponse(scratch, 1);
+        sendCommand(CMD_SEND_OP_COND, 0);
+        res = getResponse(scratch, 1);
         i++;
     }while(res && i < 10000);
 
     if(res) {
-        Error(CMD_SEND_OP_COND, res);
+        error(CMD_SEND_OP_COND, res);
         return 0;
     }
 
 #ifdef SD_USE_CRC
-    SendCommand(CMD_CRC_ONOFF, 1);
+    sendCommand(CMD_CRC_ONOFF, 1);
 #else
-    SendCommand(CMD_CRC_ONOFF, 0);
+    sendCommand(CMD_CRC_ONOFF, 0);
 #endif
-    res = GetResponse(scratch, 1);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_SEND_CID, res);
-        DecodeR1(res);
+        error(CMD_SEND_CID, res);
+        decodeR1(res);
         return 0;
     }
 
 
-    SendCommand(CMD_SEND_CID, 0);
+    sendCommand(CMD_SEND_CID, 0);
     // 128bits + 16 CRC
-    res = GetResponse(scratch, 1) || !ReadData(scratch, 18);
+    res = getResponse(scratch, 1) || !readData(scratch, 18);
 
     if(res) {
-        Error(CMD_SEND_CID, res);
+        error(CMD_SEND_CID, res);
         return 0;
     }else{
         printf_P(PSTR("CID: "));
-        Utils::PrintHex(scratch, 16);
+        Utils::printHex(scratch, 16);
         putchar('\n');
         //printf(" CRC16: %d\n", CRC16(scratch, 18));
     }
 
 
-    SendCommand(CMD_SEND_CSD, 0);
+    sendCommand(CMD_SEND_CSD, 0);
     // 128bits + 16 CRC
-    res = GetResponse(scratch, 1) || !ReadData(scratch, 18);
+    res = getResponse(scratch, 1) || !readData(scratch, 18);
 
     if(res) {
-        Error(CMD_SEND_CID, res);
+        error(CMD_SEND_CID, res);
         return 0;
     }else{
         printf_P(PSTR("CSD: "));
-        Utils::PrintHex(scratch, 16);
+        Utils::printHex(scratch, 16);
         putchar('\n');
         //printf(" CRC16: %d\n", CRC16(scratch, 18));
     }
@@ -200,28 +200,28 @@ SD::Init(GPIO::Pin ss)
  * @par Implementation Notes:
  */
 uint8_t
-SD::ReadBlock(uint8_t *buf, uint32_t addr, size_t size)
+SD::readBlock(uint8_t *buf, uint32_t addr, size_t size)
 {
     uint8_t res;
 
     // Set the block length... won't work on SDHC
-    SendCommand(CMD_SET_BLOCKLEN, size);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_SET_BLOCKLEN, size);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_SET_BLOCKLEN, res);
-        DecodeR1(res);
+        error(CMD_SET_BLOCKLEN, res);
+        decodeR1(res);
         return 0;
     }
 
-    SendCommand(CMD_READ_BLOCK, addr);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_READ_BLOCK, addr);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_READ_BLOCK, res);
-        DecodeR1(res);
+        error(CMD_READ_BLOCK, res);
+        decodeR1(res);
         return 0;
     }
 
-    return ReadData(buf, size);
+    return readData(buf, size);
 }
 
 
@@ -229,75 +229,75 @@ SD::ReadBlock(uint8_t *buf, uint32_t addr, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-SD::WriteBlock(uint8_t *data, uint32_t addr, size_t size)
+SD::writeBlock(uint8_t *data, uint32_t addr, size_t size)
 {
     uint8_t res;
     uint8_t funcRes = 1;
     uint16_t i;
     uint16_t crc;
 
-    crc = CRC16(data, (uint32_t)size);
+    crc = crc16(data, (uint32_t)size);
 
     // Set the block length... won't work on SDHC
-    SendCommand(CMD_SET_BLOCKLEN, BLOCK_SIZE);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_SET_BLOCKLEN, BLOCK_SIZE);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_SET_BLOCKLEN, res);
-        DecodeR1(res);
+        error(CMD_SET_BLOCKLEN, res);
+        decodeR1(res);
         return 0;
     }
 
     // Tell it we want to write
-    SendCommand(CMD_WRITE_BLOCK, addr);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_WRITE_BLOCK, addr);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_WRITE_BLOCK, res);
-        DecodeR1(res);
+        error(CMD_WRITE_BLOCK, res);
+        decodeR1(res);
         return 0;
     }
 
-    GPIO::Low(_ss);
+    GPIO::low(_ss);
 
     // Send "Start Block" byte
-    SPI::TrxByte(START_BLOCK);
+    SPI::trxByte(START_BLOCK);
 
     // Send data
-    SPI::SendBlock(data, size);
+    SPI::sendBlock(data, size);
 
     // Fill empty space
     for(i=size; i<BLOCK_SIZE; i++) {
-        SPI::TrxByte(FILL_BYTE);
+        SPI::trxByte(FILL_BYTE);
     }
 
     // Send CRC (recalc for fill bytes
-    crc = CRC16_Fill(crc, FILL_BYTE, BLOCK_SIZE-size);
-    SPI::TrxByte((uint8_t)(crc>>8));
-    SPI::TrxByte((uint8_t)crc);
+    crc = crc16_fill(crc, FILL_BYTE, BLOCK_SIZE-size);
+    SPI::trxByte((uint8_t)(crc>>8));
+    SPI::trxByte((uint8_t)crc);
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
     // Response?
-    res = GetResponse(scratch, 1);
+    res = getResponse(scratch, 1);
     if((res & 0x0F) != 0x05) {
         printf_P(PSTR("Error: Data rejected (%02hX)\n"), res);
-        DecodeDataRes(res);
+        decodeDataRes(res);
         funcRes = 0;
     }
 
-    GPIO::Low(_ss);
+    GPIO::low(_ss);
 
     // Wait for completion
     i=0;
     do {
-        res = SPI::TrxByte(0xFF);
+        res = SPI::trxByte(0xFF);
         i++;
     }while(res != NO_RESPONSE && i < 50000);
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
     // Did it take a crazy amount of time?
     if(res != NO_RESPONSE) {
-        Error(0xFF, res);
+        error(0xFF, res);
         return 0;
     }
 
@@ -309,41 +309,41 @@ SD::WriteBlock(uint8_t *data, uint32_t addr, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-SD::EraseBlock(uint32_t addr, uint32_t size)
+SD::eraseBlock(uint32_t addr, uint32_t size)
 {
     uint8_t res;
 
-    SendCommand(CMD_ERASE_BLOCK_START, addr);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_ERASE_BLOCK_START, addr);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_ERASE_BLOCK_START, res);
-        DecodeR1(res);
+        error(CMD_ERASE_BLOCK_START, res);
+        decodeR1(res);
         return 0;
     }
 
-    SendCommand(CMD_ERASE_BLOCK_END, addr+size);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_ERASE_BLOCK_END, addr+size);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_ERASE_BLOCK_END, res);
-        DecodeR1(res);
+        error(CMD_ERASE_BLOCK_END, res);
+        decodeR1(res);
         return 0;
     }
 
 
-    SendCommand(CMD_ERASE, 0);
-    res = GetResponse(scratch, 1);
+    sendCommand(CMD_ERASE, 0);
+    res = getResponse(scratch, 1);
     if(res) {
-        Error(CMD_ERASE, res);
-        DecodeR1(res);
+        error(CMD_ERASE, res);
+        decodeR1(res);
         return 0;
     }
 
     // Optionally, the card will send a busy token (response R1b)
-    // Wait until a non-zero response is sent back, indicating 
+    // Wait until a non-zero response is sent back, indicating
     // that the erase is complete
-    GPIO::Low(_ss);
-    while(SPI::TrxByte(0xFF) == 0) ;
-    GPIO::High(_ss);
+    GPIO::low(_ss);
+    while(SPI::trxByte(0xFF) == 0) ;
+    GPIO::high(_ss);
 
     return 1;
 }
@@ -358,10 +358,10 @@ SD::EraseBlock(uint32_t addr, uint32_t size)
  * @param bytes the number of bytes to clock out (16bit)
  */
 void
-DelayBytes(uint16_t bytes)
+delayBytes(uint16_t bytes)
 {
     while (bytes) {
-        SPI::TrxByte(0xFF);
+        SPI::trxByte(0xFF);
         bytes--;
     }
 }
@@ -376,14 +376,14 @@ DelayBytes(uint16_t bytes)
  * @return 1 if card is found, 0 otherwise
  */
 uint8_t
-CheckForCard(void)
+checkForCard(void)
 {
     unsigned int i;
-    
+
     // Reset card and check response (retry x 10)
     for(i=0; i<10; i++) {
-        SendCommand(CMD_GO_IDLE_STATE, 0);
-        if(GetResponse(scratch, 1) != NO_RESPONSE) {
+        sendCommand(CMD_GO_IDLE_STATE, 0);
+        if(getResponse(scratch, 1) != NO_RESPONSE) {
             return 1;
         }
     }
@@ -405,7 +405,7 @@ CheckForCard(void)
  * @param arg the 32-bit argument to send with the command
  */
 void
-SendCommand(uint8_t command, uint32_t arg)
+sendCommand(uint8_t command, uint32_t arg)
 {
     uint8_t temp[6]; // Block of data to send
     uint8_t i;
@@ -423,7 +423,7 @@ SendCommand(uint8_t command, uint32_t arg)
 
     // Last byte is CRC, shifted left 1, last bit set
     temp[5] = 0;
-    temp[5] = (CRC7(temp, 5) << 1) | 0x01;
+    temp[5] = (crc7(temp, 5) << 1) | 0x01;
 
     //printf(" Sending command:");
     //for(i=0; i<6; i++) {
@@ -431,13 +431,13 @@ SendCommand(uint8_t command, uint32_t arg)
     //}
     //printf("\n");
 
-    GPIO::Low(_ss);
+    GPIO::low(_ss);
 
-    SPI::TrxByte(0xFF);
-    SPI::SendBlock(temp, 6);
-    SPI::TrxByte(0xFF);
+    SPI::trxByte(0xFF);
+    SPI::sendBlock(temp, 6);
+    SPI::trxByte(0xFF);
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 }
 
 
@@ -455,33 +455,33 @@ SendCommand(uint8_t command, uint32_t arg)
  * @return the first byte of the response
  */
 uint8_t
-GetResponse(uint8_t * buf, uint16_t length)
+getResponse(uint8_t * buf, uint16_t length)
 {
     uint8_t res  = NO_RESPONSE;
     uint8_t resx = NO_RESPONSE;
     uint8_t i = 0;
 
-    GPIO::Low(_ss);
+    GPIO::low(_ss);
 
     while(i < 20 && res == NO_RESPONSE) {
         i++;
-        res = SPI::TrxByte(0xFF);
+        res = SPI::trxByte(0xFF);
     }
     //printf("    Resp: %02hX", res);
     buf[0] = res;
 
     // Read the rest of the response, up to length
     for(i=1; i<length; i++) {
-        resx = SPI::TrxByte(0xFF);
+        resx = SPI::trxByte(0xFF);
         buf[i] = resx;
         //printf(" %02hX", resx);
     }
 
     //printf("\n");
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
-    return res; 
+    return res;
 }
 
 
@@ -489,7 +489,7 @@ GetResponse(uint8_t * buf, uint16_t length)
  * Reads a data response of a given length
  *
  * The entire response is loaded in the provided buffer.
- * Assumes it's the start of the response and looks for a 
+ * Assumes it's the start of the response and looks for a
  * valid START_BLOCK (0xFE). Will wait for 100 bytes
  * for a valid start or error token.
  *
@@ -499,31 +499,31 @@ GetResponse(uint8_t * buf, uint16_t length)
  * @return 1 if sucessful, 0 otherwise.
  */
 uint8_t
-ReadData(uint8_t * buf, uint16_t length)
+readData(uint8_t * buf, uint16_t length)
 {
     uint8_t  res = 0;
     uint16_t i = 0;
     uint16_t retryCount = 100;
 
-    GPIO::Low(_ss);
+    GPIO::low(_ss);
 
     // Find data start, or error token
     do {
-        res = SPI::TrxByte(0xFF);
+        res = SPI::trxByte(0xFF);
     }while(res == NO_RESPONSE && retryCount--);
 
     if(res != START_BLOCK) {
-        Error(0xFF, res);
-        DecodeDataErr(res);
+        error(0xFF, res);
+        decodeDataErr(res);
         return 0;
     }
-    
+
     // Data is comin our way...
     for(i=0; i<length; i++) {
-        buf[i] = SPI::TrxByte(0xFF);
+        buf[i] = SPI::trxByte(0xFF);
     }
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
     return 1;
 }
@@ -539,7 +539,7 @@ ReadData(uint8_t * buf, uint16_t length)
  * @param res the response byte
  */
 void
-Error(uint8_t cmd, uint8_t res)
+error(uint8_t cmd, uint8_t res)
 {
     printf_P(PSTR("  Error: cmd=%02hX, res=%02hX\n"), cmd, res);
 }
@@ -551,7 +551,7 @@ Error(uint8_t cmd, uint8_t res)
  * @param res the R1 response
  */
 void
-DecodeR1(uint8_t res)
+decodeR1(uint8_t res)
 {
     if(res)
         printf_P(PSTR("  Error: ")); // Padding for all responses
@@ -579,7 +579,7 @@ DecodeR1(uint8_t res)
 
 /**
  * Decodes the R2 response type
- * 
+ *
  * Decodes the R2 response and prints out an error message, if applicable.
  *
  * @param res the R2 response
@@ -596,7 +596,7 @@ DecodeR1(uint8_t res)
  * @param res the data response
  */
 void
-DecodeDataRes(uint8_t res)
+decodeDataRes(uint8_t res)
 {
 
     if(res)
@@ -631,7 +631,7 @@ DecodeDataRes(uint8_t res)
  * @param res the data error response
  */
 void
-DecodeDataErr(uint8_t res)
+decodeDataErr(uint8_t res)
 {
 
     if(res)
@@ -667,7 +667,7 @@ DecodeDataErr(uint8_t res)
  * @return the resultant CRC (8bit)
  */
 uint8_t
-CRC7(uint8_t * bytes, uint32_t length)
+crc7(uint8_t * bytes, uint32_t length)
 {
     uint32_t ibyte;
     uint8_t  ibit;
@@ -700,7 +700,7 @@ CRC7(uint8_t * bytes, uint32_t length)
  * @return the resultant CRC (16bit)
  */
 uint16_t
-CRC16(uint8_t * bytes, uint32_t length)
+crc16(uint8_t * bytes, uint32_t length)
 {
     uint32_t ibyte;
     uint8_t  ibit;
@@ -735,7 +735,7 @@ CRC16(uint8_t * bytes, uint32_t length)
  * @return the resultant CRC (16bit)
  */
 uint16_t
-CRC16_Fill(uint16_t crc, uint8_t const_value, uint32_t length)
+crc16_fill(uint16_t crc, uint8_t const_value, uint32_t length)
 {
     uint32_t ibyte;
     uint8_t  ibit;

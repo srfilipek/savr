@@ -39,25 +39,25 @@ static GPIO::Pin _ss;
  * @par Implementation notes:
  */
 bool
-Eth::Init(GPIO::Pin ss, Eth::IP4Address address, Eth::IP4Address mask, Eth::IP4Address gateway)
+Eth::init(GPIO::Pin ss, Eth::IP4Address address, Eth::IP4Address mask, Eth::IP4Address gateway)
 {
     bool ret = true;
 
     _ss = ss;
-    GPIO::Out(_ss);
-    GPIO::High(_ss);
+    GPIO::out(_ss);
+    GPIO::high(_ss);
 
     // Reset, early error termination
-    ret &= Eth::W5100::Write(0, 0x80);
+    ret &= Eth::W5100::write(0, 0x80);
     if(!ret) return false;
 
-    ret &= Eth::SetIP(address);
-    ret &= Eth::SetSubnetMask(mask);
-    ret &= Eth::SetGateway(gateway);
+    ret &= Eth::setIP(address);
+    ret &= Eth::setSubnetMask(mask);
+    ret &= Eth::setGateway(gateway);
 
     // Default MAC
-    ret &= Eth::W5100::Write(0x0009, 2);   // Unicast, locally administered
-    ret &= Eth::W5100::Write(0x000E, 1);
+    ret &= Eth::W5100::write(0x0009, 2);   // Unicast, locally administered
+    ret &= Eth::W5100::write(0x000E, 1);
 
     return ret;
 }
@@ -67,15 +67,15 @@ Eth::Init(GPIO::Pin ss, Eth::IP4Address address, Eth::IP4Address mask, Eth::IP4A
  * @par Implementation notes:
  */
 bool
-Eth::SetIP(Eth::IP4Address address)
+Eth::setIP(Eth::IP4Address address)
 {
     bool ret = true;
     uint8_t *temp;
     temp = (uint8_t*)&address;
-    ret &= Eth::W5100::Write(0x000F, temp[3]);
-    ret &= Eth::W5100::Write(0x0010, temp[2]);
-    ret &= Eth::W5100::Write(0x0011, temp[1]);
-    ret &= Eth::W5100::Write(0x0012, temp[0]);
+    ret &= Eth::W5100::write(0x000F, temp[3]);
+    ret &= Eth::W5100::write(0x0010, temp[2]);
+    ret &= Eth::W5100::write(0x0011, temp[1]);
+    ret &= Eth::W5100::write(0x0012, temp[0]);
     return ret;
 }
 
@@ -84,15 +84,15 @@ Eth::SetIP(Eth::IP4Address address)
  * @par Implementation notes:
  */
 bool
-Eth::SetSubnetMask(Eth::IP4Address mask)
+Eth::setSubnetMask(Eth::IP4Address mask)
 {
     bool ret = true;
     uint8_t *temp;
     temp = (uint8_t*)&mask;
-    ret &= Eth::W5100::Write(0x0005, temp[3]);
-    ret &= Eth::W5100::Write(0x0006, temp[2]);
-    ret &= Eth::W5100::Write(0x0007, temp[1]);
-    ret &= Eth::W5100::Write(0x0008, temp[0]);
+    ret &= Eth::W5100::write(0x0005, temp[3]);
+    ret &= Eth::W5100::write(0x0006, temp[2]);
+    ret &= Eth::W5100::write(0x0007, temp[1]);
+    ret &= Eth::W5100::write(0x0008, temp[0]);
     return ret;
 }
 
@@ -101,15 +101,15 @@ Eth::SetSubnetMask(Eth::IP4Address mask)
  * @par Implementation notes:
  */
 bool
-Eth::SetGateway(Eth::IP4Address gateway)
+Eth::setGateway(Eth::IP4Address gateway)
 {
     bool ret = true;
     uint8_t *temp;
     temp = (uint8_t*)&gateway;
-    ret &= Eth::W5100::Write(0x0001, temp[3]);
-    ret &= Eth::W5100::Write(0x0002, temp[2]);
-    ret &= Eth::W5100::Write(0x0003, temp[1]);
-    ret &= Eth::W5100::Write(0x0004, temp[0]);
+    ret &= Eth::W5100::write(0x0001, temp[3]);
+    ret &= Eth::W5100::write(0x0002, temp[2]);
+    ret &= Eth::W5100::write(0x0003, temp[1]);
+    ret &= Eth::W5100::write(0x0004, temp[0]);
     return ret;
 }
 
@@ -118,16 +118,16 @@ Eth::SetGateway(Eth::IP4Address gateway)
  * @par Implementation notes:
  */
 bool
-Eth::SetMAC(uint8_t* mac)
+Eth::setMAC(uint8_t* mac)
 {
     bool ret = true;
     // MAC
-    ret &= Eth::W5100::Write(0x0009, mac[0]);
-    ret &= Eth::W5100::Write(0x000A, mac[1]);
-    ret &= Eth::W5100::Write(0x000B, mac[2]);
-    ret &= Eth::W5100::Write(0x000C, mac[3]);
-    ret &= Eth::W5100::Write(0x000D, mac[4]);
-    ret &= Eth::W5100::Write(0x000E, mac[5]);
+    ret &= Eth::W5100::write(0x0009, mac[0]);
+    ret &= Eth::W5100::write(0x000A, mac[1]);
+    ret &= Eth::W5100::write(0x000B, mac[2]);
+    ret &= Eth::W5100::write(0x000C, mac[3]);
+    ret &= Eth::W5100::write(0x000D, mac[4]);
+    ret &= Eth::W5100::write(0x000E, mac[5]);
     return false;
 }
 
@@ -146,20 +146,20 @@ Eth::SetMAC(uint8_t* mac)
 #define WRITE_OP    0xF0
 
 bool
-Eth::W5100::Read(uint16_t address, uint8_t* byte) {
-    GPIO::Low(_ss);
+Eth::W5100::read(uint16_t address, uint8_t* byte) {
+    GPIO::low(_ss);
 
-    if(SPI::TrxByte(READ_OP) != 0) goto ethread_fail;
-    if(SPI::TrxByte((address>>8) & 0xFF) != 1) goto ethread_fail;
-    if(SPI::TrxByte((address)    & 0xFF) != 2) goto ethread_fail;
-    *byte = SPI::TrxByte(0xFF);
+    if(SPI::trxByte(READ_OP) != 0) goto ethread_fail;
+    if(SPI::trxByte((address>>8) & 0xFF) != 1) goto ethread_fail;
+    if(SPI::trxByte((address)    & 0xFF) != 2) goto ethread_fail;
+    *byte = SPI::trxByte(0xFF);
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
     return true;
 
 ethread_fail:
-    GPIO::High(_ss);
+    GPIO::high(_ss);
     printf_P(PSTR("Read Failed\n"));
     return false;
 }
@@ -167,20 +167,20 @@ ethread_fail:
 
 
 bool
-Eth::W5100::Write(uint16_t address, uint8_t byte) {
-    GPIO::Low(_ss);
+Eth::W5100::write(uint16_t address, uint8_t byte) {
+    GPIO::low(_ss);
 
-    if(SPI::TrxByte(WRITE_OP) != 0) goto ethwrite_fail;
-    if(SPI::TrxByte((address>>8) & 0xFF) != 1) goto ethwrite_fail;
-    if(SPI::TrxByte((address)    & 0xFF) != 2) goto ethwrite_fail;
-    if(SPI::TrxByte(byte) != 3) goto ethwrite_fail;
+    if(SPI::trxByte(WRITE_OP) != 0) goto ethwrite_fail;
+    if(SPI::trxByte((address>>8) & 0xFF) != 1) goto ethwrite_fail;
+    if(SPI::trxByte((address)    & 0xFF) != 2) goto ethwrite_fail;
+    if(SPI::trxByte(byte) != 3) goto ethwrite_fail;
 
-    GPIO::High(_ss);
+    GPIO::high(_ss);
 
     return true;
 
 ethwrite_fail:
-    GPIO::High(_ss);
+    GPIO::high(_ss);
     printf_P(PSTR("Write Failed\n"));
     return false;
 }

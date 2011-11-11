@@ -49,7 +49,7 @@ static LCD *lcd = NULL;
  * For binding to a file stream
  */
 static int PutChar(char input, FILE * stream) {
-    lcd->OutChar(input);
+    lcd->outChar(input);
     return 0;
 }
 
@@ -59,25 +59,25 @@ static int PutChar(char input, FILE * stream) {
  */
 int main(void) {
 
-    SCI::Init(38400);  // bps
+    SCI::init(38400);  // bps
 
-    GPIO::Out(GPIO::B1);
-    GPIO::Low(GPIO::B1);
-    GPIO::Out(GPIO::B2);
-    GPIO::Low(GPIO::B2);
+    GPIO::out(GPIO::B1);
+    GPIO::low(GPIO::B1);
+    GPIO::out(GPIO::B2);
+    GPIO::low(GPIO::B2);
 
     LCD locallcd(GPIO::D3, GPIO::D5, GPIO::D2, GPIO::D4, GPIO::B0, GPIO::D7, GPIO::D6);
     lcd = &locallcd;
-    locallcd.SetBlink(false);
-    locallcd.SetCursor(false);
+    locallcd.setBlink(false);
+    locallcd.setCursor(false);
 
-    locallcd.OutString("Hello world!");
+    locallcd.outString("Hello world!");
 
-    Term::Init(welcomeMessage, promptString);
+    Term::init(welcomeMessage, promptString);
 
     Interrupts_Enable();
 
-    Term::Run(cmdList, cmdLength);
+    Term::run(cmdList, cmdLength);
 
     /* NOTREACHED */
     return 0;

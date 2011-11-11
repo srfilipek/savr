@@ -49,7 +49,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   Init(GPIO::Pin ss);
+    uint8_t   init(GPIO::Pin ss);
 
 
     /**
@@ -64,7 +64,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   ReadBlock(uint8_t *buf, uint32_t addr, size_t size);
+    uint8_t   readBlock(uint8_t *buf, uint32_t addr, size_t size);
 
 
     /**
@@ -80,7 +80,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   WriteBlock(uint8_t *data, uint32_t addr, size_t size);
+    uint8_t   writeBlock(uint8_t *data, uint32_t addr, size_t size);
 
 
     /**
@@ -95,7 +95,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   EraseBlock(uint32_t addr, uint32_t size);
+    uint8_t   eraseBlock(uint32_t addr, uint32_t size);
 
 };
 #endif

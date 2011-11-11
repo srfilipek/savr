@@ -87,7 +87,7 @@ typedef enum {
  * @param pin   The GPIO::Pin to control
  * @param set   zero = Low, non-zero = High
  */
-void    Set(GPIO::Pin pin, uint8_t set);
+void    set(GPIO::Pin pin, uint8_t set);
 
 
 /**
@@ -96,7 +96,7 @@ void    Set(GPIO::Pin pin, uint8_t set);
  * @param pin   The GPIO::Pin to read
  * @return 0 if the pin is logic low, 1 if logic high
  */
-uint8_t Get(GPIO::Pin pin);
+uint8_t get(GPIO::Pin pin);
 
 
 /**
@@ -104,7 +104,7 @@ uint8_t Get(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    High(GPIO::Pin pin);
+void    high(GPIO::Pin pin);
 
 
 /**
@@ -112,7 +112,7 @@ void    High(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    Low(GPIO::Pin pin);
+void    low(GPIO::Pin pin);
 
 
 /**
@@ -120,7 +120,7 @@ void    Low(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    In(GPIO::Pin pin);
+void    in(GPIO::Pin pin);
 
 
 /**
@@ -128,7 +128,7 @@ void    In(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    Out(GPIO::Pin pin);
+void    out(GPIO::Pin pin);
 
 
 }

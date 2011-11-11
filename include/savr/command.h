@@ -50,10 +50,10 @@ namespace CMD {
     typedef struct {
         //! Name of the command
         const char *commandName;
-    
+
         //! Callback function
         CMD::CommandCallback callback;
-    
+
         //! Brief (very brief) description
         const char *helpText;
     } CommandDef;
@@ -68,7 +68,7 @@ namespace CMD {
      * @param commandList   List of supported commands
      * @param length        Number of commands in list
      */
-    void Init(const CommandList commandList, size_t length);
+    void init(const CommandList commandList, size_t length);
 
 
     /**
@@ -78,7 +78,7 @@ namespace CMD {
      *
      * If the command is not found, a small help text is displayed
      */
-    void RunCommand(char *line);
+    void runCommand(char *line);
 
 };
 

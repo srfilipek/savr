@@ -38,8 +38,12 @@
 /**
  * Helpful macros
  */
-#define ISAVR(x) defined(__AVR_ ## x ## __)
+#define xstr(s) str(s)
+#define str(s) #s
 
+#define ISAVR(x)    defined(__AVR_ ## x ## __)      ///< If the given AVR type is our current target
+#define MYAVR       xstr(MCU)                       ///< Stringification of the current AVR target
+#define MYSPEED     xstr(F_CPU)                     ///< Stringification of the current target frequency
 
 
 namespace Utils {
@@ -56,7 +60,7 @@ namespace Utils {
  * @param data a pointer to the data to print
  * @param size the number of bytes to print
  */
-void PrintHex(void *data, size_t size);
+void printHex(void *data, size_t size);
 
 
 /**
@@ -73,7 +77,7 @@ void PrintHex(void *data, size_t size);
  * @param index a starting address to print with the data
  * @param width the number of bytes to print on a single line
  */
-void PrintBlock(void *data, size_t size, size_t index=0, size_t width=16);
+void printBlock(void *data, size_t size, size_t index=0, size_t width=16);
 
 
 }

@@ -51,7 +51,7 @@ namespace Term {
      * @param message a pointer to the welcome message
      * @param prompt a pointer to the prompt string
      */ 
-    void Init(PGM_P message, PGM_P prompt);
+    void init(PGM_P message, PGM_P prompt);
 
 
     /**
@@ -63,7 +63,7 @@ namespace Term {
      * @param commandList the list of supported commands
      * @param length the length of the commandList
      */
-    void Run(const CMD::CommandList commandList, size_t length) __attribute__ ((noreturn));
+    void run(const CMD::CommandList commandList, size_t length) __attribute__ ((noreturn));
 
 
     /**
@@ -74,7 +74,7 @@ namespace Term {
      * @param string the user supplied buffer to store the input line
      * @param maxLength the number of characters to read in at max
      */
-    void GetLine(char * string, uint8_t maxLength);
+    void getLine(char * string, uint8_t maxLength);
 
 };
 #endif

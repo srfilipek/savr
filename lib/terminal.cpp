@@ -51,7 +51,7 @@ static char     *dest;
  * @par Implementation notes:
  */
 static void
-Backspace()
+backspace()
 {
     putchar(BACKSPACE_CHAR);
     putchar(' ');
@@ -63,7 +63,7 @@ Backspace()
  * @par Implementation notes:
  */
 static bool
-AddChar(char c)
+addChar(char c)
 {
     using namespace TermState;
     /* Echo back */
@@ -75,7 +75,7 @@ AddChar(char c)
         count++;
         return true;
     } else {
-        Backspace();
+        backspace();
         return false;
     }
 }
@@ -85,7 +85,7 @@ AddChar(char c)
  * @par Implementation notes:
  */
 static void
-ClearLine()
+clearLine()
 {
     using namespace TermState;
     while (count) {
@@ -98,12 +98,12 @@ ClearLine()
 
 #if 0
 static void
-SetLine(char *line)
+setLine(char *line)
 {
     using namespace TermState;
 
-    ClearLine();
-    while(*line && AddChar(*line)) {
+    clearLine();
+    while(*line && addChar(*line)) {
         line++;
     }
 }
@@ -114,13 +114,13 @@ SetLine(char *line)
  * @par Implementation notes:
  */
 static void
-HandleEsc()
+handleEsc()
 {
     using namespace TermState;
 
     char next = getchar();
     if(next != '[') {
-        AddChar(next);
+        addChar(next);
         return;
     }
     next = getchar();
@@ -130,8 +130,8 @@ HandleEsc()
     case 'B':
         break;
     default:
-        AddChar('[');
-        AddChar(next);
+        addChar('[');
+        addChar(next);
         return;
     }
 }
@@ -142,7 +142,7 @@ HandleEsc()
  * @par Implementation Notes:
  */
 void
-Term::Init(PGM_P message, PGM_P prompt)
+Term::init(PGM_P message, PGM_P prompt)
 {
     welcomeMessage = message;
     promptString = prompt;
@@ -156,12 +156,12 @@ Term::Init(PGM_P message, PGM_P prompt)
  * @par Implementation Notes:
  */
 void
-Term::Run(const CMD::CommandList commandList, size_t length)
+Term::run(const CMD::CommandList commandList, size_t length)
 {
-    CMD::Init(commandList, length);
+    CMD::init(commandList, length);
     while (1) {
-        Term::GetLine(stringBuf, Term::LINESIZE);
-        CMD::RunCommand(stringBuf);
+        Term::getLine(stringBuf, Term::LINESIZE);
+        CMD::runCommand(stringBuf);
     }
 }
 
@@ -172,7 +172,7 @@ Term::Run(const CMD::CommandList commandList, size_t length)
  * @par Implementation Notes:
  */
 void
-Term::GetLine(char * string, uint8_t maxLength)
+Term::getLine(char * string, uint8_t maxLength)
 {
 
     char temp;
@@ -200,25 +200,25 @@ Term::GetLine(char * string, uint8_t maxLength)
 
         /* Clear line. Erase up to prompt. */
         case CLR_CHAR:
-            ClearLine();
+            clearLine();
             break;
 
         case DEL_CHAR: /* Fall through */
         case BACKSPACE_CHAR:
             if (count) {
-                Backspace();
+                backspace();
                 count--;
             }
             break;
 
         case ESC_CHAR:
-            HandleEsc();
+            handleEsc();
             break;
 
         /* All others, check for non-special character. */
         default:
             if (temp >= 0x20 && temp <= 0x7E) {
-                AddChar(temp);
+                addChar(temp);
             } else {
                 //printf("0x%02X ", temp);
             }

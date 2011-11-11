@@ -69,7 +69,7 @@ public:
      * This should be called after StartConversion() or StartConversionAll(). This
      * will call WaitForConversion() for you.
      */
-    double GetTemp(bool ferinheit=false);
+    double getTemp(bool ferinheit=false);
 
 
     /**
@@ -77,7 +77,7 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool StartConversion(void);
+    bool startConversion(void);
 
 
     /**
@@ -85,7 +85,7 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool StartConversionAll(void);
+    bool startConversionAll(void);
 
 
     /**
@@ -96,7 +96,7 @@ public:
      *
      * @return true if conversion completed within 750-ish ms. false if conversion timed out.
      */
-    bool WaitForConversion(void);
+    bool waitForConversion(void);
 
 
 private:

@@ -38,6 +38,7 @@
 namespace Eth {
 typedef uint32_t IP4Address;
 
+
 /**
  * Initialize the W5100 with the given params
  *
@@ -48,7 +49,7 @@ typedef uint32_t IP4Address;
  *
  * @return true on success, false otherwise
  */
-bool Init(GPIO::Pin ss, IP4Address address, IP4Address mask, IP4Address gateway);
+bool init(GPIO::Pin ss, IP4Address address, IP4Address mask, IP4Address gateway);
 
 
 /**
@@ -58,7 +59,8 @@ bool Init(GPIO::Pin ss, IP4Address address, IP4Address mask, IP4Address gateway)
  *
  * @return true on success, false otherwise
  */
-bool SetIP(IP4Address address);
+bool setIP(IP4Address address);
+
 
 /**
  * Change the subnet mask
@@ -67,7 +69,8 @@ bool SetIP(IP4Address address);
  *
  * @return true on success, false otherwise
  */
-bool SetSubnetMask(IP4Address mask);
+bool setSubnetMask(IP4Address mask);
+
 
 /**
  * Change the gateway address
@@ -76,7 +79,8 @@ bool SetSubnetMask(IP4Address mask);
  *
  * @return true on success, false otherwise
  */
-bool SetGateway(IP4Address gateway);
+bool setGateway(IP4Address gateway);
+
 
 /**
  * Change the MAC address
@@ -85,13 +89,13 @@ bool SetGateway(IP4Address gateway);
  *
  * @return true on success, false otherwise
  */
-bool SetMAC(uint8_t* mac);
+bool setMAC(uint8_t* mac);
 
 
 // Read/write routines for the physical device
 namespace W5100 {
-bool Read(uint16_t address, uint8_t *byte);
-bool Write(uint16_t address, uint8_t byte);
+bool read(uint16_t address, uint8_t *byte);
+bool write(uint16_t address, uint8_t byte);
 };
 
 };

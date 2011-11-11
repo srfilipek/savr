@@ -59,7 +59,7 @@ public:
      *
      * @return 1 if successful, 0 otherwise
      */
-    uint8_t Enq(T input)
+    uint8_t enq(T input)
     {
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
         {
@@ -82,7 +82,7 @@ public:
      *
      * @return 1 if successful, 0 otherwise
      */
-    uint8_t Deq(T* target)
+    uint8_t deq(T* target)
     {
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
         {
