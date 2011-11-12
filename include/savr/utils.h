@@ -77,7 +77,7 @@ void printHex(void *data, size_t size);
  * @param index a starting address to print with the data
  * @param width the number of bytes to print on a single line
  */
-void printBlock(void *data, size_t size, size_t index=0, size_t width=16);
+void printBlock(void *data, size_t size, uint32_t index=0, size_t width=16);
 
 
 }
