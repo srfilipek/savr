@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include <savr/terminal.h>
+#include <savr/stringhistory.h>
 
 #define BACKSPACE_CHAR  0x08
 #define DEL_CHAR        0x7F
@@ -37,6 +38,7 @@ static PGM_P welcomeMessage;
 static PGM_P promptString;
 
 static char stringBuf[Term::LINESIZE];
+static StringHistory<Term::LINESIZE*2> history;
 
 
 ///! File-scope terminal state
@@ -96,18 +98,20 @@ clearLine()
     }
 }
 
-#if 0
+
 static void
-setLine(char *line)
+setLine(const char *line)
 {
     using namespace TermState;
 
     clearLine();
+
+    if(line == NULL) return;
+
     while(*line && addChar(*line)) {
         line++;
     }
 }
-#endif
 
 
 /**
@@ -126,8 +130,10 @@ handleEsc()
     next = getchar();
     switch(next) {
     case 'A':
+        setLine(history.older());
         break;
     case 'B':
+        setLine(history.newer());
         break;
     default:
         addChar('[');
@@ -161,7 +167,11 @@ Term::run(const CMD::CommandList commandList, size_t length)
     CMD::init(commandList, length);
     while (1) {
         Term::getLine(stringBuf, Term::LINESIZE);
-        CMD::runCommand(stringBuf);
+
+        if(stringBuf[0] != 0) {
+            history.add(stringBuf);
+            CMD::runCommand(stringBuf);
+        }
     }
 }
 
