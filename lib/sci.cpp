@@ -112,8 +112,8 @@
 static FILE mystdout;
 static FILE mystdin;
 
-static int putChar(char, FILE *);
-static int getChar(FILE *);
+static int PutChar(char, FILE *);
+static int GetChar(FILE *);
 
 #define __GETBAUD(base, baud) (base/16/(baud)-1)
 
@@ -131,15 +131,15 @@ static Queue<uint8_t, 8> RxBuffer;
  * Blocking Function - Place a single character on the TxBuffer
  */
 int
-putChar(char input, FILE * stream)
+PutChar(char input, FILE * stream)
 {
     uint8_t err;
     if(input == '\n')
-        putChar('\r', stream);
+        PutChar('\r', stream);
 
     do{
         cli();
-        err = TxBuffer.enq(input);
+        err = TxBuffer.Enq(input);
         sei();
     }while(err);
     __CTRLB |= _BV(__CTRLB_UDRIE);
@@ -153,13 +153,13 @@ putChar(char input, FILE * stream)
  * Blocking Function - Get next char on the RxBuffer
  */
 int
-getChar(FILE * stream)
+GetChar(FILE * stream)
 {
     char ret_val;
     uint8_t err;
     do{
         cli();
-        err = RxBuffer.deq((uint8_t *)&ret_val);
+        err = RxBuffer.Deq((uint8_t *)&ret_val);
         sei();
     }while(err); // Poll till something is in buffer
     return ret_val;
@@ -173,7 +173,7 @@ getChar(FILE * stream)
  * stdin and stdout to the serial port.
  */
 void
-SCI::init(uint32_t baud)
+SCI::Init(uint32_t baud)
 {
     // Set Baud Rate.
     uint16_t brate = (uint16_t)__GETBAUD(F_CPU, baud);
@@ -189,8 +189,8 @@ SCI::init(uint32_t baud)
 
     stdout  = &mystdout;
     stdin   = &mystdin;
-    fdev_setup_stream(stdout, putChar, NULL, _FDEV_SETUP_WRITE);
-    fdev_setup_stream(stdin,  NULL, getChar, _FDEV_SETUP_READ);
+    fdev_setup_stream(stdout, PutChar, NULL, _FDEV_SETUP_WRITE);
+    fdev_setup_stream(stdin,  NULL, GetChar, _FDEV_SETUP_READ);
 }
 
 
@@ -200,7 +200,7 @@ SCI::init(uint32_t baud)
 ISR(__RX_VECT)
 {
     uint8_t rx_data = __DATAR;
-    RxBuffer.enq(rx_data); // Fail silently
+    RxBuffer.Enq(rx_data); // Fail silently
 }
 
 
@@ -212,7 +212,7 @@ ISR(__TX_VECT)
     uint8_t tx_data;
     uint8_t err;
 
-    err = TxBuffer.deq(&tx_data);
+    err = TxBuffer.Deq(&tx_data);
     if(err)
         __CTRLB &= ~_BV(__CTRLB_UDRIE);
     else

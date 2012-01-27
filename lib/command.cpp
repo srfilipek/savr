@@ -32,8 +32,8 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/command.h>
 
-static void findAndRun(char *cmd, char *args);
-static void help(void);
+static void FindAndRun(char *cmd, char *args);
+static void Help(void);
 
 static CMD::CommandListPtr cmdList = NULL;
 
@@ -51,7 +51,7 @@ static char     formatter[32];
  * @param length the length of the CommandList
  */
 void
-CMD::init(const CMD::CommandList commandList, size_t length)
+CMD::Init(const CMD::CommandList commandList, size_t length)
 {
     cmdList = commandList;
     cmdLength = length;
@@ -78,7 +78,7 @@ CMD::init(const CMD::CommandList commandList, size_t length)
  * @param line a character pointer to the line to parse (and destroy)
  */
 void
-CMD::runCommand(char *line)
+CMD::RunCommand(char *line)
 {
     char *cmd   = line;
     char *args  = line;
@@ -102,7 +102,7 @@ CMD::runCommand(char *line)
     }
 
     // Else, try to run the command
-    findAndRun(cmd, args);
+    FindAndRun(cmd, args);
 }
 
 
@@ -116,7 +116,7 @@ CMD::runCommand(char *line)
  * @param args a pointer to the argument string to pass to the command callback
  */
 void
-findAndRun(char *cmd, char *args)
+FindAndRun(char *cmd, char *args)
 {
     uint8_t found;
     uint8_t ret;
@@ -133,7 +133,7 @@ findAndRun(char *cmd, char *args)
 
     if (!found) {
         if (strcmp_P(cmd, PSTR("help")) == 0) {
-            help();
+            Help();
         } else {
             printf_P(PSTR("Unk cmd. Try 'help'.\n"));
         }
@@ -145,7 +145,7 @@ findAndRun(char *cmd, char *args)
  * @brief Prints out a list of supported commands.
  */
 void
-help(void)
+Help(void)
 {
     // List out all available commands
     printf_P(PSTR("Available commands:\n"));

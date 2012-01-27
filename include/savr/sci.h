@@ -43,7 +43,7 @@ namespace SCI {
      *
      * @param baud      The desired baud rate
      */
-    void init(uint32_t baud);
+    void Init(uint32_t baud);
 
 };
 

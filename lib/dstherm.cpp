@@ -55,25 +55,25 @@ DSTherm::DSTherm(W1 wire, W1::Address address) :
  * @par Implementation notes:
  */
 double
-DSTherm::getTemp(bool ferinheit)
+DSTherm::GetTemp(bool ferinheit)
 {
     uint16_t    temp;   // Raw
     double      dtemp;  // Converted
 
     // Bus setup
-    if(!waitForConversion()) return NAN;
-    if(!_wire.reset()) return NAN;
+    if(!WaitForConversion()) return NAN;
+    if(!_wire.Reset()) return NAN;
 
     // Select our device
-    _wire.matchROM(_address);
-    _wire.writeByte(DS_READ_SCRATCH);
+    _wire.MatchROM(_address);
+    _wire.WriteByte(DS_READ_SCRATCH);
 
     // Read only the first 2 bytes
-    temp  = _wire.readByte();                   // LSB
-    temp |= ((uint16_t)_wire.readByte() << 8);  // MSB
+    temp  = _wire.ReadByte();                   // LSB
+    temp |= ((uint16_t)_wire.ReadByte() << 8);  // MSB
 
     // Stop transmission
-    _wire.reset();
+    _wire.Reset();
 
     dtemp = temp;
     dtemp /= 16;
@@ -89,13 +89,13 @@ DSTherm::getTemp(bool ferinheit)
  * @par Implementation notes:
  */
 bool
-DSTherm::waitForConversion(void)
+DSTherm::WaitForConversion(void)
 {
     size_t count = 0;
     static const size_t MAX_COUNT = 15000;  // 750ms max for a conversion
                                             // (70us min in pure delay per bit read)
     // Wait for the therm to release the DQ line
-    while(_wire.readBit() == 0) {
+    while(_wire.ReadBit() == 0) {
         if(count++ > MAX_COUNT) {
             return false;
         }
@@ -108,12 +108,12 @@ DSTherm::waitForConversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::startConversion(void)
+DSTherm::StartConversion(void)
 {
-    if(!_wire.reset()) return false;
+    if(!_wire.Reset()) return false;
 
-    _wire.matchROM(_address);
-    _wire.writeByte(DS_CONVERT);
+    _wire.MatchROM(_address);
+    _wire.WriteByte(DS_CONVERT);
     return true;
 }
 
@@ -122,11 +122,11 @@ DSTherm::startConversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::startConversionAll(void)
+DSTherm::StartConversionAll(void)
 {
-    if(!_wire.reset()) return false;
+    if(!_wire.Reset()) return false;
 
-    _wire.skipROM();
-    _wire.writeByte(DS_CONVERT);
+    _wire.SkipROM();
+    _wire.WriteByte(DS_CONVERT);
     return true;
 }

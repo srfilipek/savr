@@ -21,7 +21,7 @@
 #define Interrupts_Disable() cli()
 #define Interrupts_Enable() sei()
 
-uint8_t scanTWI(char *args) {
+uint8_t ScanTWI(char *args) {
     uint8_t i=0;
     uint8_t res=0;
     uint8_t state=0;
@@ -29,24 +29,24 @@ uint8_t scanTWI(char *args) {
     printf_P(PSTR("Devices found:\n"));
     for(i=0; i<0x7F; ++i) {
         // Try to read from the address...
-        res = TWI::address(i, 1);
+        res = TWI::Address(i, 1);
         if(res == 0) {
             printf_P(PSTR("  0x%02X\n"), i);
         }
 
         // If we get an ACK, read out a byte or else errors can occur
         // Else, we can do a repeated Start and look at the next address...
-        state = TWI::state();
+        state = TWI::State();
         if(state == TW_MR_SLA_ACK) {
-            TWI::get();
-            TWI::stop();
+            TWI::Get();
+            TWI::Stop();
         }
     }
-    TWI::stop();
+    TWI::Stop();
     return 0;
 }
 
-uint8_t getTime(char *args) {
+uint8_t GetTime(char *args) {
     uint8_t res = 0;
     uint8_t i = 0;
     uint8_t temp = 0;
@@ -60,30 +60,30 @@ uint8_t getTime(char *args) {
     addr = strtoul(currentArg, (char**) NULL, 0);
 
     // Write mode first to set the pointer to 0
-    res = TWI::address(addr, 0);
+    res = TWI::Address(addr, 0);
     if(res != 0) {
         printf_P(PSTR("Failed to address 0x%02X\n"), addr);
-        TWI::printState();
+        TWI::PrintState();
         return 1;
     }
-    TWI::send(0);
-    TWI::stop();
+    TWI::Send(0);
+    TWI::Stop();
 
 
-    res = TWI::address(addr, 1);
+    res = TWI::Address(addr, 1);
     if(res != 0) {
         printf_P(PSTR("Failed to address 0x%02X\n"), addr);
-        TWI::printState();
+        TWI::PrintState();
         return 1;
     }
 
     for(i=0; i<sizeof(buff)-1; ++i) {
-        buff[i] = TWI::getAck();
+        buff[i] = TWI::GetAck();
     }
-    buff[7] = TWI::get(); // Last read has no ACK
+    buff[7] = TWI::Get(); // Last read has no ACK
 
     printf_P(PSTR("Raw: "));
-    Utils::printHex(buff, 8);
+    Utils::PrintHex(buff, 8);
     putchar('\n');
 
     printf_P(PSTR(" Year    :   xx%d%d\n"), buff[6]>>4, buff[6]&0xF);
@@ -102,12 +102,12 @@ uint8_t getTime(char *args) {
     buff[0] &= 0x7F; // Mask out CH bit
     printf_P(PSTR(" Seconds :   %d%d\n"),   buff[0]>>4, buff[0]&0xF);
 
-    TWI::stop();
+    TWI::Stop();
     return 0;
 }
 
 uint8_t wrap_TWI_PrintState(char *args) {
-    TWI::printState();
+    TWI::PrintState();
     return 0;
 }
 
@@ -124,21 +124,21 @@ uint8_t wrap_TWI_Address(char *args) {
     rw = strtoul(currentArg, (char**) NULL, 0);
     printf_P(PSTR("Addressing 0x%02X, %S\n"), b, (rw?PSTR("Read"):PSTR("Write")));
 
-    res = TWI::address(b, rw);
+    res = TWI::Address(b, rw);
     printf_P(PSTR("Res: 0x%02X\n"), res);
-    TWI::printState();
+    TWI::PrintState();
     return 0;
 }
 
 uint8_t wrap_TWI_GetAck(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::getAck());
-    TWI::printState();
+    printf_P(PSTR("Res: 0x%02X\n"), TWI::GetAck());
+    TWI::PrintState();
     return 0;
 }
 
 uint8_t wrap_TWI_Get(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::get());
-    TWI::printState();
+    printf_P(PSTR("Res: 0x%02X\n"), TWI::Get());
+    TWI::PrintState();
     return 0;
 }
 
@@ -151,27 +151,27 @@ uint8_t wrap_TWI_Send(char *args) {
     b = strtoul(currentArg, (char**) NULL, 0);
 
     printf_P(PSTR("Sending: 0x%02X\n"), b);
-    TWI::send(b);
-    TWI::printState();
+    TWI::Send(b);
+    TWI::PrintState();
     return 0;
 }
 
 uint8_t wrap_TWI_Stop(char *args) {
-    TWI::stop();
-    TWI::printState();
+    TWI::Stop();
+    TWI::PrintState();
     return 0;
 }
 
 uint8_t wrap_TWI_Start(char *args) {
-    TWI::start();
-    TWI::wait();
-    TWI::printState();
+    TWI::Start();
+    TWI::Wait();
+    TWI::PrintState();
     return 0;
 }
 
 uint8_t wrap_TWI_State(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::state());
-    TWI::printState();
+    printf_P(PSTR("Res: 0x%02X\n"), TWI::State());
+    TWI::PrintState();
     return 0;
 }
 
@@ -183,16 +183,16 @@ uint8_t wrap_TWI_State(char *args) {
 
 // Command list
 static CMD::CommandList cmdList = {
-    {"time",            getTime,                "Gets the time: Time [addr]"},
-    {"scan",            scanTWI,                "Scans the bus and prints any addresses found"},
-    {"printstate",      wrap_TWI_PrintState,    "Prints current bus state"},
-    {"addr",            wrap_TWI_Address,       "Starts bus and address a device: Addr [addr] [1=read, 0=write]"},
-    {"getack",          wrap_TWI_GetAck,        "Read a byte with ack"},
-    {"get",             wrap_TWI_Get,           "Read a byte without ack"},
-    {"send",            wrap_TWI_Send,          "Send a byte: Send [byte]"},
-    {"start",           wrap_TWI_Start,         "Bus Start (rarely needed)"},
-    {"stop",            wrap_TWI_Stop,          "Bus Stop"},
-    {"state",           wrap_TWI_State,         "Get bus status byte"},
+    {"Time",            GetTime,                "Gets the time: Time [addr]"},
+    {"Scan",            ScanTWI,                "Scans the bus and prints any addresses found"},
+    {"PrintState",      wrap_TWI_PrintState,    "Prints current bus state"},
+    {"Addr",            wrap_TWI_Address,       "Starts bus and address a device: Addr [addr] [1=read, 0=write]"},
+    {"GetAck",          wrap_TWI_GetAck,        "Read a byte with ack"},
+    {"Get",             wrap_TWI_Get,           "Read a byte without ack"},
+    {"Send",            wrap_TWI_Send,          "Send a byte: Send [byte]"},
+    {"Start",           wrap_TWI_Start,         "Bus Start (rarely needed)"},
+    {"Stop",            wrap_TWI_Stop,          "Bus Stop"},
+    {"State",           wrap_TWI_State,         "Get bus status byte"},
 
 
 };
@@ -209,14 +209,14 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::init(38400);  // bps
-    TWI::init(100000); // Bus freq in Hz
+    SCI::Init(38400);  // bps
+    TWI::Init(100000); // Bus freq in Hz
 
-    Term::init(welcomeMessage, promptString);
+    Term::Init(welcomeMessage, promptString);
 
     Interrupts_Enable();
 
-    Term::run(cmdList, cmdLength);
+    Term::Run(cmdList, cmdLength);
 
     /* NOTREACHED */
     return 0;

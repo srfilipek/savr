@@ -28,8 +28,8 @@
 // Base feature set is Reset + Search
 
 #define FEATURESET_1            // MatchROM + ReadByte + WriteByte
-#define FEATURESET_2            // Alarm + GetTemp + GetAll + PollTemp + PollAll
-#define INCLUDE_DESCRIPTIONS    // May save space by removing command descriptions
+//#define FEATURESET_2            // Alarm + GetTemp + GetAll + PollTemp + PollAll
+//#define INCLUDE_DESCRIPTIONS    // May save space by removing command descriptions
 
 #if defined(INCLUDE_DESCRIPTIONS)
 #define DESC(x) x
@@ -41,7 +41,7 @@
 static W1 *wire = NULL;
 
 
-static bool parseAddress(W1::Address &address, char *text) {
+static bool ParseAddress(W1::Address &address, char *text) {
     uint8_t i=0;
     char temp[3];
     temp[2] = 0;
@@ -55,14 +55,14 @@ static bool parseAddress(W1::Address &address, char *text) {
         return false;
     }
     printf_P(PSTR("Address: "));
-    W1::printAddress(address);
+    W1::PrintAddress(address);
     putchar('\n');
     return true;
 }
 
 
 uint8_t wrap_W1_Reset(char *args) {
-    if(!wire->reset()) {
+    if(!wire->Reset()) {
         printf_P(PSTR("No "));
     }
     printf_P(PSTR("Presence!\n"));
@@ -76,8 +76,8 @@ uint8_t wrap_W1_Search(char *args) {
 
     W1::Address address;
     W1::Token   token = W1_EMPTY_TOKEN;
-    while(wire->searchROM(address, token)) {
-        W1::printAddress(address);
+    while(wire->SearchROM(address, token)) {
+        W1::PrintAddress(address);
         putchar('\n');
     }
 
@@ -89,11 +89,11 @@ uint8_t wrap_W1_Search(char *args) {
 uint8_t wrap_W1_MatchROM(char *args) {
     W1::Address address;
 
-    if(!parseAddress(address, args)) {
+    if(!ParseAddress(address, args)) {
         printf_P(PSTR("Invalid address\n"));
         return 1;
     }
-    wire->matchROM(address);
+    wire->MatchROM(address);
     return 0;
 }
 
@@ -109,7 +109,7 @@ uint8_t wrap_W1_ReadByte(char *args) {
 
     printf_P(PSTR("Reading %d bytes:"), b);
     while(b --> 0) {
-        printf_P(PSTR(" 0x%02X"), wire->readByte());
+        printf_P(PSTR(" 0x%02X"), wire->ReadByte());
     }
     putchar('\n');
     return 0;
@@ -128,7 +128,7 @@ uint8_t wrap_W1_WriteByte(char *args) {
         currentArg = strtok_r(NULL, " ", &token);
 
         printf_P(PSTR("Sending: 0x%02X\n"), b);
-        wire->writeByte(b);
+        wire->WriteByte(b);
     }
     return 0;
 }
@@ -142,8 +142,8 @@ uint8_t wrap_W1_Alarm(char *args) {
 
     W1::Address address;
     W1::Token   token = W1_EMPTY_TOKEN;
-    while(wire->alarmSearch(address, token)) {
-        W1::printAddress(address);
+    while(wire->AlarmSearch(address, token)) {
+        W1::PrintAddress(address);
         putchar('\n');
     }
 
@@ -158,15 +158,15 @@ wrap_GetTemp(char *args)
 
     W1::Address address;
 
-    if(!parseAddress(address, args)) {
+    if(!ParseAddress(address, args)) {
         printf_P(PSTR("Invalid address\n"));
         return 1;
     }
     DSTherm therm(*wire, address);
 
-    therm.startConversion();
+    therm.StartConversion();
 
-    dtemp = therm.getTemp(false);
+    dtemp = therm.GetTemp(false);
     printf_P(PSTR("  C Temp: %f\n"), dtemp);
 
     dtemp = 1.8*dtemp + 32;
@@ -182,17 +182,17 @@ uint8_t wrap_GetAll(char *args) {
     double dtemp;
 
 
-    if(!wire->reset()) {
+    if(!wire->Reset()) {
         printf_P(PSTR("No presence detected.\n"));
         return 1;
     }
 
     // Make all devices start a conversion
-    wire->writeByte(0xCC);
-    wire->writeByte(0x44);
+    wire->WriteByte(0xCC);
+    wire->WriteByte(0x44);
 
 
-    while(wire->readByte() == 0x00) {
+    while(wire->ReadByte() == 0x00) {
         if(count++ > MAX_COUNT) {
             printf_P(PSTR("Device took too long to perform measurement.\n"));
             return 1;
@@ -201,10 +201,10 @@ uint8_t wrap_GetAll(char *args) {
 
     W1::Address address;
     W1::Token   token = W1_EMPTY_TOKEN;
-    while(wire->searchROM(address, token)) {
-        W1::printAddress(address);
+    while(wire->SearchROM(address, token)) {
+        W1::PrintAddress(address);
         DSTherm therm(*wire, address);
-        dtemp = therm.getTemp(true);
+        dtemp = therm.GetTemp(true);
         printf_P(PSTR(": %f F\n"), dtemp);
     }
     return 0;
@@ -216,15 +216,15 @@ uint8_t wrap_PollTemp(char *args) {
 
     W1::Address address;
 
-    if(!parseAddress(address, args)) {
+    if(!ParseAddress(address, args)) {
         printf_P(PSTR("Invalid address\n"));
         return 1;
     }
 
     DSTherm therm(*wire, address);
     while(1) {
-        therm.startConversion();
-        dtemp = therm.getTemp(true);
+        therm.StartConversion();
+        dtemp = therm.GetTemp(true);
         printf_P(PSTR("Temp: %f F\n"), dtemp);
     }
 }
@@ -250,21 +250,21 @@ uint8_t wrap_PollAll(char *args) {
 
 // Command list
 static CMD::CommandList cmdList = {
-    {"reset",           wrap_W1_Reset,          DESC("Reset 1-Wire bus, look for presence.")},
-    {"search",          wrap_W1_Search,         DESC("Scan bus and print any addresses found")},
+    {"Reset",           wrap_W1_Reset,          DESC("Reset 1-Wire bus, look for presence.")},
+    {"Search",          wrap_W1_Search,         DESC("Scan bus and print any addresses found")},
 
 #if defined(FEATURESET_1)
-    {"match",           wrap_W1_MatchROM,       DESC("Select device using MatchROM (match <address>)")},
-    {"read",            wrap_W1_ReadByte,       DESC("Read a byte (read [num bytes])")},
-    {"write",           wrap_W1_WriteByte,      DESC("Write one+ byte to the bus (write <byte> [byte] ..)")},
+    {"Match",           wrap_W1_MatchROM,       DESC("Select device using MatchROM (Select <address>)")},
+    {"Read",            wrap_W1_ReadByte,       DESC("Read a byte (Read [num bytes])")},
+    {"Write",           wrap_W1_WriteByte,      DESC("Write one+ byte to the bus (Wrte <byte> [byte] ..)")},
 #endif
 
 #if defined(FEATURESET_2)
-    {"alarm",           wrap_W1_Alarm,          DESC("Scan bus and print addresses found (alarmSearch)")},
-    {"gettemp",         wrap_GetTemp,           DESC("Setup a temp conversion and read the result (gettemp <address>)")},
-    {"getall",          wrap_GetAll,            DESC("Get temps from all devices once")},
-    {"polltemp",        wrap_PollTemp,          DESC("Continually perform temp conversion -- never returns (polltemp <address>)")},
-    {"pollall",         wrap_PollAll,           DESC("Continually get temps from all devices -- never returns")},
+    {"Alarm",           wrap_W1_Alarm,          DESC("Scan bus and print addresses found (AlarmSearch)")},
+    {"GetTemp",         wrap_GetTemp,           DESC("Setup a temp conversion and read the result (GetTemp <address>)")},
+    {"GetAll",          wrap_GetAll,            DESC("Get temps from all devices once")},
+    {"PollTemp",        wrap_PollTemp,          DESC("Continually perform temp conversion -- never returns (PollTemp <address>)")},
+    {"PollAll",         wrap_PollAll,           DESC("Continually get temps from all devices -- never returns")},
 #endif
 
 
@@ -273,7 +273,7 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
 
 
 // Terminal display
-#define welcomeMessage PSTR("\n1-Wire Test for " MYAVR "\n")
+#define welcomeMessage PSTR("\n1-Wire Test\n")
 #define promptString   PSTR("] ")
 
 
@@ -282,16 +282,16 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::init(38400);  // bps
+    SCI::Init(38400);  // bps
 
-    W1 local_wire(GPIO::C3);
-    wire = &local_wire;
+    W1 localWire(GPIO::C3);
+    wire = &localWire;
 
-    Term::init(welcomeMessage, promptString);
+    Term::Init(welcomeMessage, promptString);
 
     Interrupts_Enable();
 
-    Term::run(cmdList, cmdLength);
+    Term::Run(cmdList, cmdLength);
 
     /* NOTREACHED */
     return 0;

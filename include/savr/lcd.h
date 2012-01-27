@@ -60,7 +60,7 @@ public:
      *
      * @param cursor Boolean true/false (true = show cursor)
      */
-    void setCursor(bool cursor);
+    void SetCursor(bool cursor);
 
 
     /**
@@ -68,7 +68,7 @@ public:
      *
      * @param blink Boolean true/false (true = blink)
      */
-    void setBlink(bool blink);
+    void SetBlink(bool blink);
 
 
     /**
@@ -76,7 +76,7 @@ public:
      *
      * @param on Boolean true/false (true = on)
      */
-    void setDisplay(bool on);
+    void SetDisplay(bool on);
 
 
     /**
@@ -84,7 +84,7 @@ public:
      *
      * @param string The null-terminated string to display
      */
-    void outString(const char * string);
+    void OutString(const char * string);
 
 
     /**
@@ -93,7 +93,7 @@ public:
      * @param byte  The byte to send
      * @param mode  RS line control
      */
-    void outByte(uint8_t byte, uint8_t mode=0);
+    void OutByte(uint8_t byte, uint8_t mode=0);
 
 
     /**
@@ -101,8 +101,8 @@ public:
      *
      * @param cmd  The command byte to send
      */
-    inline void outCmd(uint8_t cmd) {
-        outByte(cmd);
+    inline void OutCmd(uint8_t cmd) {
+        OutByte(cmd);
     }
 
 
@@ -111,24 +111,24 @@ public:
      *
      * @param c  The character to write
      */
-    inline void outChar(char c) {
-        outByte(c, 1);
+    inline void OutChar(char c) {
+        OutByte(c, 1);
     }
 
 
     /**
      * Clear the display, cursor to home position
      */
-    inline void clear(void) {
-        outCmd(0x01);
+    inline void Clear(void) {
+        OutCmd(0x01);
     }
 
 
     /**
      * Set the cursor to the home position
      */
-    inline void home(void) {
-        outCmd(0x02);
+    inline void Home(void) {
+        OutCmd(0x02);
     }
 
 
@@ -137,8 +137,8 @@ public:
      *
      * @param pos The DDRAM address
      */
-    inline void setPos(uint8_t pos) {
-        outCmd(0x80 | pos);
+    inline void SetPos(uint8_t pos) {
+        OutCmd(0x80 | pos);
     }
 
 
@@ -147,8 +147,8 @@ public:
      *
      * @return The current cursor position
      */
-    inline uint8_t getPos(void) {
-        return _getByte() & ~LCD_READ_BUSYFLAG;
+    inline uint8_t GetPos(void) {
+        return _GetByte() & ~LCD_READ_BUSYFLAG;
     }
 
 
@@ -162,37 +162,37 @@ private:
      * @param nib  Nibble (least significant 4 bits)
      * @param mode RS control
      */
-    void _outNib(uint8_t nib, uint8_t mode=0);
+    void _OutNib(uint8_t nib, uint8_t mode=0);
 
 
     /**
      * Wait for the busy flag to not be set
      */
-    void _wait(void);
+    void _Wait(void);
 
 
     /**
      * Change data direction
      */
-    void _setDataOut(void);
+    void _SetDataOut(void);
 
 
     /**
      * Change data direction
      */
-    void _setDataIn(void);
+    void _SetDataIn(void);
 
 
     /**
      * Read a nibble from the data lines
      */
-    uint8_t _readDataNibble(void);
+    uint8_t _ReadDataNibble(void);
 
 
     /**
      * Write a nibble to the data lines
      */
-    void _setDataNibble(uint8_t nibble);
+    void _SetDataNibble(uint8_t nibble);
 
 
     /**
@@ -200,7 +200,7 @@ private:
      *
      * @param mode  RS control. 0 for address/busy flag. 1 for data.
      */
-    uint8_t _getByte(uint8_t mode = 0);
+    uint8_t _GetByte(uint8_t mode = 0);
 
 
     uint8_t         _entryMode;

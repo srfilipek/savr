@@ -54,16 +54,32 @@
 #define SPI_SCK  PB7
 
 // This fixes improper register/field names in avr-libc for the atmega324pa
-#if ISAVR(ATmega324PA)
-#define SPI2X   SPI2X0
-#define SPR0    SPR00
-#define SPR1    SPR10
-#define SPCR    SPCR0
-#define SPSR    SPSR0
-#define SPE     SPE0
-#define MSTR    MSTR0
-#define SPDR    SPDR0
-#define SPIF    SPIF0
+#ifndef SPI2X
+#define SPI2X SPI2X0
+#endif
+#ifndef SPR0
+#define SPR0 SPR00
+#endif
+#ifndef SPR1
+#define SPR1 SPR10
+#endif
+#ifndef SPCR
+#define SPCR SPCR0
+#endif
+#ifndef SPSR
+#define SPSR SPSR0
+#endif
+#ifndef SPE
+#define SPE SPE0
+#endif
+#ifndef MSTR
+#define MSTR MSTR0
+#endif
+#ifndef SPDR
+#define SPDR SPDR0
+#endif
+#ifndef SPIF
+#define SPIF SPIF0
 #endif
 
 #else
@@ -95,11 +111,11 @@ static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
  * @par Implementation Notes:
  */
 void
-SPI::sendBlock(uint8_t * input, size_t length)
+SPI::SendBlock(uint8_t * input, size_t length)
 {
     size_t i = 0;
     while(i < length)
-        SPI::trxByte(input[i++]);
+        SPI::TrxByte(input[i++]);
 }
 
 
@@ -107,11 +123,11 @@ SPI::sendBlock(uint8_t * input, size_t length)
  * @par Implementation Notes:
  */
 void
-SPI::getBlock(uint8_t * input, size_t length, uint8_t filler)
+SPI::GetBlock(uint8_t * input, size_t length, uint8_t filler)
 {
     size_t i = 0;
     while(i < length)
-        input[i++] = SPI::trxByte(filler);
+        input[i++] = SPI::TrxByte(filler);
 }
 
 
@@ -119,7 +135,7 @@ SPI::getBlock(uint8_t * input, size_t length, uint8_t filler)
  * @par Implementation Notes:
  */
 uint8_t
-SPI::trxByte(uint8_t input)
+SPI::TrxByte(uint8_t input)
 {
     uint8_t status;
 
@@ -157,7 +173,7 @@ uint8_t highestBit(uint32_t word)
  * @par Implementation Notes:
  */
 void
-SPI::init(uint32_t spiFreq)
+SPI::Init(uint32_t spiFreq)
 {
     uint8_t divExp;
 

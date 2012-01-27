@@ -66,8 +66,8 @@ W1::__W1(GPIO::Pin pin)
     _pin  = pin;
 
     // Set to tristate
-    GPIO::low(_pin);
-    GPIO::in(_pin);
+    GPIO::Low(_pin);
+    GPIO::In(_pin);
 }
 
 
@@ -76,7 +76,7 @@ W1::__W1(GPIO::Pin pin)
  */
 W1::~W1()
 {
-    _release();
+    _Release();
 }
 
 
@@ -84,17 +84,17 @@ W1::~W1()
  * @par Implementation notes:
  */
 bool
-W1::reset()
+W1::Reset()
 {
     bool presence = false;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         DELAY(G);
-        _driveLow();
+        _DriveLow();
         DELAY(H);
-        _release();
+        _Release();
         DELAY(I);
-        presence = (_readState() == 0);
+        presence = (_ReadState() == 0);
         DELAY(J);
     }
     return presence;
@@ -105,10 +105,10 @@ W1::reset()
  * @par Implementation notes:
  */
 void
-W1::matchROM(Address &address)
+W1::MatchROM(Address &address)
 {
-    writeByte(0x55);
-    writeBytes(address.array, 8);
+    WriteByte(0x55);
+    WriteBytes(address.array, 8);
 }
 
 
@@ -116,9 +116,9 @@ W1::matchROM(Address &address)
  * @par Implementation notes:
  */
 void
-W1::skipROM(void)
+W1::SkipROM(void)
 {
-    writeByte(0xCC);
+    WriteByte(0xCC);
 }
 
 
@@ -126,9 +126,9 @@ W1::skipROM(void)
  * @par Implementation notes:
  */
 bool
-W1::searchROM(Address &address, Token &token)
+W1::SearchROM(Address &address, Token &token)
 {
-    return _searcher(0xF0, address, token);
+    return _Searcher(0xF0, address, token);
 }
 
 
@@ -136,9 +136,9 @@ W1::searchROM(Address &address, Token &token)
  * @par Implementation notes:
  */
 bool
-W1::alarmSearch(Address &address, Token &token)
+W1::AlarmSearch(Address &address, Token &token)
 {
-    return _searcher(0xEC, address, token);
+    return _Searcher(0xEC, address, token);
 }
 
 
@@ -146,7 +146,7 @@ W1::alarmSearch(Address &address, Token &token)
  * @par Implementation notes:
  */
 bool
-W1::_searcher(uint8_t command, Address &address, Token &token)
+W1::_Searcher(uint8_t command, Address &address, Token &token)
 {
 
     // Note: 1-based bit counting
@@ -163,19 +163,19 @@ W1::_searcher(uint8_t command, Address &address, Token &token)
     }
 
     // Always reset when beginning a new search
-    if(!reset()) {
+    if(!Reset()) {
         return false;
     }
 
     // Begin search
-    writeByte(command);
+    WriteByte(command);
 
 
     // Scan down 64 bits of the ROM...
     while(++current_bit <= 64) {
 
-        bits  = readBit();       // Next bit value
-        bits |= readBit() << 1;  // Complement
+        bits  = ReadBit();       // Next bit value
+        bits |= ReadBit() << 1;  // Complement
 
         switch(bits) {
         case 0: // Discrepancy
@@ -193,7 +193,7 @@ W1::_searcher(uint8_t command, Address &address, Token &token)
             }else{
 
                 // Old discrepancy... take the old path from the address
-                if(getBit(address, current_bit-1) == 0) {
+                if(GetBit(address, current_bit-1) == 0) {
                     search_dir      = 0;
                     last_zero_path  = current_bit;
                 }else{
@@ -216,8 +216,8 @@ W1::_searcher(uint8_t command, Address &address, Token &token)
         default:
             return false;
         }
-        setBit(address, current_bit-1, search_dir);
-        writeBit(search_dir);
+        SetBit(address, current_bit-1, search_dir);
+        WriteBit(search_dir);
     }
 
     token = last_zero_path;
@@ -235,18 +235,18 @@ W1::_searcher(uint8_t command, Address &address, Token &token)
  * @par Implementation notes:
  */
 uint8_t
-W1::readBit()
+W1::ReadBit()
 {
     bool state;
 
     // These operations are time sensitive...
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        _driveLow();
+        _DriveLow();
         DELAY(A);
-        _release();
+        _Release();
         DELAY(E);
-        state = _readState();
+        state = _ReadState();
         DELAY(F);
     }
     return (uint8_t)state;
@@ -257,20 +257,20 @@ W1::readBit()
  * @par Implementation notes:
  */
 void
-W1::writeBit(bool bit)
+W1::WriteBit(bool bit)
 {
     // These operations are time sensitive...
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
         if(bit) {
-            _driveLow();
+            _DriveLow();
             DELAY(A);
-            _release();
+            _Release();
             DELAY(B);
         }else{
-            _driveLow();
+            _DriveLow();
             DELAY(C);
-            _release();
+            _Release();
             DELAY(D);
         }
     }
@@ -282,12 +282,12 @@ W1::writeBit(bool bit)
  * Read LSB first.
  */
 uint8_t
-W1::readByte(void)
+W1::ReadByte(void)
 {
     uint8_t byte = 0;
     for(uint8_t i=0; i<8; ++i) {
         byte >>= 1;
-        if(readBit()) {
+        if(ReadBit()) {
             byte |= 0x80;
         }
     }
@@ -300,10 +300,10 @@ W1::readByte(void)
  * Write LSB first.
  */
 void
-W1::writeByte(uint8_t byte)
+W1::WriteByte(uint8_t byte)
 {
     for(uint8_t i=0; i<8; ++i) {
-        writeBit(byte & 0x01);
+        WriteBit(byte & 0x01);
         byte >>= 1;
     }
 }
@@ -313,10 +313,10 @@ W1::writeByte(uint8_t byte)
  * @par Implementation notes:
  */
 void
-W1::readBytes(uint8_t *byte, size_t size)
+W1::ReadBytes(uint8_t *byte, size_t size)
 {
     for(size_t i=0; i<size; ++i) {
-        byte[i] = readByte();
+        byte[i] = ReadByte();
     }
 }
 
@@ -325,10 +325,10 @@ W1::readBytes(uint8_t *byte, size_t size)
  * @par Implementation notes:
  */
 void
-W1::writeBytes(uint8_t *byte, size_t size)
+W1::WriteBytes(uint8_t *byte, size_t size)
 {
     for(size_t i=0; i<size; ++i) {
-        writeByte(byte[i]);
+        WriteByte(byte[i]);
     }
 }
 
@@ -337,10 +337,10 @@ W1::writeBytes(uint8_t *byte, size_t size)
  * @par Implementation notes:
  */
 __attribute__ ((noinline)) void
-W1::_driveLow()
+W1::_DriveLow()
 {
     // Tri-state to low, DDR to 1
-    GPIO::out(_pin);
+    GPIO::Out(_pin);
 }
 
 
@@ -348,10 +348,10 @@ W1::_driveLow()
  * @par Implementation notes:
  */
 __attribute__ ((noinline)) void
-W1::_release()
+W1::_Release()
 {
     // Low to tri-state, DDR to 0
-    GPIO::in(_pin);
+    GPIO::In(_pin);
 }
 
 
@@ -359,9 +359,9 @@ W1::_release()
  * @par Implementation notes:
  */
 __attribute__ ((noinline)) bool
-W1::_readState()
+W1::_ReadState()
 {
-    return (bool)GPIO::get(_pin);
+    return (bool)GPIO::Get(_pin);
 }
 
 
@@ -369,7 +369,7 @@ W1::_readState()
  * @par Implementation notes:
  */
 void
-W1::setBit(Address &address, uint8_t bitNum, bool set)
+W1::SetBit(Address &address, uint8_t bitNum, bool set)
 {
     uint8_t bit     = _BV(bitNum%8);
     uint8_t byte    = bitNum / 8;
@@ -386,7 +386,7 @@ W1::setBit(Address &address, uint8_t bitNum, bool set)
  * @par Implementation notes:
  */
 uint8_t
-W1::getBit(Address &address, uint8_t bitNum)
+W1::GetBit(Address &address, uint8_t bitNum)
 {
     return !!(address.array[bitNum/8] & _BV(bitNum%8));
 }
@@ -396,7 +396,7 @@ W1::getBit(Address &address, uint8_t bitNum)
  * @par Implementation notes:
  */
 void
-W1::printAddress(const Address &address)
+W1::PrintAddress(const Address &address)
 {
     for(uint8_t i=0; i<8; ++i) {
         printf_P(PSTR("%02x"), address.array[i]);

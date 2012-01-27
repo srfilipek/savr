@@ -22,7 +22,7 @@
 
 
 static uint8_t
-echo(char* args)
+Echo(char* args)
 {
     printf_P(PSTR("Echo got: '%s'\n"), args);
     return 0;
@@ -35,7 +35,7 @@ echo(char* args)
 
 // Command list
 static CMD::CommandList cmdList = {
-        {"echo", echo, "Prints the given argument string"},
+        {"Echo", Echo, "Prints the given argument string"},
 };
 
 static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
@@ -51,13 +51,13 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::init(38400); // bps
+    SCI::Init(38400); // bps
 
-    Term::init(welcomeMessage, promptString);
+    Term::Init(welcomeMessage, promptString);
 
     Interrupts_Enable();
 
-    Term::run(cmdList, cmdLength);
+    Term::Run(cmdList, cmdLength);
 
     /* NOTREACHED */
     return 0;

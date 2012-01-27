@@ -35,13 +35,13 @@ namespace TWI {
      *
      * @param outputFreq    The desired TWI bus frequency in Hz
      */
-    void    init(uint32_t outputFreq);
+    void    Init(uint32_t outputFreq);
 
 
     /**
      * Prints a textual description of the bus state
      */
-    void    printState(void);
+    void    PrintState(void);
 
 
     /**
@@ -51,7 +51,7 @@ namespace TWI {
      * @param rw        The RW bit
      * @return 0 on success, non-zero on error
      */
-    uint8_t address(uint8_t address, uint8_t rw);
+    uint8_t Address(uint8_t address, uint8_t rw);
 
 
     /**
@@ -59,7 +59,7 @@ namespace TWI {
      *
      * @return The byte read
      */
-    uint8_t getAck(void);
+    uint8_t GetAck(void);
 
 
     /**
@@ -67,7 +67,7 @@ namespace TWI {
      *
      * @return The byte read
      */
-    uint8_t get(void);
+    uint8_t Get(void);
 
 
     /**
@@ -75,19 +75,19 @@ namespace TWI {
      *
      * @param b     The byte to send
      */
-    void    send(uint8_t b);
+    void    Send(uint8_t b);
 
 
     /**
      * Send bus Start
      */
-    void    start(void);
+    void    Start(void);
 
 
     /**
      * Send bus stop
      */
-    void    stop(void);
+    void    Stop(void);
 
 
     /**
@@ -97,14 +97,14 @@ namespace TWI {
      *
      * See util/twi.h from the avr-libc for a state enumeration
      */
-    uint8_t state(void);
+    uint8_t State(void);
 
 
     /**
      * Polling wait on the TWI bus
      */
     static inline void
-    wait(void) {
+    Wait(void) {
         while(!(TWCR & _BV(TWINT))) ;
     }
 

@@ -84,7 +84,7 @@ public:
      *
      * @return true if presence found, false otherwise.
      */
-    bool    reset(void);
+    bool    Reset(void);
 
 
     /**
@@ -92,13 +92,13 @@ public:
      *
      * @param address   Pointer to an address source
      */
-    void    matchROM(Address &address);
+    void    MatchROM(Address &address);
 
 
     /**
      * Select all devices on the bus.
      */
-    void    skipROM(void);
+    void    SkipROM(void);
 
 
     /**
@@ -122,7 +122,7 @@ public:
      *
      * @return true if we found a device, false otherwise.
      */
-    bool    searchROM(Address &address, Token &token);
+    bool    SearchROM(Address &address, Token &token);
 
 
     /**
@@ -146,7 +146,7 @@ public:
      *
      * @return true if we found a device, false otherwise.
      */
-    bool    alarmSearch(Address &address, Token &token);
+    bool    AlarmSearch(Address &address, Token &token);
 
 
     /**
@@ -156,7 +156,7 @@ public:
      *
      * @return true if we successfully found a device, false otherwise.
      */
-    bool    readROM(Address &address);
+    bool    ReadROM(Address &address);
 
 
     /**
@@ -164,7 +164,7 @@ public:
      *
      * @return 1 if bit is high, 0 otherwise
      */
-    uint8_t readBit(void);
+    uint8_t ReadBit(void);
 
 
     /**
@@ -174,21 +174,21 @@ public:
      *
      * @param bit   Bit to write
      */
-    void    writeBit(bool bit);
+    void    WriteBit(bool bit);
 
 
     /**
      * Read a full byte from the bus
      * @return The byte read
      */
-    uint8_t readByte(void);
+    uint8_t ReadByte(void);
 
 
     /**
      * Write a full byte to the bus
      * @param byte  The byte write
      */
-    void    writeByte(uint8_t byte);
+    void    WriteByte(uint8_t byte);
 
 
     /**
@@ -197,7 +197,7 @@ public:
      * @param byte  Pointer to a destination byte array
      * @param size  Number of bytes to read
      */
-    void    readBytes(uint8_t *byte, size_t size);
+    void    ReadBytes(uint8_t *byte, size_t size);
 
 
     /**
@@ -208,7 +208,7 @@ public:
      *
      * Writes bytes starting at 0, to size-1
      */
-    void    writeBytes(uint8_t *byte, size_t size);
+    void    WriteBytes(uint8_t *byte, size_t size);
 
 
     /**
@@ -218,7 +218,7 @@ public:
      * @param bitNum    Bit number to set (0 is LSB)
      * @param set       Set the bit to 1 if true, 0 otherwise
      */
-    static void     setBit(Address &address, uint8_t bitNum, bool set);
+    static void     SetBit(Address &address, uint8_t bitNum, bool set);
 
 
     /**
@@ -229,7 +229,7 @@ public:
      *
      * @return 0 if the bit is 0, 1 if the bit is 1...
      */
-    static uint8_t  getBit(Address &address, uint8_t bitNum);
+    static uint8_t  GetBit(Address &address, uint8_t bitNum);
 
 
     /**
@@ -237,14 +237,14 @@ public:
      *
      * @param address  The address to print
      */
-    static void     printAddress(const Address &address);
+    static void     PrintAddress(const Address &address);
 
 protected:
 
-    bool _searcher(uint8_t command, Address &address, Token &token);
-    void _driveLow();
-    void _release();
-    bool _readState();
+    bool _Searcher(uint8_t command, Address &address, Token &token);
+    void _DriveLow();
+    void _Release();
+    bool _ReadState();
 
 private:
     void __W1(GPIO::Pin pin);
