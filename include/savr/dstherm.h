@@ -62,14 +62,14 @@ public:
     /**
      * Get the temperature in Celcius or Ferinheit
      *
-     * @param ferinheit true to convert to F, false to leave in C (default)
+     * @param fahrenheit true to convert to F, false to leave in C (default)
      *
      * @return the temperature in degrees of the selected units, or NAN (math.h) on error
      *
      * This should be called after StartConversion() or StartConversionAll(). This
      * will call WaitForConversion() for you.
      */
-    double GetTemp(bool ferinheit=false);
+    double GetTemp(bool fahrenheit=false);
 
 
     /**

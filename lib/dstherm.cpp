@@ -55,7 +55,7 @@ DSTherm::DSTherm(W1 wire, W1::Address address) :
  * @par Implementation notes:
  */
 double
-DSTherm::GetTemp(bool ferinheit)
+DSTherm::GetTemp(bool fahrenheit)
 {
     uint16_t    temp;   // Raw
     double      dtemp;  // Converted
@@ -79,7 +79,7 @@ DSTherm::GetTemp(bool ferinheit)
     dtemp /= 16;
 
     // Do a conversion to F if necessary
-    if(!ferinheit)
+    if(!fahrenheit)
         return dtemp;
     return 1.8*dtemp + 32;
 }
