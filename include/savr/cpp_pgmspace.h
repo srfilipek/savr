@@ -1,5 +1,5 @@
-#ifndef _cpp_pgmspace_h_Included_
-#define _cpp_pgmspace_h_Included_
+#ifndef _savr_cpp_pgmspace_h_Included_
+#define _savr_cpp_pgmspace_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -39,4 +39,4 @@
 #define PSTR(s) (__extension__({static const char CPP_PROGMEM __c[] = (s); &__c[0];}))
 
 
-#endif
+#endif /*_savr_cpp_pgmspace_h_Included_ */

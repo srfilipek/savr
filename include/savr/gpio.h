@@ -1,5 +1,5 @@
-#ifndef _gpio_h_Included_
-#define _gpio_h_Included_
+#ifndef _savr_gpio_h_Included_
+#define _savr_gpio_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -133,4 +133,4 @@ void    Out(GPIO::Pin pin);
 
 }
 
-#endif /* GPIO_H_ */
+#endif /* _savr_gpio_h_Included_ */

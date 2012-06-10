@@ -1,5 +1,5 @@
-#ifndef _queue_h_Included_
-#define _queue_h_Included_
+#ifndef _savr_queue_h_Included_
+#define _savr_queue_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -97,4 +97,4 @@ public:
 
 };
 
-#endif
+#endif /* _savr_queue_h_Included_ */

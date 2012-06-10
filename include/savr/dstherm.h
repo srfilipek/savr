@@ -1,5 +1,5 @@
-#ifndef _dstherm_h_Included_
-#define _dstherm_h_Included_
+#ifndef _savr_dstherm_h_Included_
+#define _savr_dstherm_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -69,7 +69,7 @@ public:
      * This should be called after StartConversion() or StartConversionAll(). This
      * will call WaitForConversion() for you.
      */
-    double GetTemp(bool fahrenheit=false);
+    float GetTemp(bool fahrenheit=false);
 
 
     /**
@@ -105,6 +105,6 @@ private:
 };
 
 
-#endif /* _dstherm_h_Included_ */
+#endif /* _savr_dstherm_h_Included_ */
 
 

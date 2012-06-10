@@ -71,7 +71,7 @@ Eth::SetIP(Eth::IP4Address address)
 {
     bool ret = true;
     uint8_t *temp;
-    temp = (uint8_t*)&address;
+    temp = reinterpret_cast<uint8_t*>(&address);
     ret &= Eth::W5100::Write(0x000F, temp[3]);
     ret &= Eth::W5100::Write(0x0010, temp[2]);
     ret &= Eth::W5100::Write(0x0011, temp[1]);
@@ -88,7 +88,7 @@ Eth::SetSubnetMask(Eth::IP4Address mask)
 {
     bool ret = true;
     uint8_t *temp;
-    temp = (uint8_t*)&mask;
+    temp = reinterpret_cast<uint8_t*>(&mask);
     ret &= Eth::W5100::Write(0x0005, temp[3]);
     ret &= Eth::W5100::Write(0x0006, temp[2]);
     ret &= Eth::W5100::Write(0x0007, temp[1]);
@@ -105,7 +105,7 @@ Eth::SetGateway(Eth::IP4Address gateway)
 {
     bool ret = true;
     uint8_t *temp;
-    temp = (uint8_t*)&gateway;
+    temp = reinterpret_cast<uint8_t*>(&gateway);
     ret &= Eth::W5100::Write(0x0001, temp[3]);
     ret &= Eth::W5100::Write(0x0002, temp[2]);
     ret &= Eth::W5100::Write(0x0003, temp[1]);

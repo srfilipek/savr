@@ -361,7 +361,7 @@ W1::_Release()
 __attribute__ ((noinline)) bool
 W1::_ReadState()
 {
-    return (bool)GPIO::Get(_pin);
+    return static_cast<bool>(GPIO::Get(_pin));
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef _stringhistory_h_Included_
-#define _stringhistory_h_Included_
+#ifndef _savr_stringhistory_h_Included_
+#define _savr_stringhistory_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -80,7 +80,7 @@ public:
      *
      * @param line  Null terminated string
      */
-    void add(const char* line)
+    void Add(const char* line)
     {
         size_t remaining    = MAX_SIZE - _next;     // Number of bytes in history that can be copied
         size_t to_copy      = strlen(line) + 1;     // +1 for the NULL termination
@@ -130,7 +130,7 @@ public:
      *
      * This will wrap
      */
-    const char* newer(void)
+    const char* Newer(void)
     {
         if(_history[_nav] == 0) return NULL;
 
@@ -160,7 +160,7 @@ public:
      *
      * This will wrap
      */
-    const char* older(void)
+    const char* Older(void)
     {
         if(_history[_nav] == 0) return NULL;
 
@@ -214,4 +214,4 @@ private:
 
 
 
-#endif
+#endif /* _savr_stringhistory_h_Included_ */

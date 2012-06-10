@@ -275,8 +275,9 @@ LCD::OutByte(uint8_t byte, uint8_t mode)
 void
 LCD::OutString(const char * string)
 {
-    while(*string)
+    while(*string) {
         OutChar(*string++);
+    }
 }
 
 
@@ -286,7 +287,9 @@ LCD::OutString(const char * string)
 void
 LCD::_Wait(void)
 {
-    while(_GetByte() & LCD_READ_BUSYFLAG) ;
+    while(_GetByte() & LCD_READ_BUSYFLAG) {
+        // Nothing
+    }
 }
 
 
@@ -299,7 +302,7 @@ LCD::_OutNib(uint8_t nib, uint8_t mode)
     GPIO::High(_pinE);
 
     _SetDataNibble(nib);
-    if (mode) GPIO::High(_pinRS);
+    if(mode) GPIO::High(_pinRS);
 
     GPIO::Low(_pinE);
     GPIO::Low(_pinRS);

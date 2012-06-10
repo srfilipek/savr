@@ -1,5 +1,5 @@
-#ifndef _version_h_Included_
-#define _version_h_Included_
+#ifndef _savr_version_h_Included_
+#define _savr_version_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -30,4 +30,4 @@
 #define SAVR_MINOR   ((uint8_t)0)  ///< Minor version number
 #define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
 
-#endif /* _version_h_Included_ */
+#endif /* _savr_version_h_Included_ */

@@ -1,3 +1,5 @@
+#ifndef _savr_command_h_Included_
+#define _savr_command_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -34,9 +36,6 @@
  * callback routine.
  */
 
-#ifndef _command_h_Included_
-#define _command_h_Included_
-
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -50,10 +49,10 @@ namespace CMD {
     typedef struct {
         //! Name of the command
         const char *commandName;
-    
+
         //! Callback function
         CMD::CommandCallback callback;
-    
+
         //! Brief (very brief) description
         const char *helpText;
     } CommandDef;
@@ -82,5 +81,5 @@ namespace CMD {
 
 };
 
-#endif
+#endif /* _savr_command_h_Included_ */
 

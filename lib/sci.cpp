@@ -176,9 +176,9 @@ void
 SCI::Init(uint32_t baud)
 {
     // Set Baud Rate.
-    uint16_t brate = (uint16_t)__GETBAUD(F_CPU, baud);
-    __BAUD_HIGH = (uint8_t)(brate>>8);
-    __BAUD_LOW  = (uint8_t)(brate);
+    uint16_t brate  = static_cast<uint16_t>(__GETBAUD(F_CPU, baud));
+    __BAUD_HIGH     = static_cast<uint8_t>(brate>>8);
+    __BAUD_LOW      = static_cast<uint8_t>(brate);
 
     /* Enable Rx and Tx, and interrupt */
     __CTRLB = _BV(__CTRLB_RXCIE) | _BV(__CTRLB_RXEN) | _BV(__CTRLB_TXEN);

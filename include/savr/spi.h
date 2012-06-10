@@ -1,5 +1,5 @@
-#ifndef _spi_h_Included_
-#define _spi_h_Included_
+#ifndef _savr_spi_h_Included_
+#define _savr_spi_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -72,4 +72,4 @@ namespace SPI {
 
 };
 
-#endif
+#endif /* _savr_spi_h_Included_ */

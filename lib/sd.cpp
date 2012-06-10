@@ -85,9 +85,9 @@ static void DecodeDataErr(uint8_t res);
 
 
 #ifdef SD_USE_CRC
-static uint8_t CRC7 (uint8_t *bytes, uint32_t length);
-static uint16_t CRC16(uint8_t *bytes, uint32_t length);
-static uint16_t CRC16_Fill(uint16_t crc, uint8_t const_value, uint32_t length);
+static uint8_t CRC7 (uint8_t *bytes, size_t length);
+static uint16_t CRC16(uint8_t *bytes, size_t length);
+static uint16_t CRC16_Fill(uint16_t crc, uint8_t const_value, size_t length);
 #else
 #define CRC7(x, y)           ((uint8_t)0x4A)
 #define CRC16(x, y)          0xFFFF
@@ -122,8 +122,7 @@ SD::Init(GPIO::Pin ss)
     DelayBytes(20);
 
     // Check if the card is inserted
-    if(!CheckForCard())
-    {
+    if(!CheckForCard()) {
         printf_P(PSTR("Card NOT found\n"));
         return 0;
     }
@@ -339,7 +338,7 @@ SD::EraseBlock(uint32_t addr, uint32_t size)
     }
 
     // Optionally, the card will send a busy token (response R1b)
-    // Wait until a non-zero response is sent back, indicating 
+    // Wait until a non-zero response is sent back, indicating
     // that the erase is complete
     GPIO::Low(_ss);
     while(SPI::TrxByte(0xFF) == 0) ;
@@ -379,7 +378,7 @@ uint8_t
 CheckForCard(void)
 {
     unsigned int i;
-    
+
     // Reset card and check response (retry x 10)
     for(i=0; i<10; i++) {
         SendCommand(CMD_GO_IDLE_STATE, 0);
@@ -481,7 +480,7 @@ GetResponse(uint8_t * buf, uint16_t length)
 
     GPIO::High(_ss);
 
-    return res; 
+    return res;
 }
 
 
@@ -489,7 +488,7 @@ GetResponse(uint8_t * buf, uint16_t length)
  * Reads a data response of a given length
  *
  * The entire response is loaded in the provided buffer.
- * Assumes it's the start of the response and looks for a 
+ * Assumes it's the start of the response and looks for a
  * valid START_BLOCK (0xFE). Will wait for 100 bytes
  * for a valid start or error token.
  *
@@ -517,7 +516,7 @@ ReadData(uint8_t * buf, uint16_t length)
         DecodeDataErr(res);
         return 0;
     }
-    
+
     // Data is comin our way...
     for(i=0; i<length; i++) {
         buf[i] = SPI::TrxByte(0xFF);
@@ -579,7 +578,7 @@ DecodeR1(uint8_t res)
 
 /**
  * Decodes the R2 response type
- * 
+ *
  * Decodes the R2 response and prints out an error message, if applicable.
  *
  * @param res the R2 response
@@ -667,26 +666,26 @@ DecodeDataErr(uint8_t res)
  * @return the resultant CRC (8bit)
  */
 uint8_t
-CRC7(uint8_t * bytes, uint32_t length)
+CRC7(uint8_t * bytes, size_t length)
 {
-    uint32_t ibyte;
+    size_t   ibyte;
     uint8_t  ibit;
-    uint8_t  reg = 0;
+    uint8_t  crc = 0;
 
 
     for (ibyte = 0; ibyte < length; ibyte++) {
 
-        reg ^= bytes[ibyte];
+        crc ^= bytes[ibyte];
         for (ibit=0; ibit<8; ibit++) {
-            if(reg & 0x80) {
-                reg = (reg << 1) ^ CRC7_B_POLYN;
+            if(crc & 0x80) {
+                crc = (crc << 1) ^ CRC7_B_POLYN;
             }else{
-                reg <<= 1;
+                crc <<= 1;
             }
         }
 
     }
-    return reg>>1;
+    return crc>>1;
 }
 
 
@@ -694,32 +693,32 @@ CRC7(uint8_t * bytes, uint32_t length)
 /**
  * A simple CRC16 calculation (Xmodem)
  *
- * @param bytes a pointer to the source data
- * @param length the length of the source data (32bit)
+ * @param bytes   a pointer to the source data
+ * @param length  the length of the source data
  *
  * @return the resultant CRC (16bit)
  */
 uint16_t
-CRC16(uint8_t * bytes, uint32_t length)
+CRC16(uint8_t * bytes, size_t length)
 {
-    uint32_t ibyte;
+    size_t   ibyte;
     uint8_t  ibit;
-    uint16_t reg = 0;
+    uint16_t crc = 0;
 
 
     for (ibyte = 0; ibyte < length; ibyte++) {
 
-        reg ^= ((uint16_t)bytes[ibyte]) << 8;
+        crc ^= ((uint16_t)bytes[ibyte]) << 8;
         for (ibit=0; ibit<8; ibit++) {
-            if(reg & 0x8000) {
-                reg = (reg << 1) ^ CRC16_POLYN;
+            if(crc & 0x8000) {
+                crc = (crc << 1) ^ CRC16_POLYN;
             }else{
-                reg <<= 1;
+                crc <<= 1;
             }
         }
 
     }
-    return (uint16_t)reg;
+    return crc;
 }
 
 /**
@@ -735,26 +734,25 @@ CRC16(uint8_t * bytes, uint32_t length)
  * @return the resultant CRC (16bit)
  */
 uint16_t
-CRC16_Fill(uint16_t crc, uint8_t const_value, uint32_t length)
+CRC16_Fill(uint16_t crc, uint8_t const_value, size_t length)
 {
-    uint32_t ibyte;
+    size_t   ibyte;
     uint8_t  ibit;
-    uint16_t reg = crc;
-    uint16_t constVal = ((uint16_t)const_value) << 8;
+    uint16_t constVal = static_cast<uint16_t>(const_value) << 8;
 
     for (ibyte = 0; ibyte < length; ibyte++) {
 
-        reg ^= constVal;
+        crc ^= constVal;
         for (ibit=0; ibit<8; ibit++) {
-            if(reg & 0x8000) {
-                reg = (reg << 1) ^ CRC16_POLYN;
+            if(crc & 0x8000) {
+                crc = (crc << 1) ^ CRC16_POLYN;
             }else{
-                reg <<= 1;
+                crc <<= 1;
             }
         }
 
     }
-    return (uint16_t)reg;
+    return crc;
 }
 
 #endif

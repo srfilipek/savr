@@ -54,11 +54,11 @@ DSTherm::DSTherm(W1 wire, W1::Address address) :
 /**
  * @par Implementation notes:
  */
-double
+float
 DSTherm::GetTemp(bool fahrenheit)
 {
     uint16_t    temp;   // Raw
-    double      dtemp;  // Converted
+    float       ftemp;  // Converted
 
     // Bus setup
     if(!WaitForConversion()) return NAN;
@@ -75,13 +75,12 @@ DSTherm::GetTemp(bool fahrenheit)
     // Stop transmission
     _wire.Reset();
 
-    dtemp = temp;
-    dtemp /= 16;
+    ftemp = temp;
+    ftemp /= 16;
 
     // Do a conversion to F if necessary
-    if(!fahrenheit)
-        return dtemp;
-    return 1.8*dtemp + 32;
+    if(!fahrenheit) return ftemp;
+    return 1.8*ftemp + 32;
 }
 
 

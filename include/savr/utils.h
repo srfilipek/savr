@@ -1,5 +1,5 @@
-#ifndef _utils_h_Included_
-#define _utils_h_Included_
+#ifndef _savr_utils_h_Included_
+#define _savr_utils_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -78,4 +78,4 @@ void PrintBlock(void *data, size_t size, uint32_t index=0, size_t width=16);
 
 }
 
-#endif
+#endif /* _savr_utils_h_Included_ */

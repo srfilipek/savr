@@ -1,5 +1,5 @@
-#ifndef _w1_h_Included_
-#define _w1_h_Included_
+#ifndef _savr_w1_h_Included_
+#define _savr_w1_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -253,4 +253,4 @@ private:
 };
 
 
-#endif /* W1_H_ */
+#endif /* _savr_w1_h_Included_ */

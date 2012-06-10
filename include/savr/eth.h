@@ -1,5 +1,5 @@
-#ifndef _eth_h_Included_
-#define _eth_h_Included_
+#ifndef _savr_eth_h_Included_
+#define _savr_eth_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -96,5 +96,5 @@ bool Write(uint16_t address, uint8_t byte);
 
 };
 
-#endif
+#endif /* _savr_eth_h_Included_ */
 

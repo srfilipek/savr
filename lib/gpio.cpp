@@ -104,8 +104,8 @@ Get(GPIO::Pin pin)
 void
 High(GPIO::Pin pin)
 {
-    uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _port  = pin / 8;
+    uint8_t _pin   = _BV(pin % 8);
     PORTOF(_port) |= _pin;
 }
 
@@ -116,8 +116,8 @@ High(GPIO::Pin pin)
 void
 Low(GPIO::Pin pin)
 {
-    uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _port  = pin / 8;
+    uint8_t _pin   = _BV(pin % 8);
     PORTOF(_port) &= ~_pin;
 }
 

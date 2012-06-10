@@ -1,5 +1,5 @@
-#ifndef _terminal_h_Included_
-#define _terminal_h_Included_
+#ifndef _savr_terminal_h_Included_
+#define _savr_terminal_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -50,7 +50,7 @@ namespace Term {
      * Initializes the terminal settings and prints a welcome message
      * @param message a pointer to the welcome message
      * @param prompt a pointer to the prompt string
-     */ 
+     */
     void Init(PGM_P message, PGM_P prompt);
 
 
@@ -77,4 +77,4 @@ namespace Term {
     void GetLine(char * string, uint8_t maxLength);
 
 };
-#endif
+#endif /* _savr_terminal_h_Included_ */

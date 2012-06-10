@@ -108,7 +108,7 @@ SetLine(const char *line)
 
     if(line == NULL) return;
 
-    while(*line && addChar(*line)) {
+    while(*line && AddChar(*line)) {
         line++;
     }
 }
@@ -130,10 +130,10 @@ HandleEsc()
     next = getchar();
     switch(next) {
     case 'A':
-        setLine(history.older());
+        SetLine(history.Older());
         break;
     case 'B':
-        setLine(history.newer());
+        SetLine(history.Newer());
         break;
     default:
         AddChar('[');
@@ -169,7 +169,7 @@ Term::Run(const CMD::CommandList commandList, size_t length)
         Term::GetLine(stringBuf, Term::LINESIZE);
 
         if(stringBuf[0] != 0) {
-            history.add(stringBuf);
+            history.Add(stringBuf);
             CMD::RunCommand(stringBuf);
         }
     }
