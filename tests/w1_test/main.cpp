@@ -28,8 +28,8 @@
 // Base feature set is Reset + Search
 
 #define FEATURESET_1            // MatchROM + ReadByte + WriteByte
-//#define FEATURESET_2            // Alarm + GetTemp + GetAll + PollTemp + PollAll
-//#define INCLUDE_DESCRIPTIONS    // May save space by removing command descriptions
+#define FEATURESET_2            // Alarm + GetTemp + GetAll + PollTemp + PollAll
+#define INCLUDE_DESCRIPTIONS    // May save space by removing command descriptions
 
 #if defined(INCLUDE_DESCRIPTIONS)
 #define DESC(x) x
