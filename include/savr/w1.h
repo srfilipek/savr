@@ -64,7 +64,7 @@ public:
 
 
     /**
-     * Create a 1-Wire interface on the given port and pin.
+     * Create a 1-Wire interface on the given pin.
      *
      * @param pin       GPIO Pin to use for the bus.
      */
