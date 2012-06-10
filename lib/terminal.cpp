@@ -37,8 +37,7 @@
 static PGM_P welcomeMessage;
 static PGM_P promptString;
 
-static char stringBuf[Term::LINESIZE];
-static StringHistory<Term::LINESIZE*2> history;
+static StringHistory<Term::LINESIZE> history;
 
 
 ///! File-scope terminal state
@@ -164,6 +163,8 @@ Term::Init(PGM_P message, PGM_P prompt)
 void
 Term::Run(const CMD::CommandList commandList, size_t length)
 {
+    char stringBuf[Term::LINESIZE];
+
     CMD::Init(commandList, length);
     while (1) {
         Term::GetLine(stringBuf, Term::LINESIZE);
