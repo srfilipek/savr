@@ -80,7 +80,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   WriteBlock(uint8_t *data, uint32_t addr, size_t size);
+    uint8_t   WriteBlock(const uint8_t *data, uint32_t addr, size_t size);
 
 
     /**

@@ -60,7 +60,7 @@ public:
     }Address;
 
     // Token for reentrant bus searches
-    typedef uint8_t     Token;
+    typedef uint8_t Token;
 
 
     /**
@@ -84,21 +84,21 @@ public:
      *
      * @return true if presence found, false otherwise.
      */
-    bool    Reset(void);
+    bool Reset(void);
 
 
     /**
      * Select the device with the given address using a Match ROM.
      *
-     * @param address   Pointer to an address source
+     * @param address   The address of the source
      */
-    void    MatchROM(Address &address);
+    void MatchROM(const Address &address);
 
 
     /**
      * Select all devices on the bus.
      */
-    void    SkipROM(void);
+    void SkipROM(void);
 
 
     /**
@@ -116,13 +116,13 @@ public:
      *  }
      * @endcode
      *
-     * @param address   Pointer to address destination
+     * @param address   An address to manipulate and update
      * @param token     Token that keeps state between calls. This must be 0 on the first call. And
      *                  must never be modified by the caller.
      *
      * @return true if we found a device, false otherwise.
      */
-    bool    SearchROM(Address &address, Token &token);
+    bool SearchROM(Address &address, Token &token);
 
 
     /**
@@ -140,23 +140,23 @@ public:
      *  }
      * @endcode
      *
-     * @param address   The address destination
+     * @param address   An address to manipulate and update
      * @param token     Token that keeps state between calls. This must be 0 on the first call. And
      *                  must never be modified by the caller.
      *
      * @return true if we found a device, false otherwise.
      */
-    bool    AlarmSearch(Address &address, Token &token);
+    bool AlarmSearch(Address &address, Token &token);
 
 
     /**
      * If there is only a single device on the bus, this can be used to retrieve its address.
      *
-     * @param address   The address destination
+     * @param address   The address of the destination
      *
      * @return true if we successfully found a device, false otherwise.
      */
-    bool    ReadROM(Address &address);
+    bool ReadROM(const Address &address);
 
 
     /**
@@ -174,7 +174,7 @@ public:
      *
      * @param bit   Bit to write
      */
-    void    WriteBit(bool bit);
+    void WriteBit(bool bit);
 
 
     /**
@@ -188,7 +188,7 @@ public:
      * Write a full byte to the bus
      * @param byte  The byte write
      */
-    void    WriteByte(uint8_t byte);
+    void WriteByte(uint8_t byte);
 
 
     /**
@@ -197,7 +197,7 @@ public:
      * @param byte  Pointer to a destination byte array
      * @param size  Number of bytes to read
      */
-    void    ReadBytes(uint8_t *byte, size_t size);
+    void ReadBytes(uint8_t *byte, size_t size);
 
 
     /**
@@ -208,28 +208,28 @@ public:
      *
      * Writes bytes starting at 0, to size-1
      */
-    void    WriteBytes(uint8_t *byte, size_t size);
+    void WriteBytes(const uint8_t *byte, size_t size);
 
 
     /**
      * Set a bit in the address
      *
-     * @param address   The address
+     * @param address   The address to manipulate
      * @param bitNum    Bit number to set (0 is LSB)
      * @param set       Set the bit to 1 if true, 0 otherwise
      */
-    static void     SetBit(Address &address, uint8_t bitNum, bool set);
+    static void SetBit(Address &address, uint8_t bitNum, bool set);
 
 
     /**
      * Get a bit in the address
      *
-     * @param address   The address
+     * @param address   The address to examine
      * @param bitNum    Bit number to get (0 is LSB)
      *
      * @return 0 if the bit is 0, 1 if the bit is 1...
      */
-    static uint8_t  GetBit(Address &address, uint8_t bitNum);
+    static uint8_t GetBit(const Address &address, uint8_t bitNum);
 
 
     /**
@@ -237,7 +237,7 @@ public:
      *
      * @param address  The address to print
      */
-    static void     PrintAddress(const Address &address);
+    static void PrintAddress(const Address &address);
 
 protected:
 

@@ -85,8 +85,8 @@ static void DecodeDataErr(uint8_t res);
 
 
 #ifdef SD_USE_CRC
-static uint8_t CRC7 (uint8_t *bytes, size_t length);
-static uint16_t CRC16(uint8_t *bytes, size_t length);
+static uint8_t  CRC7 (const uint8_t *bytes, size_t length);
+static uint16_t CRC16(const uint8_t *bytes, size_t length);
 static uint16_t CRC16_Fill(uint16_t crc, uint8_t const_value, size_t length);
 #else
 #define CRC7(x, y)           ((uint8_t)0x4A)
@@ -228,7 +228,7 @@ SD::ReadBlock(uint8_t *buf, uint32_t addr, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-SD::WriteBlock(uint8_t *data, uint32_t addr, size_t size)
+SD::WriteBlock(const uint8_t *data, uint32_t addr, size_t size)
 {
     uint8_t res;
     uint8_t funcRes = 1;
@@ -666,7 +666,7 @@ DecodeDataErr(uint8_t res)
  * @return the resultant CRC (8bit)
  */
 uint8_t
-CRC7(uint8_t * bytes, size_t length)
+CRC7(const uint8_t * bytes, size_t length)
 {
     size_t   ibyte;
     uint8_t  ibit;
@@ -699,7 +699,7 @@ CRC7(uint8_t * bytes, size_t length)
  * @return the resultant CRC (16bit)
  */
 uint16_t
-CRC16(uint8_t * bytes, size_t length)
+CRC16(const uint8_t * bytes, size_t length)
 {
     size_t   ibyte;
     uint8_t  ibit;

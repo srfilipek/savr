@@ -38,10 +38,10 @@ static const char CPP_PROGMEM dPAD[]     = "  ";
  * @par Implementation notes:
  */
 void
-PrintHex(void *data, size_t size)
+PrintHex(const void *data, size_t size)
 {
 
-    uint8_t *input = (uint8_t *)data;
+    const uint8_t *input = static_cast<const uint8_t *>(data);
 
     for(size_t i=0; i<size; i++) {
         printf_P(BYTEwPAD, input[i]);
@@ -54,10 +54,10 @@ PrintHex(void *data, size_t size)
  * @par Implementation notes:
  */
 void
-PrintBlock(void *data, size_t size, uint32_t index, size_t width)
+PrintBlock(const void *data, size_t size, uint32_t index, size_t width)
 {
 
-    uint8_t *input  = static_cast<uint8_t *>(data);
+    const uint8_t *input = static_cast<const uint8_t *>(data);
 
     for(size_t i=0; i<size; i+=width, index+=width) {
         printf_P(PSTR("0x%08lX:"), index);

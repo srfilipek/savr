@@ -105,7 +105,7 @@ W1::Reset()
  * @par Implementation notes:
  */
 void
-W1::MatchROM(Address &address)
+W1::MatchROM(const Address &address)
 {
     WriteByte(0x55);
     WriteBytes(address.array, 8);
@@ -325,7 +325,7 @@ W1::ReadBytes(uint8_t *byte, size_t size)
  * @par Implementation notes:
  */
 void
-W1::WriteBytes(uint8_t *byte, size_t size)
+W1::WriteBytes(const uint8_t *byte, size_t size)
 {
     for(size_t i=0; i<size; ++i) {
         WriteByte(byte[i]);
@@ -386,7 +386,7 @@ W1::SetBit(Address &address, uint8_t bitNum, bool set)
  * @par Implementation notes:
  */
 uint8_t
-W1::GetBit(Address &address, uint8_t bitNum)
+W1::GetBit(const Address &address, uint8_t bitNum)
 {
     return !!(address.array[bitNum/8] & _BV(bitNum%8));
 }

@@ -111,7 +111,7 @@ static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
  * @par Implementation Notes:
  */
 void
-SPI::SendBlock(uint8_t * input, size_t length)
+SPI::SendBlock(const uint8_t * input, size_t length)
 {
     size_t i = 0;
     while(i < length)
@@ -155,7 +155,7 @@ SPI::TrxByte(uint8_t input)
  *
  * Note that MSB is 31, LSB is 0
  */
-uint8_t highestBit(uint32_t word)
+uint8_t HighestBit(uint32_t word)
 {
     uint8_t bitCount = 0;
 
@@ -185,7 +185,7 @@ SPI::Init(uint32_t spiFreq)
     SPI_PORT |= _BV(SPI_MISO);
 
     // Round down divider and find 2^x (highest bit)
-    divExp = highestBit(F_CPU/spiFreq);
+    divExp = HighestBit(F_CPU/spiFreq);
 
     // Bounds. divExp to be subtracted by one in a few lines...
     // Sooo, our bounds are [1, FREQ_CFG_SIZE], not the normal [0, FREQ_CFG_SIZE-1] (both inclusive)

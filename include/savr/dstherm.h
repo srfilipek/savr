@@ -56,7 +56,7 @@ public:
      * @param wire      A 1-Wire interface
      * @param address   Address of the thermometer in question
      */
-    DSTherm(W1 wire, W1::Address address);
+    DSTherm(W1 wire, const W1::Address &address);
 
 
     /**
