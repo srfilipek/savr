@@ -102,10 +102,14 @@ LCD::_SetDataIn(void)
 uint8_t
 LCD::_ReadDataNibble(void)
 {
-    uint8_t ret = GPIO::Get(_pinD4);
-    ret |= GPIO::Get(_pinD5) << 1;
-    ret |= GPIO::Get(_pinD6) << 2;
-    ret |= GPIO::Get(_pinD7) << 3;
+    uint8_t ret = 0;
+    ret |= GPIO::Get(_pinD7);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD6);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD5);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD4);
     return ret;
 }
 
