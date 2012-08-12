@@ -25,9 +25,16 @@
 /**
  * @file version.h
  */
+ #define __str(s) #s
+ #define __xstr(s) __str(s)
 
-#define SAVR_MAJOR   ((uint8_t)1)  ///< Major version number
-#define SAVR_MINOR   ((uint8_t)0)  ///< Minor version number
+
+#define SAVR_MAJOR   1  ///< Major version number
+#define SAVR_MINOR   0  ///< Minor version number
 #define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
+
+#define SAVR_TARGET_STR     __xstr(MCU)
+#define SAVR_VERSION_STR    __xstr(SAVR_MAJOR) "." __xstr(SAVR_MINOR)
+
 
 #endif /* _savr_version_h_Included_ */
