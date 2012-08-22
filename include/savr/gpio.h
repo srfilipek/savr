@@ -30,9 +30,48 @@
 
 namespace GPIO {
 
+/**
+ * This data structure must be defined here to allow the template functions to reduce down
+ * to sbi/cbi/sbis/sbic instructions.
+ */
+static volatile uint8_t * const PortBanks[] = {
+#ifdef PORTA
+        &PORTA,
+#endif
+#ifdef PORTB
+        &PORTB,
+#endif
+#ifdef PORTC
+        &PORTC,
+#endif
+#ifdef PORTD
+        &PORTD,
+#endif
+#ifdef PORTE
+        &PORTE,
+#endif
+#ifdef PORTF
+        &PORTF,
+#endif
+#ifdef PORTG
+        &PORTG,
+#endif
+#ifdef PORTH
+        &PORTH,
+#endif
+#ifdef PORTJ
+        &PORTJ,
+#endif
+#ifdef PORTK
+        &PORTK,
+#endif
+#ifdef PORTL
+        &PORTL,
+#endif
+};
+
+
 #define MAKEPINS(x) x##0, x##1, x##2, x##3, x##4, x##5, x##6, x##7
-
-
 
 /**
  * GPIO Pin Constants for the compiled system.
@@ -81,13 +120,10 @@ typedef enum {
 } Pin;
 
 
-/**
- * Set the pin high or low.
- *
- * @param pin   The GPIO::Pin to control
- * @param set   zero = Low, non-zero = High
- */
-void    Set(GPIO::Pin pin, uint8_t set);
+/* Internal functions */
+inline volatile uint8_t & PORTOF (uint8_t x) { return (*(PortBanks[(x)]  )); }
+inline volatile uint8_t & DDROF  (uint8_t x) { return (*(PortBanks[(x)]-1)); }
+inline volatile uint8_t & PINOF  (uint8_t x) { return (*(PortBanks[(x)]-2)); }
 
 
 /**
@@ -100,11 +136,40 @@ uint8_t Get(GPIO::Pin pin);
 
 
 /**
+ * Get the pin's value from the PIN register
+ *
+ * @tparam pin   The GPIO::Pin to read
+ * @return 0 if the pin is logic low, 1 if logic high
+ */
+template<GPIO::Pin pin>
+void Get()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    return ((PINOF(_port) & _pin) ? 1 : 0);
+}
+
+
+/**
  * Set the pin (PORT register) high
  *
  * @param pin   The GPIO::Pin to control
  */
-void    High(GPIO::Pin pin);
+void High(GPIO::Pin pin);
+
+
+/**
+ * Set the pin (PORT register) high
+ *
+ * @tparam pin   The GPIO::Pin to control
+ */
+template<GPIO::Pin pin>
+void High()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    PORTOF(_port) |= _pin;
+}
 
 
 /**
@@ -112,7 +177,21 @@ void    High(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    Low(GPIO::Pin pin);
+void Low(GPIO::Pin pin);
+
+
+/**
+ * Set the pin (PORT register) low
+ *
+ * @tparam pin   The GPIO::Pin to control
+ */
+template<GPIO::Pin pin>
+void Low()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    PORTOF(_port) &= ~_pin;
+}
 
 
 /**
@@ -120,7 +199,21 @@ void    Low(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    In(GPIO::Pin pin);
+void In(GPIO::Pin pin);
+
+
+/**
+ * Set the pin direction to be an input
+ *
+ * @tparam pin   The GPIO::Pin to control
+ */
+template<GPIO::Pin pin>
+void In()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    DDROF(_port) &= ~_pin;
+}
 
 
 /**
@@ -128,8 +221,47 @@ void    In(GPIO::Pin pin);
  *
  * @param pin   The GPIO::Pin to control
  */
-void    Out(GPIO::Pin pin);
+void Out(GPIO::Pin pin);
 
+
+/**
+ * Set the pin direction to be an output
+ *
+ * @tparam pin   The GPIO::Pin to control
+ */
+template<GPIO::Pin pin>
+void Out()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+    DDROF(_port) |= _pin;
+}
+
+
+/**
+ * Set the pin high or low.
+ *
+ * @param pin   The GPIO::Pin to control
+ * @param set   zero = Low, non-zero = High
+ */
+void Set(GPIO::Pin pin, uint8_t set);
+
+
+/**
+ * Set the pin high or low.
+ *
+ * @tparam pin  The GPIO::Pin to control
+ * @param set   zero = Low, non-zero = High
+ */
+template<GPIO::Pin pin>
+void Set(uint8_t set)
+{
+    if(set) {
+        High<pin>();
+    }else{
+        Low<pin>();
+    }
+}
 
 }
 
