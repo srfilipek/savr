@@ -29,7 +29,9 @@
 #include <savr/queue.h>
 #include <savr/utils.h>
 
-#if     ISAVR(ATmega16) || ISAVR(ATmega32) || ISAVR(ATmega8)
+#if     ISAVR(ATmega8)      || \
+        ISAVR(ATmega16)     || \
+        ISAVR(ATmega32)
     #define __BAUD_HIGH    UBRRH
     #define __BAUD_LOW     UBRRL
     #define __CTRLA        UCSRA
@@ -63,10 +65,9 @@
     #define __RX_VECT      USART_RX_vect
     #define __TX_VECT      USART_UDRE_vect
 
-#elif   ISAVR(ATmega168)  || ISAVR(ATmega328)  || \
-        ISAVR(ATmega168P) || ISAVR(ATmega328P) || \
-        ISAVR(ATmega48)   || ISAVR(ATmega88)   || ISAVR(ATmega168) || \
-        ISAVR(ATmega48P)  || ISAVR(ATmega88P)  || ISAVR(ATmega168P)
+#elif   ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
+        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
+        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
     #define __BAUD_HIGH    UBRR0H
     #define __BAUD_LOW     UBRR0L
     #define __CTRLA        UCSR0A
@@ -84,8 +85,10 @@
     #define __TX_VECT      USART_UDRE_vect
 
 
-#elif   ISAVR(ATmega164P) || ISAVR(ATmega324P) || ISAVR(ATmega644P) || \
-        ISAVR(ATmega164)  || ISAVR(ATmega324)  || ISAVR(ATmega644)
+#elif   ISAVR(ATmega644)    || \
+        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
+        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
+        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
     #define __BAUD_HIGH    UBRR0H
     #define __BAUD_LOW     UBRR0L
     #define __CTRLA        UCSR0A
@@ -114,10 +117,11 @@ static int GetChar(FILE *);
 
 #define __GETBAUD(base, baud) (base/16/(baud)-1)
 
-//! Circular recieve buffer
-static Queue TxBuffer;
+//! Circular receive buffer
+static Queue<uint8_t, 8> TxBuffer;
+
 //! Circular transmit buffer
-static Queue RxBuffer;
+static Queue<uint8_t, 8> RxBuffer;
 
 
 
@@ -129,7 +133,7 @@ static Queue RxBuffer;
 int
 PutChar(char input, FILE * stream)
 {
-    uint8_t err = 0;
+    uint8_t err;
     if(input == '\n')
         PutChar('\r', stream);
 
@@ -151,8 +155,8 @@ PutChar(char input, FILE * stream)
 int
 GetChar(FILE * stream)
 {
-    char ret_val = 0;
-    uint8_t err  = 0;
+    char ret_val;
+    uint8_t err;
     do{
         cli();
         err = RxBuffer.Deq((uint8_t *)&ret_val);
@@ -172,9 +176,9 @@ void
 SCI::Init(uint32_t baud)
 {
     // Set Baud Rate.
-    uint16_t brate = (uint16_t)__GETBAUD(F_CPU, baud);
-    __BAUD_HIGH = (uint8_t)(brate>>8);
-    __BAUD_LOW  = (uint8_t)(brate);
+    uint16_t brate  = static_cast<uint16_t>(__GETBAUD(F_CPU, baud));
+    __BAUD_HIGH     = static_cast<uint8_t>(brate>>8);
+    __BAUD_LOW      = static_cast<uint8_t>(brate);
 
     /* Enable Rx and Tx, and interrupt */
     __CTRLB = _BV(__CTRLB_RXCIE) | _BV(__CTRLB_RXEN) | _BV(__CTRLB_TXEN);
@@ -191,7 +195,7 @@ SCI::Init(uint32_t baud)
 
 
 /**
- * Handle recieved data
+ * Handle received data
  */
 ISR(__RX_VECT)
 {
@@ -206,7 +210,8 @@ ISR(__RX_VECT)
 ISR(__TX_VECT)
 {
     uint8_t tx_data;
-    uint8_t err = 0;
+    uint8_t err;
+
     err = TxBuffer.Deq(&tx_data);
     if(err)
         __CTRLB &= ~_BV(__CTRLB_UDRIE);

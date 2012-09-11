@@ -105,7 +105,7 @@ W1::Reset()
  * @par Implementation notes:
  */
 void
-W1::MatchROM(Address &address)
+W1::MatchROM(const Address &address)
 {
     WriteByte(0x55);
     WriteBytes(address.array, 8);
@@ -168,7 +168,6 @@ W1::_Searcher(uint8_t command, Address &address, Token &token)
     }
 
     // Begin search
-    last_zero_path = 0;
     WriteByte(command);
 
 
@@ -238,7 +237,7 @@ W1::_Searcher(uint8_t command, Address &address, Token &token)
 uint8_t
 W1::ReadBit()
 {
-    bool state = false;
+    bool state;
 
     // These operations are time sensitive...
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
@@ -326,7 +325,7 @@ W1::ReadBytes(uint8_t *byte, size_t size)
  * @par Implementation notes:
  */
 void
-W1::WriteBytes(uint8_t *byte, size_t size)
+W1::WriteBytes(const uint8_t *byte, size_t size)
 {
     for(size_t i=0; i<size; ++i) {
         WriteByte(byte[i]);
@@ -362,7 +361,7 @@ W1::_Release()
 __attribute__ ((noinline)) bool
 W1::_ReadState()
 {
-    return (bool)GPIO::Get(_pin);
+    return static_cast<bool>(GPIO::Get(_pin));
 }
 
 
@@ -387,7 +386,7 @@ W1::SetBit(Address &address, uint8_t bitNum, bool set)
  * @par Implementation notes:
  */
 uint8_t
-W1::GetBit(Address &address, uint8_t bitNum)
+W1::GetBit(const Address &address, uint8_t bitNum)
 {
     return !!(address.array[bitNum/8] & _BV(bitNum%8));
 }

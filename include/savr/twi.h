@@ -1,5 +1,5 @@
-#ifndef _twi_h_Included_
-#define _twi_h_Included_
+#ifndef _savr_twi_h_Included_
+#define _savr_twi_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -111,5 +111,5 @@ namespace TWI {
 };
 
 #endif /* defined(TWBR) && defined(TWCR) */
-#endif /*_twi_h_Included_ */
+#endif /* _savr_twi_h_Included_ */
 

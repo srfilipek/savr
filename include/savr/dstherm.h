@@ -1,5 +1,5 @@
-#ifndef _dstherm_h_Included_
-#define _dstherm_h_Included_
+#ifndef _savr_dstherm_h_Included_
+#define _savr_dstherm_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -56,20 +56,22 @@ public:
      * @param wire      A 1-Wire interface
      * @param address   Address of the thermometer in question
      */
-    DSTherm(W1 wire, W1::Address address);
+    DSTherm(W1 wire, const W1::Address &address) : _wire(wire) {
+        __DSTherm(address);
+    }
 
 
     /**
      * Get the temperature in Celcius or Ferinheit
      *
-     * @param ferinheit true to convert to F, false to leave in C (default)
+     * @param fahrenheit true to convert to F, false to leave in C (default)
      *
      * @return the temperature in degrees of the selected units, or NAN (math.h) on error
      *
      * This should be called after StartConversion() or StartConversionAll(). This
      * will call WaitForConversion() for you.
      */
-    double GetTemp(bool ferinheit=false);
+    float GetTemp(bool fahrenheit=false);
 
 
     /**
@@ -100,11 +102,13 @@ public:
 
 
 private:
+    void            __DSTherm(const W1::Address &address);
+
     W1              _wire;      ///< Copy of a 1-wire interface (it's only a byte in size...)
     W1::Address     _address;   ///< Copy of a given address
 };
 
 
-#endif /* _dstherm_h_Included_ */
+#endif /* _savr_dstherm_h_Included_ */
 
 

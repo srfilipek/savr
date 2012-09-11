@@ -25,50 +25,6 @@
 
 #include <savr/gpio.h>
 
-typedef volatile uint8_t* PortBank;
-
-#define PORTOF(x)   (*(portBanks[(x)]  ))
-#define DDROF(x)    (*(portBanks[(x)]-1))
-#define PINOF(x)    (*(portBanks[(x)]-2))
-
-
-static const PortBank portBanks[] = {
-#ifdef PORTA
-        &PORTA,
-#endif
-#ifdef PORTB
-        &PORTB,
-#endif
-#ifdef PORTC
-        &PORTC,
-#endif
-#ifdef PORTD
-        &PORTD,
-#endif
-#ifdef PORTE
-        &PORTE,
-#endif
-#ifdef PORTF
-        &PORTF,
-#endif
-#ifdef PORTG
-        &PORTG,
-#endif
-#ifdef PORTH
-        &PORTH,
-#endif
-#ifdef PORTJ
-        &PORTJ,
-#endif
-#ifdef PORTK
-        &PORTK,
-#endif
-#ifdef PORTL
-        &PORTL,
-#endif
-};
-
-
 namespace GPIO {
 
 

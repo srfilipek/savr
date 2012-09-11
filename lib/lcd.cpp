@@ -102,10 +102,14 @@ LCD::_SetDataIn(void)
 uint8_t
 LCD::_ReadDataNibble(void)
 {
-    uint8_t ret = GPIO::Get(_pinD4);
-    ret |= GPIO::Get(_pinD5) << 1;
-    ret |= GPIO::Get(_pinD6) << 2;
-    ret |= GPIO::Get(_pinD7) << 3;
+    uint8_t ret = 0;
+    ret |= GPIO::Get(_pinD7);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD6);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD5);
+    ret <<= 1;
+    ret |= GPIO::Get(_pinD4);
     return ret;
 }
 
@@ -230,7 +234,7 @@ LCD::SetDisplay(bool on)
 uint8_t
 LCD::_GetByte(uint8_t mode)
 {
-    uint8_t x = 0;
+    uint8_t x;
 
     _SetDataIn();
 
@@ -275,8 +279,9 @@ LCD::OutByte(uint8_t byte, uint8_t mode)
 void
 LCD::OutString(const char * string)
 {
-    while(*string)
+    while(*string) {
         OutChar(*string++);
+    }
 }
 
 
@@ -286,7 +291,9 @@ LCD::OutString(const char * string)
 void
 LCD::_Wait(void)
 {
-    while(_GetByte() & LCD_READ_BUSYFLAG) ;
+    while(_GetByte() & LCD_READ_BUSYFLAG) {
+        // Nothing
+    }
 }
 
 
@@ -299,7 +306,7 @@ LCD::_OutNib(uint8_t nib, uint8_t mode)
     GPIO::High(_pinE);
 
     _SetDataNibble(nib);
-    if (mode) GPIO::High(_pinRS);
+    if(mode) GPIO::High(_pinRS);
 
     GPIO::Low(_pinE);
     GPIO::Low(_pinRS);

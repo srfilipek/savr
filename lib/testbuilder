@@ -1,0 +1,48 @@
+#! /bin/bash
+
+devices=( \
+    atmega8 
+
+    atmega16
+
+    atmega32
+
+    atmega644
+
+    atmega8515
+
+    atmega48
+    atmega88
+    atmega168
+
+    atmega48p
+    atmega88p
+    atmega168p
+    
+#    atmega48pa
+    atmega88pa
+#    atmega168pa
+    atmega328p
+    
+    atmega164p
+    atmega324p
+    atmega644p
+
+    atmega164a
+#    atmega164pa
+    atmega324a
+    atmega324pa
+    atmega644a
+    atmega644pa
+#    atmega1284
+    atmega1284p
+)
+
+for device in ${devices[*]}
+do
+    make MCU=$device F_CPU=16000000
+    if [ $? -ne 0 ]; then
+        printf "Failed on %s with %d" $device, $?
+        exit 1
+    fi
+done

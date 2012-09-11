@@ -31,11 +31,9 @@ COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned
 
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions
-CXXFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions $(INCLUDES)
 
-CFLAGS    = $(COMMON) -std=gnu99
-CFLAGS   += -MD -MP -MT $(*F).o -MF dep/$(@F).d $(INCLUDES)
+CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 
 LDFLAGS   = $(ARCHFLAGS) -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
 
@@ -55,7 +53,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
-.PHONY: clean all size load 
+.PHONY: clean all size load cleanload
 .INTERMEDIATE: $(OBJECTS)
 
 ## Build
@@ -81,14 +79,16 @@ size: $(TARGET)
 	@avr-size -C -t --mcu=$(MCU) $(TARGET)
 
 
-## Other dependencies
--include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)
-
 ## Program MCU
 load: $(TARGET:%.elf=%.hex)
 	$(shell avrdude -cavrisp2 -Pusb -p$(MCU) -U $<)
 
 ## Clean target
 clean:
-	-rm -rf *.o *.a *.lss *.hex *.elf dep *.map *.eep
+	-rm -rf *.o *.a *.lss *.hex *.elf *.map *.eep
+
+cleanload:
+	@$(MAKE) clean
+	@$(MAKE) all
+	@$(MAKE) load
 

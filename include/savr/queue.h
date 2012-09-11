@@ -1,5 +1,5 @@
-#ifndef _queue_h_Included_
-#define _queue_h_Included_
+#ifndef _savr_queue_h_Included_
+#define _savr_queue_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -23,25 +23,32 @@
 /**
  * @file queue.h
  *
- * Circular queue functionality.
+ * Small (<256 items) circular queue functionality of any type.
  */
 
 #include <stdint.h>
 #include <stddef.h>
+#include <util/atomic.h>
 
+
+template <typename T, uint8_t MAX_SIZE>
 class Queue {
 
 private:
-    static const uint8_t MAX_SIZE=8;        ///< Maximum supported size
-
-    uint8_t data[MAX_SIZE];                 ///< Queue data
-    uint8_t top;                            ///< Index to top
-    uint8_t bottom;                         ///< Index to bottom
-    uint8_t size;                           ///< Current size of the queue
+    T       data[MAX_SIZE];         ///< Queue data
+    uint8_t top;                    ///< Index to top
+    uint8_t bottom;                 ///< Index to bottom
+    uint8_t size;                   ///< Current size of the queue
 
 public:
 
-    Queue();
+    /**
+     * Allocate a queue of qsize bytes on the heap
+     * @param qsize     Size of the desired queue, in bytes.
+     */
+    Queue() : top(0), bottom(0), size(0) {
+    }
+
 
     /**
      * Place data on to a Queue
@@ -50,9 +57,20 @@ public:
      *
      * @param input the byte to place on the Queue
      *
-     * @return 1 if sucessful, 0 otherwise
+     * @return 1 if successful, 0 otherwise
      */
-    uint8_t Enq(uint8_t input);
+    uint8_t Enq(T input)
+    {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
+            if(size == MAX_SIZE) return 1;
+
+            data[bottom++] = input;
+            if(bottom >= MAX_SIZE) bottom = 0;
+            size++;
+        }
+        return 0;
+    }
 
 
     /**
@@ -62,10 +80,21 @@ public:
      *
      * @param target a pointer to a byte to place the read value
      *
-     * @return 1 if sucessful, 0 otherwise
+     * @return 1 if successful, 0 otherwise
      */
-    uint8_t Deq(uint8_t* target);
+    uint8_t Deq(T* target)
+    {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
+            if(size == 0) return 1;
+
+            *target = data[top++];
+            if(top >= MAX_SIZE) top = 0;
+            size--;
+        }
+        return 0;
+    }
 
 };
 
-#endif
+#endif /* _savr_queue_h_Included_ */

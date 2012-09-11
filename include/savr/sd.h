@@ -1,5 +1,5 @@
-#ifndef _sd_h_Included_
-#define _sd_h_Included_
+#ifndef _savr_sd_h_Included_
+#define _savr_sd_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -80,13 +80,13 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   WriteBlock(uint8_t *data, uint32_t addr, size_t size);
+    uint8_t   WriteBlock(const uint8_t *data, uint32_t addr, size_t size);
 
 
     /**
      * Erases a block of data from the SD card.
      *
-     * Erases data starting at addr and ending at 
+     * Erases data starting at addr and ending at
      * addr+size (inclusive). The SD card will erase
      * all 512byte blocks that the range touches.
      *
@@ -98,4 +98,4 @@ namespace SD {
     uint8_t   EraseBlock(uint32_t addr, uint32_t size);
 
 };
-#endif
+#endif /* _savr_sd_h_Included_ */

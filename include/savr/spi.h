@@ -1,5 +1,5 @@
-#ifndef _spi_h_Included_
-#define _spi_h_Included_
+#ifndef _savr_spi_h_Included_
+#define _savr_spi_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -39,7 +39,7 @@ namespace SPI {
      *
      * @param spiFreq   Desired SPI clock frequency
      */
-    void        Init(uint32_t spiFreq);
+    void Init(uint32_t spiFreq);
 
 
     /**
@@ -48,7 +48,7 @@ namespace SPI {
      * @param input a pointer to the source data
      * @param length the size of the source data
      */
-    void        SendBlock(uint8_t *input, size_t length);
+    void SendBlock(const uint8_t *input, size_t length);
 
 
     /**
@@ -58,7 +58,7 @@ namespace SPI {
      * @param length the number of bytes to read
      * @param filler a byte to send continuously while reading
      */
-    void        GetBlock(uint8_t *input, size_t length, uint8_t filler);
+    void GetBlock(uint8_t *input, size_t length, uint8_t filler);
 
 
     /**
@@ -68,8 +68,8 @@ namespace SPI {
      *
      * @return the byte read from the SPI line
      */
-    uint8_t     TrxByte(uint8_t input);
+    uint8_t TrxByte(uint8_t input);
 
 };
 
-#endif
+#endif /* _savr_spi_h_Included_ */

@@ -43,22 +43,21 @@ static const uint8_t DS_READ_SUPPLY     = 0xB4;
 /**
  * @par Implementation notes:
  */
-DSTherm::DSTherm(W1 wire, W1::Address address) :
-    _wire(wire),
-    _address(address)
+void
+DSTherm::__DSTherm(const W1::Address &address)
 {
-    // Empty
+    _address = address;
 }
 
 
 /**
  * @par Implementation notes:
  */
-double
-DSTherm::GetTemp(bool ferinheit)
+float
+DSTherm::GetTemp(bool fahrenheit)
 {
     uint16_t    temp;   // Raw
-    double      dtemp;  // Converted
+    float       ftemp;  // Converted
 
     // Bus setup
     if(!WaitForConversion()) return NAN;
@@ -75,13 +74,12 @@ DSTherm::GetTemp(bool ferinheit)
     // Stop transmission
     _wire.Reset();
 
-    dtemp = temp;
-    dtemp /= 16;
+    ftemp = temp;
+    ftemp /= 16;
 
     // Do a conversion to F if necessary
-    if(!ferinheit)
-        return dtemp;
-    return 1.8*dtemp + 32;
+    if(!fahrenheit) return ftemp;
+    return 1.8*ftemp + 32;
 }
 
 

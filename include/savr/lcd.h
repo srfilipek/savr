@@ -1,5 +1,5 @@
-#ifndef _lcd_h_Included_
-#define _lcd_h_Included_
+#ifndef _savr_lcd_h_Included_
+#define _savr_lcd_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -219,4 +219,4 @@ private:
 
 };
 
-#endif /* _lcd_h_Included_ */
+#endif /* _savr_lcd_h_Included_ */

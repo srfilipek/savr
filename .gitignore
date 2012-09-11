@@ -1,0 +1,8 @@
+*.[oad]
+*.lss
+*.hex
+*.map
+*.elf
+.project
+.cproject
+.settings

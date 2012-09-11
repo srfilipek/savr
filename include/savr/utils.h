@@ -1,5 +1,5 @@
-#ifndef _utils_h_Included_
-#define _utils_h_Included_
+#ifndef _savr_utils_h_Included_
+#define _savr_utils_h_Included_
 /*********************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
@@ -56,7 +56,7 @@ namespace Utils {
  * @param data a pointer to the data to print
  * @param size the number of bytes to print
  */
-void PrintHex(void *data, size_t size);
+void PrintHex(const void *data, size_t size);
 
 
 /**
@@ -73,9 +73,9 @@ void PrintHex(void *data, size_t size);
  * @param index a starting address to print with the data
  * @param width the number of bytes to print on a single line
  */
-void PrintBlock(void *data, size_t size, size_t index=0, size_t width=16);
+void PrintBlock(const void *data, size_t size, uint32_t index=0, size_t width=16);
 
 
 }
 
-#endif
+#endif /* _savr_utils_h_Included_ */

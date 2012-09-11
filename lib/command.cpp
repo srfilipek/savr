@@ -53,17 +53,16 @@ static char     formatter[32];
 void
 CMD::Init(const CMD::CommandList commandList, size_t length)
 {
-    size_t temp = 0;
-
     cmdList = commandList;
     cmdLength = length;
 
     commandColWidth = 0;
 
     for (size_t i = 0; i < length; ++i) {
-        temp = strlen(commandList[i].commandName);
-        if (temp > commandColWidth)
+        size_t temp = strlen(commandList[i].commandName);
+        if (temp > commandColWidth) {
             commandColWidth = temp;
+        }
     }
 
     // For pretty help formatting
@@ -81,11 +80,8 @@ CMD::Init(const CMD::CommandList commandList, size_t length)
 void
 CMD::RunCommand(char *line)
 {
-    char *cmd;
-    char *args;
-
-    cmd = line;
-    args = line;
+    char *cmd   = line;
+    char *args  = line;
 
     // Find the space delimiter between command and arguments
     while (*args != ' ' && *args)
@@ -122,12 +118,12 @@ CMD::RunCommand(char *line)
 void
 FindAndRun(char *cmd, char *args)
 {
-    size_t i = 0;
-    uint8_t found = 0;
-    uint8_t ret = 0;
+    uint8_t found;
+    uint8_t ret;
 
     // Linear search, but it's not that important... right?
-    for (i = 0; i < cmdLength; i++) {
+    found = 0;
+    for (size_t i = 0; i < cmdLength; i++) {
         if (strcmp(cmdList[i].commandName, cmd) == 0) {
             ret = cmdList[i].callback(args);
             found = 1;
@@ -151,11 +147,9 @@ FindAndRun(char *cmd, char *args)
 void
 Help(void)
 {
-    size_t i;
-
     // List out all available commands
     printf_P(PSTR("Available commands:\n"));
-    for (i = 0; i < cmdLength; i++) {
+    for (size_t i = 0; i < cmdLength; i++) {
         if (cmdList[i].helpText == NULL) {
             printf_P(PSTR("  %s\n"), cmdList[i].commandName);
         } else {

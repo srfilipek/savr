@@ -166,7 +166,7 @@ uint8_t
 TWI::Address(uint8_t address, uint8_t rw)
 {
     // Create start condition
-    uint8_t state = 0;
+    uint8_t state;
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
     TWI::Wait();
