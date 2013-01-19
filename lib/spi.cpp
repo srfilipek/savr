@@ -28,17 +28,17 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/spi.h>
 #include <savr/utils.h>
+#include <savr/gpio.h>
 
 
 #if     ISAVR(ATmega8)      || \
         ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
         ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
         ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
-#define SPI_DDR  DDRB
-#define SPI_PORT PORTB
-#define SPI_MOSI PB3
-#define SPI_MISO PB4
-#define SPI_SCK  PB5
+#define SPI_SS   GPIO::B2
+#define SPI_MOSI GPIO::B3
+#define SPI_MISO GPIO::B4
+#define SPI_SCK  GPIO::B5
 
 #elif   ISAVR(ATmega16)     || \
         ISAVR(ATmega32)     || \
@@ -47,11 +47,10 @@
         ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
         ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
         ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
-#define SPI_DDR  DDRB
-#define SPI_PORT PORTB
-#define SPI_MOSI PB5
-#define SPI_MISO PB6
-#define SPI_SCK  PB7
+#define SPI_SS   GPIO::B4
+#define SPI_MOSI GPIO::B5
+#define SPI_MISO GPIO::B6
+#define SPI_SCK  GPIO::B7
 
 // This fixes improper register/field names in avr-libc for the atmega324pa
 #ifndef SPI2X
@@ -177,12 +176,23 @@ SPI::Init(uint32_t spiFreq)
 {
     uint8_t divExp;
 
-    /* Master mode: MISO is Input; MOSI, and SCK is output */
-    SPI_DDR &= ~(_BV(SPI_MISO));
-    SPI_DDR |= _BV(SPI_MOSI) | _BV(SPI_SCK);
+    /**
+     * Master mode: MISO is Input; MOSI, SCK, and SS are output
+     *
+     * Note:
+     *   Setup MISO with a pull-up resistor
+     *   The SS must be an output, else we may auto-switch to slave mode
+     */
+    GPIO::Out<SPI_SCK>();
 
-    /* Setup MISO with a pull-up resistor */
-    SPI_PORT |= _BV(SPI_MISO);
+    GPIO::Out<SPI_MOSI>();
+
+    GPIO::In<SPI_MISO>();
+    GPIO::High<SPI_MISO>();
+
+    GPIO::Out<SPI_SS>();
+    GPIO::High<SPI_SS>();
+
 
     // Round down divider and find 2^x (highest bit)
     divExp = HighestBit(F_CPU/spiFreq);
@@ -193,9 +203,10 @@ SPI::Init(uint32_t spiFreq)
     if(divExp > FREQ_CFG_SIZE) divExp = FREQ_CFG_SIZE;
     divExp--;
 
-    /* Setup SPCR
-     * SPI enabled, master mode, fck/2, MSB first
-     * Mode 0
+    /**
+     * Setup SPCR
+     *   SPI enabled, master mode, fck/2, MSB first
+     *   Mode 0
      */
     SPCR |= _BV(SPE) | _BV(MSTR) | pgm_read_byte(&regFreqCfg[divExp].spcr);
     SPSR |= pgm_read_byte(&regFreqCfg[divExp].spsr);
