@@ -142,7 +142,7 @@ uint8_t Get(GPIO::Pin pin);
  * @return 0 if the pin is logic low, 1 if logic high
  */
 template<GPIO::Pin pin>
-void Get()
+uint8_t Get()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
