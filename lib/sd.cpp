@@ -199,7 +199,7 @@ SD::Init(GPIO::Pin ss)
  * @par Implementation Notes:
  */
 uint8_t
-SD::ReadBlock(uint8_t *buf, uint32_t addr, size_t size)
+SD::ReadBlock(uint32_t addr, uint8_t *buf, size_t size)
 {
     uint8_t res;
 
@@ -228,7 +228,7 @@ SD::ReadBlock(uint8_t *buf, uint32_t addr, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-SD::WriteBlock(const uint8_t *data, uint32_t addr, size_t size)
+SD::WriteBlock(uint32_t addr, const uint8_t *data, size_t size)
 {
     uint8_t res;
     uint8_t funcRes = 1;
