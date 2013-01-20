@@ -87,16 +87,16 @@ bool
 W1::Reset()
 {
     bool presence = false;
+    DELAY(G);
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        DELAY(G);
         _DriveLow();
         DELAY(H);
         _Release();
         DELAY(I);
         presence = (_ReadState() == 0);
-        DELAY(J);
     }
+    DELAY(J);
     return presence;
 }
 
@@ -247,8 +247,8 @@ W1::ReadBit()
         _Release();
         DELAY(E);
         state = _ReadState();
-        DELAY(F);
     }
+    DELAY(F);
     return (uint8_t)state;
 }
 
@@ -260,19 +260,22 @@ void
 W1::WriteBit(bool bit)
 {
     // These operations are time sensitive...
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-    {
-        if(bit) {
+    if(bit) {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
             _DriveLow();
             DELAY(A);
             _Release();
-            DELAY(B);
-        }else{
+        }
+        DELAY(B);
+    }else{
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
             _DriveLow();
             DELAY(C);
             _Release();
-            DELAY(D);
         }
+        DELAY(D);
     }
 }
 
