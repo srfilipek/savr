@@ -2,6 +2,7 @@
 *.lss
 *.hex
 *.map
+*.eep
 *.elf
 .project
 .cproject
