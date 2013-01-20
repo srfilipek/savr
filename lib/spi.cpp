@@ -104,7 +104,16 @@ static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
 };
 #define FREQ_CFG_SIZE sizeof(regFreqCfg)/sizeof(SPIConfig)
 
-
+void
+SPI::SSHigh(void)
+{
+    GPIO::High(SPI_SS);
+}
+void
+SPI::SSLow(void)
+{
+    GPIO::Low(SPI_SS);
+}
 
 /**
  * @par Implementation Notes:
