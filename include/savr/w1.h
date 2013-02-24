@@ -57,6 +57,11 @@ public:
     typedef union {
         uint64_t raw;
         uint8_t  array[8];
+        struct {
+            uint8_t crc;
+            uint8_t serial[6];
+            uint8_t family;
+        };
     }Address;
 
     // Token for reentrant bus searches
