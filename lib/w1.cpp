@@ -401,7 +401,8 @@ W1::GetBit(const Address &address, uint8_t bitNum)
 void
 W1::PrintAddress(const Address &address)
 {
-    for(uint8_t i=0; i<8; ++i) {
+    uint8_t i=8;
+    while(i-->0) {
         printf_P(PSTR("%02x"), address.array[i]);
     }
 }

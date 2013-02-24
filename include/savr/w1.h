@@ -46,21 +46,23 @@ public:
     /**
      * @brief 64-bit 1-Wire device address type
      *
-     * Internally, the address is stored with the Family code at byte 0
+     * Internally, the address is stored in proper bit order in a 64bit unsigned integer. This
+     * results in the 8-byte address ordering, when accessed through the array field, to be:
+     *   Field: [ CRC | 48-bit serial | Family ]
+     *   Index:    7     6 5 4 3 2 1      0
      *
-     * The 8-byte address looks like:
-     *  [ Fam Code | 48-bit serial | CRC ]
-     *        0       1 2 3 4 5 6     7
+     * The ordering of bytes is a consequence of GCC's implementation of this systems "endianness".
      *
-     * This is also the order printed using PrintAddress()
+     * The PrintAddress() function prints the hexadecimal characters in proper address order, from
+     * 7 down to 0, to match the above field order.
      */
     typedef union {
         uint64_t raw;
         uint8_t  array[8];
         struct {
-            uint8_t crc;
-            uint8_t serial[6];
             uint8_t family;
+            uint8_t serial[6];
+            uint8_t crc;
         };
     }Address;
 

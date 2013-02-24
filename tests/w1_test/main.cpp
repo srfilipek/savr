@@ -42,16 +42,16 @@ static W1 *wire = NULL;
 
 
 static bool ParseAddress(W1::Address &address, char *text) {
-    uint8_t i=0;
+    uint8_t i=8;
     char temp[3];
     temp[2] = 0;
 
-    while(i<8 && *text && *(text+1)) {
+    while(i && *text && *(text+1)) {
         temp[0] = *text++;
         temp[1] = *text++;
-        address.array[i++] = strtoul(temp, NULL, 16);
+        address.array[--i] = strtoul(temp, NULL, 16);
     }
-    if(i != 8) {
+    if(i != 0) {
         return false;
     }
     printf_P(PSTR("Address: "));
@@ -284,7 +284,7 @@ int main(void) {
 
     SCI::Init(38400);  // bps
 
-    W1 localWire(GPIO::C0);
+    W1 localWire(GPIO::D7);
     wire = &localWire;
 
     Term::Init(welcomeMessage, promptString);
