@@ -263,6 +263,37 @@ void Set(uint8_t set)
     }
 }
 
+
+/**
+ * Toggle the pin high or low.
+ *
+ * If the PORT is currently low, set to high, and vice versa.
+ *
+ * @param pin   The GPIO::Pin to control
+ */
+void Set(GPIO::Pin pin);
+
+
+/**
+ * Toggle the pin high or low.
+ *
+ * If the PORT is currently low, set to high, and vice versa.
+ *
+ * @tparam pin  The GPIO::Pin to control
+ */
+template<GPIO::Pin pin>
+void Toggle()
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+
+    if(PORTOF(_port) & _pin) {
+        Low<pin>();
+    }else{
+        High<pin>();
+    }
+}
+
 }
 
 #endif /* _savr_gpio_h_Included_ */

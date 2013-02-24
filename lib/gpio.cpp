@@ -45,6 +45,23 @@ Set(GPIO::Pin pin, uint8_t set)
 /**
  * @par Implementation notes:
  */
+void
+Toggle(GPIO::Pin pin)
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = _BV(pin % 8);
+
+    if(PORTOF(_port) & _pin) {
+        Low(pin);
+    }else{
+        High(pin);
+    }
+}
+
+
+/**
+ * @par Implementation notes:
+ */
 uint8_t
 Get(GPIO::Pin pin)
 {
