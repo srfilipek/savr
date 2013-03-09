@@ -17,6 +17,7 @@
 #include <savr/terminal.h>
 #include <savr/utils.h>
 #include <savr/twi.h>
+#include <savr/gpio.h>
 
 #define Interrupts_Disable() cli()
 #define Interrupts_Enable() sei()
@@ -175,6 +176,13 @@ uint8_t wrap_TWI_State(char *args) {
     return 0;
 }
 
+uint8_t wrap_Pins(char *args) {
+    //printf_P(PSTR("Port %c: 0x%02X\n"), 'A', PORTA);
+    printf_P(PSTR("PIN %c: 0x%02X\n"), 'B', PINB);
+    printf_P(PSTR("PIN %c: 0x%02X\n"), 'C', PINC);
+    printf_P(PSTR("PIN %c: 0x%02X\n"), 'D', PIND);
+    return 0;
+}
 
 
 /**
@@ -193,6 +201,7 @@ static CMD::CommandList cmdList = {
     {"Start",           wrap_TWI_Start,         "Bus Start (rarely needed)"},
     {"Stop",            wrap_TWI_Stop,          "Bus Stop"},
     {"State",           wrap_TWI_State,         "Get bus status byte"},
+    {"Pins",            wrap_Pins,              "Print state of all GPIO pins"},
 
 
 };
@@ -210,7 +219,9 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
 int main(void) {
 
     SCI::Init(38400);  // bps
-    TWI::Init(100000); // Bus freq in Hz
+
+    // Enable internal pullups for the TWI bus
+    TWI::Init(100000, true); // Bus freq in Hz
 
     Term::Init(welcomeMessage, promptString);
 
