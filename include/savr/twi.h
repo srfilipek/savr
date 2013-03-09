@@ -31,11 +31,21 @@
 namespace TWI {
 
     /**
-     * Inltialize the TWI subsystem
+     * Initialize the TWI subsystem without internal pull-ups
      *
      * @param outputFreq    The desired TWI bus frequency in Hz
      */
     void    Init(uint32_t outputFreq);
+
+    /**
+     * Initialize the TWI subsystem with internal pull-up control
+     *
+     * @param outputFreq    The desired TWI bus frequency in Hz
+     * @param pullups       Enable (true) or disable (false) internal pull-ups for SDA/SCL
+     *
+     * If pullups is false, the SDA and SCL lines are left untouched.
+     */
+    void    Init(uint32_t outputFreq, bool pullups);
 
 
     /**

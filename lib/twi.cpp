@@ -26,8 +26,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include <savr/utils.h>
 #include <savr/cpp_pgmspace.h>
 #include <savr/twi.h>
+#include <savr/gpio.h>
 
 
 #if defined(TWBR) && defined(TWCR) // Not everything has a TWI
@@ -40,12 +42,44 @@ static const char CPP_PROGMEM SLAR[]        = "SLA+R";
 static const char CPP_PROGMEM eACK[]        = " ACK";
 static const char CPP_PROGMEM eNACK[]       = " NACK";
 
+#if     ISAVR(ATmega8)      || \
+        ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
+        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
+        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
+
+#define TWI_GPIO_SDA    GPIO::C4
+#define TWI_GPIO_SCL    GPIO::C5
+
+#elif   ISAVR(ATmega16)     || \
+        ISAVR(ATmega32)     || \
+        ISAVR(ATmega644)    || \
+        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
+        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
+        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
+
+#define TWI_GPIO_SDA    GPIO::C1
+#define TWI_GPIO_SCL    GPIO::C0
+
+#else
+#error Unsupported AVR target for TWI interface
+#endif
+
 
 /**
  * @par Implementation notes:
  */
 void
 TWI::Init(uint32_t outputFreq)
+{
+    Init(outputFreq, false);
+}
+
+
+/**
+ * @par Implementation notes:
+ */
+void
+TWI::Init(uint32_t outputFreq, bool pullup)
 {
 
     // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
@@ -54,6 +88,13 @@ TWI::Init(uint32_t outputFreq)
 
     // Clear interrupt flag, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
+
+    if(pullup) {
+        GPIO::In<TWI_GPIO_SDA>();
+        GPIO::High<TWI_GPIO_SDA>();
+        GPIO::In<TWI_GPIO_SCL>();
+        GPIO::High<TWI_GPIO_SCL>();
+    }
 }
 
 
