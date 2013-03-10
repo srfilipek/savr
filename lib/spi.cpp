@@ -158,12 +158,12 @@ SPI::TrxByte(uint8_t input)
 /**
  * Find the highest bit that is a 1
  *
- * @param word The 32bit word to search over
+ * @param word The 8bit word to search over
  * @return The MSB that is a 1
  *
- * Note that MSB is 31, LSB is 0
+ * Note that MSB is 7, LSB is 0
  */
-uint8_t HighestBit(uint32_t word)
+uint8_t HighestBit(uint8_t word)
 {
     uint8_t bitCount = 0;
 
@@ -204,13 +204,14 @@ SPI::Init(uint32_t spiFreq)
 
 
     // Round down divider and find 2^x (highest bit)
-    divExp = HighestBit(F_CPU/spiFreq);
+    divExp = HighestBit(static_cast<uint8_t>(F_CPU/spiFreq));
 
     // Bounds. divExp to be subtracted by one in a few lines...
     // Sooo, our bounds are [1, FREQ_CFG_SIZE], not the normal [0, FREQ_CFG_SIZE-1] (both inclusive)
     if(divExp == 0) divExp = 1;
     if(divExp > FREQ_CFG_SIZE) divExp = FREQ_CFG_SIZE;
     divExp--;
+
 
     /**
      * Setup SPCR
