@@ -284,7 +284,7 @@ int main(void) {
 
     SCI::Init(38400);  // bps
 
-    W1 localWire(GPIO::D7);
+    W1 localWire(GPIO::D6);
     wire = &localWire;
 
     Term::Init(welcomeMessage, promptString);
