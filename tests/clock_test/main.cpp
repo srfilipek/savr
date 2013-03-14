@@ -47,10 +47,65 @@ uint8_t ScanTWI(char *args) {
     return 0;
 }
 
+uint8_t __TOBCDNIB(char value) {
+    if(value < '0' || value > '9') return 0;
+    return value - '0';
+}
+
+
+uint8_t TOBCD(const char* value) {
+    uint8_t ret = 0;
+
+    ret |= __TOBCDNIB(value[0]);
+    ret <<= 4;
+    ret |= __TOBCDNIB(value[1]);
+
+    return ret;
+}
+
+uint8_t SetTime(char *args) {
+    uint8_t res;
+    char *token;
+    char *currentArg;
+    uint8_t addr;
+
+    currentArg = strtok_r(args, " ", &token);
+    addr = strtoul(currentArg, (char**) NULL, 0);
+
+    // Write mode first to set the pointer to 0
+    res = TWI::Address(addr, 0);
+    if(res != 0) {
+        printf_P(PSTR("Failed to address 0x%02X\n"), addr);
+        TWI::PrintState();
+        return 1;
+    }
+    TWI::Send(0);
+
+    currentArg = strtok_r(NULL, " ", &token);
+    uint8_t year    = TOBCD(currentArg+0);
+    uint8_t month   = TOBCD(currentArg+2);
+    uint8_t day     = TOBCD(currentArg+4);
+    uint8_t hour    = TOBCD(currentArg+6);
+    uint8_t minute  = TOBCD(currentArg+8);
+    uint8_t second  = TOBCD(currentArg+10);
+
+    TWI::Send(second);
+    TWI::Send(minute);
+    TWI::Send(hour);
+    TWI::Send(0);
+    TWI::Send(day);
+    TWI::Send(month);
+    TWI::Send(year);
+
+    TWI::Stop();
+
+    return 0;
+}
+
 uint8_t GetTime(char *args) {
-    uint8_t res = 0;
-    uint8_t i = 0;
-    uint8_t temp = 0;
+    uint8_t res;
+    uint8_t i;
+    uint8_t temp;
     char *token;
     char *currentArg;
     uint8_t addr;
@@ -191,7 +246,8 @@ uint8_t wrap_Pins(char *args) {
 
 // Command list
 static CMD::CommandList cmdList = {
-    {"Time",            GetTime,                "Gets the time: Time [addr]"},
+    {"GetTime",         GetTime,                "Gets the time: Time [addr]"},
+    {"SetTime",         SetTime,                "Sets the time: Time [addr] [YYMMDDHHMMSS]"},
     {"Scan",            ScanTWI,                "Scans the bus and prints any addresses found"},
     {"PrintState",      wrap_TWI_PrintState,    "Prints current bus state"},
     {"Addr",            wrap_TWI_Address,       "Starts bus and address a device: Addr [addr] [1=read, 0=write]"},
