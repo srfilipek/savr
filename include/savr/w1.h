@@ -157,16 +157,6 @@ public:
 
 
     /**
-     * If there is only a single device on the bus, this can be used to retrieve its address.
-     *
-     * @param address   The address of the destination
-     *
-     * @return true if we successfully found a device, false otherwise.
-     */
-    bool ReadROM(const Address &address);
-
-
-    /**
      * Read a bit from the bus
      *
      * @return 1 if bit is high, 0 otherwise
