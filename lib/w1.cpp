@@ -88,10 +88,10 @@ W1::Reset()
 {
     bool presence = false;
     DELAY(G);
+    _DriveLow();
+    DELAY(H);       // Must delay *at least* this amount
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
     {
-        _DriveLow();
-        DELAY(H);
         _Release();
         DELAY(I);
         presence = (_ReadState() == 0);
