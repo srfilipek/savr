@@ -58,10 +58,10 @@ namespace TWI {
      * Addresses the given endpoint for read or write
      *
      * @param address   The address of the endpoint
-     * @param rw        The RW bit
+     * @param read      True to read, false to write
      * @return 0 on success, non-zero on error
      */
-    uint8_t Address(uint8_t address, uint8_t rw);
+    uint8_t Address(uint8_t address, bool read);
 
 
     /**

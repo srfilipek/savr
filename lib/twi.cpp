@@ -204,7 +204,7 @@ TWI::Get(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Address(uint8_t address, uint8_t rw)
+TWI::Address(uint8_t address, bool read)
 {
     // Create start condition
     uint8_t state;
@@ -217,7 +217,7 @@ TWI::Address(uint8_t address, uint8_t rw)
     }
 
     // Send address | RW (has waits...)
-    TWI::Send((address<<1) | (!!rw));
+    TWI::Send((address<<1) | ((uint8_t)read));
 
     state = TWI::State();
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
