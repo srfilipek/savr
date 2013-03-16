@@ -27,6 +27,7 @@
 
 #include <savr/terminal.h>
 #include <savr/stringhistory.h>
+#include <savr/sci.h>
 
 #define BACKSPACE_CHAR  0x08
 #define DEL_CHAR        0x7F
@@ -41,12 +42,15 @@ static StringHistory<Term::LINESIZE> history;
 
 
 ///! File-scope terminal state
-namespace TermState {
-static uint8_t  count;
-static uint8_t  length;
-static char     *dest;
+struct TermState {
+    uint8_t  size;
+    uint8_t  maxLength;
+    char     *dest;
 };
+static TermState state;
 
+
+static char stringBuf[Term::LINESIZE];
 
 /**
  * @par Implementation notes:
@@ -66,14 +70,13 @@ Backspace()
 static bool
 AddChar(char c)
 {
-    using namespace TermState;
     /* Echo back */
     putchar(c);
 
     /* If there's room, store the char, else, backup over it */
-    if (count < (length - 1)) {
-        dest[count] = c;
-        count++;
+    if (state.size < (state.maxLength - 1)) {
+        state.dest[state.size] = c;
+        state.size++;
         return true;
     } else {
         Backspace();
@@ -88,12 +91,11 @@ AddChar(char c)
 static void
 ClearLine()
 {
-    using namespace TermState;
-    while (count) {
+    while (state.size) {
         putchar(BACKSPACE_CHAR);
         putchar(' ');
         putchar(BACKSPACE_CHAR);
-        count--;
+        state.size--;
     }
 }
 
@@ -101,8 +103,6 @@ ClearLine()
 static void
 SetLine(const char *line)
 {
-    using namespace TermState;
-
     ClearLine();
 
     if(line == NULL) return;
@@ -119,8 +119,6 @@ SetLine(const char *line)
 static void
 HandleEsc()
 {
-    using namespace TermState;
-
     char next = getchar();
     if(next != '[') {
         AddChar(next);
@@ -142,40 +140,54 @@ HandleEsc()
 }
 
 
-
 /**
- * @par Implementation Notes:
+ * Handle the given character as a user input
+ *
+ * @return true if a line is completed, false otherwise
  */
-void
-Term::Init(PGM_P message, PGM_P prompt)
-{
-    welcomeMessage = message;
-    promptString = prompt;
+bool
+HandleChar(char c) {
 
-    printf_P(welcomeMessage);
-}
+    switch (c) {
 
+    /* End of line found. NULL out and return. */
+    case '\r':
+        state.dest[state.size] = '\0';
+        putchar('\n');
+        //puts(dest);
+        return true;
+        /* Not Reached */
+        break;
 
+    /* Clear line. Erase up to prompt. */
+    case CLR_CHAR:
+        ClearLine();
+        break;
 
-/**
- * @par Implementation Notes:
- */
-void
-Term::Run(const CMD::CommandList commandList, size_t length)
-{
-    char stringBuf[Term::LINESIZE];
-
-    CMD::Init(commandList, length);
-    while (1) {
-        Term::GetLine(stringBuf, Term::LINESIZE);
-
-        if(stringBuf[0] != 0) {
-            history.Add(stringBuf);
-            CMD::RunCommand(stringBuf);
+    case DEL_CHAR: /* Fall through */
+    case BACKSPACE_CHAR:
+        if (state.size) {
+            Backspace();
+            state.size--;
         }
-    }
-}
+        break;
 
+    case ESC_CHAR:
+        HandleEsc();
+        break;
+
+    /* All others, check for non-special character. */
+    default:
+        if (c >= 0x20 && c <= 0x7E) {
+            AddChar(c);
+        } else {
+            //printf("0x%02X ", c);
+        }
+
+        break;
+    }
+    return false;
+}
 
 
 
@@ -185,58 +197,67 @@ Term::Run(const CMD::CommandList commandList, size_t length)
 void
 Term::GetLine(char * string, uint8_t maxLength)
 {
+    while(!HandleChar(getchar())) { /* Nothing */ }
+    strncpy(string, state.dest, maxLength);
+}
 
-    char temp;
 
-    using namespace TermState;
-    count   = 0;
-    dest    = string;
-    length  = maxLength;
 
+/**
+ * @par Implementation Notes:
+ */
+void
+Term::Init(PGM_P message, PGM_P prompt, const CMD::CommandList commandList, size_t length)
+{
+    welcomeMessage = message;
+    promptString = prompt;
+
+    printf_P(welcomeMessage);
+    CMD::Init(commandList, length);
+
+    state.size      = 0;
+    state.dest      = stringBuf;
+    state.maxLength = Term::LINESIZE;
 
     printf_P(promptString);
+}
 
-    do {
-        temp = getchar();
-        switch (temp) {
 
-        /* End of line found. NULL out and return. */
-        case '\r':
-            dest[count] = '\0';
-            putchar('\n');
-            //puts(dest);
-            return;
-            /* Not Reached */
-            break;
 
-        /* Clear line. Erase up to prompt. */
-        case CLR_CHAR:
-            ClearLine();
-            break;
-
-        case DEL_CHAR: /* Fall through */
-        case BACKSPACE_CHAR:
-            if (count) {
-                Backspace();
-                count--;
-            }
-            break;
-
-        case ESC_CHAR:
-            HandleEsc();
-            break;
-
-        /* All others, check for non-special character. */
-        default:
-            if (temp >= 0x20 && temp <= 0x7E) {
-                AddChar(temp);
-            } else {
-                //printf("0x%02X ", temp);
-            }
-
-            break;
+/**
+ * @par Implementation Notes:
+ */
+void
+Term::Run(void)
+{
+    while (1) {
+        while(!HandleChar(getchar())) { /* Nothing */ }
+        if(state.size) {
+            history.Add(stringBuf);
+            CMD::RunCommand(stringBuf);
+            state.size = 0;
         }
+        printf_P(promptString);
+    }
+}
 
-    } while (1);
+
+
+/**
+ * @par Implementation Notes:
+ */
+void
+Term::Work(void)
+{
+    while(SCI::Size(stdin)) {
+        if(HandleChar(getchar())) {
+            if(state.size) {
+                history.Add(stringBuf);
+                CMD::RunCommand(stringBuf);
+                state.size = 0;
+            }
+            printf_P(promptString);
+        }
+    }
 }
 
