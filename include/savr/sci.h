@@ -35,6 +35,7 @@
  * This is intended to be one-per-system as the 'debug console'.
  */
 
+#include <stdio.h>
 
 namespace SCI {
 
@@ -44,6 +45,8 @@ namespace SCI {
      * @param baud      The desired baud rate
      */
     void Init(uint32_t baud);
+
+    size_t Size(FILE *stream);
 
 };
 
