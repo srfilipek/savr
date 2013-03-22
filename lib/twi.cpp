@@ -31,10 +31,6 @@
 #include <savr/twi.h>
 #include <savr/gpio.h>
 
-
-#if defined(TWBR) && defined(TWCR) // Not everything has a TWI
-
-
 static const char CPP_PROGMEM SentData[]    = "Send data, got";
 static const char CPP_PROGMEM RcvdData[]    = "Rcvd data and";
 static const char CPP_PROGMEM SLAW[]        = "SLA+W";
@@ -61,9 +57,11 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
 #define TWI_GPIO_SCL    GPIO::C0
 
 #else
-#error Unsupported AVR target for TWI interface
+#warning Unsupported AVR target for TWI interface
+#define SAVR_NO_TWI
 #endif
 
+#ifndef SAVR_NO_TWI
 
 /**
  * @par Implementation notes:
@@ -258,4 +256,3 @@ TWI::State(void)
 }
 
 #endif
-

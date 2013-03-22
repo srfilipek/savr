@@ -82,8 +82,11 @@
 #endif
 
 #else
-#error Unsupported AVR target for SPI interface
+#warning Unsupported AVR target for SPI interface
+#define SAVR_NO_SPI
 #endif
+
+#ifndef SAVR_NO_SPI
 
 //! For SPI divider settings
 typedef struct {
@@ -222,3 +225,4 @@ SPI::Init(uint32_t spiFreq)
     SPSR |= pgm_read_byte(&regFreqCfg[divExp].spsr);
 }
 
+#endif

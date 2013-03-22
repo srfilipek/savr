@@ -106,8 +106,11 @@
     #define __TX_VECT      USART0_UDRE_vect
 
 #else
-#error Unsupported AVR target for SCI interface
+#warning Unsupported AVR target for SCI interface
+#define SAVR_NO_SCI
 #endif
+
+#ifndef SAVR_NO_SCI
 
 static FILE mystdout;
 static FILE mystdin;
@@ -234,3 +237,6 @@ ISR(__TX_VECT)
     else
         __DATAR = tx_data;
 }
+
+#endif
+
