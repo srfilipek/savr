@@ -17,7 +17,7 @@ CXX         = avr-g++
 LSS_TARGET  = $(TARGET:%.a=%.lss)
 
 ## Options common to compile, link and assembly rules
-COMMON  = -mmcu=$(MCU) -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -DF_CPU=$(F_CPU)UL
+COMMON  = -mmcu=$(MCU) -Wall -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -DF_CPU=$(F_CPU)UL
 
 ## Include Directories
 INCLUDES += -I../include

@@ -176,8 +176,6 @@ GetChar(FILE * stream)
 size_t
 SCI::Size(FILE * stream)
 {
-    char ret_val;
-    uint8_t err;
     IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
     return buff->Size();
 }

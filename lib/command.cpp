@@ -119,13 +119,12 @@ void
 FindAndRun(char *cmd, char *args)
 {
     uint8_t found;
-    uint8_t ret;
 
     // Linear search, but it's not that important... right?
     found = 0;
     for (size_t i = 0; i < cmdLength; i++) {
         if (strcmp(cmdList[i].commandName, cmd) == 0) {
-            ret = cmdList[i].callback(args);
+            cmdList[i].callback(args);
             found = 1;
             break;
         }
