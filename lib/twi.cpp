@@ -175,6 +175,18 @@ TWI::Send(uint8_t b)
 /**
  * @par Implementation notes:
  */
+void
+TWI::SendAsync(uint8_t b)
+{
+    TWI::Wait();
+    TWDR = b;
+    TWCR = _BV(TWINT) | _BV(TWEN);
+}
+
+
+/**
+ * @par Implementation notes:
+ */
 uint8_t
 TWI::GetAck(void)
 {

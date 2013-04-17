@@ -89,6 +89,14 @@ namespace TWI {
 
 
     /**
+     * Send a byte without any waiting
+     *
+     * @param b     The byte to send
+     */
+    void    SendAsync(uint8_t b);
+
+
+    /**
      * Send bus Start
      */
     void    Start(void);
