@@ -27,6 +27,7 @@
 #include <stdio.h>
 
 #include <savr/w1.h>
+#include <savr/optimized.h>
 
 
 /**
@@ -374,7 +375,7 @@ W1::_ReadState()
 void
 W1::SetBit(Address &address, uint8_t bitNum, bool set)
 {
-    uint8_t bit     = _BV(bitNum%8);
+    uint8_t bit     = Opt::BitVal(bitNum%8);
     uint8_t byte    = bitNum / 8;
 
     if(set) {
@@ -391,7 +392,7 @@ W1::SetBit(Address &address, uint8_t bitNum, bool set)
 uint8_t
 W1::GetBit(const Address &address, uint8_t bitNum)
 {
-    return !!(address.array[bitNum/8] & _BV(bitNum%8));
+    return !!(address.array[bitNum/8] & Opt::BitVal(bitNum%8));
 }
 
 
