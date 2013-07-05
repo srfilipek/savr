@@ -4,6 +4,7 @@ SUBDIRS= hello_world w1_test clock_test lcd
 
 all clean:
 	for dir in $(SUBDIRS); do \
-	$(MAKE) -C $$dir $@; \
+	echo "Making $$dir" && \
+	$(MAKE) -C $$dir $@ || exit 0; \
 	done
 
