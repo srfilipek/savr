@@ -53,11 +53,11 @@ int main(void) {
 
     SCI::Init(38400); // bps
 
-    Term::Init(welcomeMessage, promptString);
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     Interrupts_Enable();
 
-    Term::Run(cmdList, cmdLength);
+    Term::Run();
 
     /* NOTREACHED */
     return 0;
