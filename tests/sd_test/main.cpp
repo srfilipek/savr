@@ -78,13 +78,13 @@ main(void) {
     SPI::Init(F_CPU/2);
 
     // Init UART terminal
-    Term::Init(welcomeMessage, promptString);
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     // Enable interrupts for all services
     Interrupts_Enable();
 
     // Run the terminal
-    Term::Run(cmdList, cmdLength);
+    Term::Run();
 
     /* NOTREACHED */
     return 0;

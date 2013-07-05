@@ -1,4 +1,4 @@
-SUBDIRS= hello_world w1_test clock_test lcd
+SUBDIRS= hello_world w1_test clock_test lcd sd_test
 
 .PHONY: all clean $(SUBDIRS)
 
