@@ -40,7 +40,7 @@ devices=( \
 
 for device in ${devices[*]}
 do
-    make MCU=$device F_CPU=16000000
+    make MCU=$device F_CPU=16000000 -j
     if [ $? -ne 0 ]; then
         printf "Failed on %s with %d" $device, $?
         exit 1

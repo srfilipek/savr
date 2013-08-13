@@ -1,9 +1,10 @@
-SUBDIRS= hello_world w1_test clock_test lcd
+SUBDIRS= hello_world w1_test clock_test lcd sd_test
 
 .PHONY: all clean $(SUBDIRS)
 
 all clean:
 	for dir in $(SUBDIRS); do \
-	$(MAKE) -C $$dir $@; \
+	echo "Making $$dir" && \
+	$(MAKE) -C $$dir $@ || exit 0; \
 	done
 

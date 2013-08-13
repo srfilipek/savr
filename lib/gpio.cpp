@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include <savr/gpio.h>
+#include <savr/optimized.h>
 
 namespace GPIO {
 
@@ -45,11 +46,28 @@ Set(GPIO::Pin pin, uint8_t set)
 /**
  * @par Implementation notes:
  */
+void
+Toggle(GPIO::Pin pin)
+{
+    uint8_t _port = pin / 8;
+    uint8_t _pin  = Opt::BitVal(pin % 8);
+
+    if(PORTOF(_port) & _pin) {
+        Low(pin);
+    }else{
+        High(pin);
+    }
+}
+
+
+/**
+ * @par Implementation notes:
+ */
 uint8_t
 Get(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin  = Opt::BitVal(pin % 8);
     return ((PINOF(_port) & _pin) ? 1 : 0);
 }
 
@@ -61,7 +79,7 @@ void
 High(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin  = Opt::BitVal(pin % 8);
     PORTOF(_port) |= _pin;
 }
 
@@ -73,7 +91,7 @@ void
 Low(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin  = Opt::BitVal(pin % 8);
     PORTOF(_port) &= ~_pin;
 }
 
@@ -85,7 +103,7 @@ void
 In(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin  = Opt::BitVal(pin % 8);
     DDROF(_port) &= ~_pin;
 }
 
@@ -97,7 +115,7 @@ void
 Out(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin  = Opt::BitVal(pin % 8);
     DDROF(_port) |= _pin;
 }
 

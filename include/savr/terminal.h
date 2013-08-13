@@ -48,10 +48,13 @@ namespace Term {
 
     /**
      * Initializes the terminal settings and prints a welcome message
+     *
      * @param message a pointer to the welcome message
      * @param prompt a pointer to the prompt string
+     * @param commandList the list of supported commands
+     * @param length the length of the commandList
      */
-    void Init(PGM_P message, PGM_P prompt);
+    void Init(PGM_P message, PGM_P prompt, const CMD::CommandList commandList, size_t length);
 
 
     /**
@@ -59,11 +62,20 @@ namespace Term {
      *
      * This continually gets lines from standard in and runs the
      * associated command, if any.
-     *
-     * @param commandList the list of supported commands
-     * @param length the length of the commandList
      */
-    void Run(const CMD::CommandList commandList, size_t length) __attribute__ ((noreturn));
+    void Run(void) __attribute__ ((noreturn));
+
+
+    /**
+     * Do some work, if needed, for the terminal interface
+     *
+     * This checks to see if there is any new input from standard in and runs
+     * the associated command, if any and if needed.
+     *
+     * This can be used to provide a terminal interface while still performing other tasks in
+     * the main execution loop.
+     */
+    void Work(void);
 
 
     /**

@@ -102,6 +102,17 @@ DSTherm::WaitForConversion(void)
     return true;
 }
 
+
+/**
+ * @par Implementation notes:
+ */
+bool
+DSTherm::ConversionDone(void)
+{
+    // Wait for the therm to release the DQ line
+    return _wire.ReadBit() != 0;
+}
+
 /**
  * @par Implementation notes:
  */

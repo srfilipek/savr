@@ -1,7 +1,7 @@
-#ifndef _savr_sci_h_Included_
-#define _savr_sci_h_Included_
+#ifndef _savr_optimized_h_Included_
+#define _savr_optimized_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2013 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,32 +23,46 @@
 *********************************************************************************/
 
 /**
- * @file sci.h
+ * @file optimized.h
  *
- * SCI/UART interface
+ * Optimized math, bit twiddling, assembly
  *
- * This interface relies on avr-libc. It binds the compile-time
- * configured UART to stdin and stdout, allowing the user to
- * read/write data over the serial line using printf and similar
- * calls.
- *
- * This is intended to be one-per-system as the 'debug console'.
+ * Some common operations are not fully optimized by the GCC compiler. This
+ * header file provides functionality that has been optimized at the
+ * instruction set level.
  */
 
-#include <stdio.h>
-
-namespace SCI {
-
-    /**
-     * Initialize the SCI subsystem
-     *
-     * @param baud      The desired baud rate
-     */
-    void Init(uint32_t baud);
-
-    size_t Size(FILE *stream);
-
-};
+namespace Opt {
 
 
-#endif /* _savr_sci_h_Included_ */
+/**
+ * This is the same thing as _BV() bit shift macro, but it keeps it
+ * contained in a single byte, instead of automatic 16bit promotion.
+ *
+ * Obviously, there are restrictions to the size of "bit". Anything
+ * above 7 is undefined. Well, not really; you know what'll happen...
+ *
+ * @param bit The bit number to set
+ * @return A byte with the corresponding bit set
+ */
+inline uint8_t
+BitVal(uint8_t bit)
+{
+    uint8_t ret;
+    asm volatile (
+            "ldi %0, 0x01\n"
+            "rjmp 2f\n"
+            "1: lsl %0\n"
+            "2: dec %1\n"
+            "brpl 1b"
+         :"=a" (ret)
+         :"b"  (bit)
+    );
+    return ret;
+}
+
+
+}
+
+
+#endif

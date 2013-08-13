@@ -70,6 +70,17 @@ namespace SPI {
      */
     uint8_t TrxByte(uint8_t input);
 
+
+    /**
+     * Set the default SS line for this chip high
+     */
+    void SSHigh(void);
+
+    /**
+     * Set the default SS line for this chip low
+     */
+    void SSLow(void);
+
 };
 
 #endif /* _savr_spi_h_Included_ */

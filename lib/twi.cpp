@@ -26,12 +26,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#include <savr/utils.h>
 #include <savr/cpp_pgmspace.h>
 #include <savr/twi.h>
-
-
-#if defined(TWBR) && defined(TWCR) // Not everything has a TWI
-
+#include <savr/gpio.h>
 
 static const char CPP_PROGMEM SentData[]    = "Send data, got";
 static const char CPP_PROGMEM RcvdData[]    = "Rcvd data and";
@@ -40,12 +38,46 @@ static const char CPP_PROGMEM SLAR[]        = "SLA+R";
 static const char CPP_PROGMEM eACK[]        = " ACK";
 static const char CPP_PROGMEM eNACK[]       = " NACK";
 
+#if     ISAVR(ATmega8)      || \
+        ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
+        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
+        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
+
+#define TWI_GPIO_SDA    GPIO::C4
+#define TWI_GPIO_SCL    GPIO::C5
+
+#elif   ISAVR(ATmega16)     || \
+        ISAVR(ATmega32)     || \
+        ISAVR(ATmega644)    || \
+        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
+        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
+        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
+
+#define TWI_GPIO_SDA    GPIO::C1
+#define TWI_GPIO_SCL    GPIO::C0
+
+#else
+#warning Unsupported AVR target for TWI interface
+#define SAVR_NO_TWI
+#endif
+
+#ifndef SAVR_NO_TWI
 
 /**
  * @par Implementation notes:
  */
 void
 TWI::Init(uint32_t outputFreq)
+{
+    Init(outputFreq, false);
+}
+
+
+/**
+ * @par Implementation notes:
+ */
+void
+TWI::Init(uint32_t outputFreq, bool pullup)
 {
 
     // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
@@ -54,6 +86,13 @@ TWI::Init(uint32_t outputFreq)
 
     // Clear interrupt flag, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
+
+    if(pullup) {
+        GPIO::In<TWI_GPIO_SDA>();
+        GPIO::High<TWI_GPIO_SDA>();
+        GPIO::In<TWI_GPIO_SCL>();
+        GPIO::High<TWI_GPIO_SCL>();
+    }
 }
 
 
@@ -136,6 +175,18 @@ TWI::Send(uint8_t b)
 /**
  * @par Implementation notes:
  */
+void
+TWI::SendAsync(uint8_t b)
+{
+    TWI::Wait();
+    TWDR = b;
+    TWCR = _BV(TWINT) | _BV(TWEN);
+}
+
+
+/**
+ * @par Implementation notes:
+ */
 uint8_t
 TWI::GetAck(void)
 {
@@ -163,7 +214,7 @@ TWI::Get(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Address(uint8_t address, uint8_t rw)
+TWI::Address(uint8_t address, bool read)
 {
     // Create start condition
     uint8_t state;
@@ -176,7 +227,7 @@ TWI::Address(uint8_t address, uint8_t rw)
     }
 
     // Send address | RW (has waits...)
-    TWI::Send((address<<1) | (!!rw));
+    TWI::Send((address<<1) | ((uint8_t)read));
 
     state = TWI::State();
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
@@ -217,4 +268,3 @@ TWI::State(void)
 }
 
 #endif
-

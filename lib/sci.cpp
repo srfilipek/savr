@@ -106,8 +106,11 @@
     #define __TX_VECT      USART0_UDRE_vect
 
 #else
-#error Unsupported AVR target for SCI interface
+#warning Unsupported AVR target for SCI interface
+#define SAVR_NO_SCI
 #endif
+
+#ifndef SAVR_NO_SCI
 
 static FILE mystdout;
 static FILE mystdin;
@@ -117,11 +120,13 @@ static int GetChar(FILE *);
 
 #define __GETBAUD(base, baud) (base/16/(baud)-1)
 
+typedef Queue<uint8_t, 8> IOBuffer;
+
 //! Circular receive buffer
-static Queue<uint8_t, 8> TxBuffer;
+static IOBuffer TxBuffer;
 
 //! Circular transmit buffer
-static Queue<uint8_t, 8> RxBuffer;
+static IOBuffer RxBuffer;
 
 
 
@@ -137,10 +142,10 @@ PutChar(char input, FILE * stream)
     if(input == '\n')
         PutChar('\r', stream);
 
+    IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
+
     do{
-        cli();
-        err = TxBuffer.Enq(input);
-        sei();
+        err = buff->Enq(input);
     }while(err);
     __CTRLB |= _BV(__CTRLB_UDRIE);
     return 0;
@@ -157,12 +162,22 @@ GetChar(FILE * stream)
 {
     char ret_val;
     uint8_t err;
+    IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
     do{
-        cli();
-        err = RxBuffer.Deq((uint8_t *)&ret_val);
-        sei();
+        err = buff->Deq((uint8_t *)&ret_val);
     }while(err); // Poll till something is in buffer
     return ret_val;
+}
+
+
+/**
+ * Get the size of a stream.
+ */
+size_t
+SCI::Size(FILE * stream)
+{
+    IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
+    return buff->Size();
 }
 
 
@@ -191,6 +206,8 @@ SCI::Init(uint32_t baud)
     stdin   = &mystdin;
     fdev_setup_stream(stdout, PutChar, NULL, _FDEV_SETUP_WRITE);
     fdev_setup_stream(stdin,  NULL, GetChar, _FDEV_SETUP_READ);
+    fdev_set_udata(stdout, (void*)&TxBuffer);
+    fdev_set_udata(stdin,  (void*)&RxBuffer);
 }
 
 
@@ -218,3 +235,6 @@ ISR(__TX_VECT)
     else
         __DATAR = tx_data;
 }
+
+#endif
+

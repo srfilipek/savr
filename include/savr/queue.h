@@ -95,6 +95,19 @@ public:
         return 0;
     }
 
+
+    /**
+     * Get the current number of elements in the queue.
+     *
+     * Non-blocking.
+     *
+     * @return Number of elements in the queue
+     */
+    uint8_t Size(void)
+    {
+        return size;
+    }
+
 };
 
 #endif /* _savr_queue_h_Included_ */

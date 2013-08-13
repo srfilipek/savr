@@ -58,13 +58,13 @@ namespace SD {
      * Will read a block of data into the specified
      * buffer.
      *
-     * @param buf   a character pointer to the destination
      * @param addr  a 32bit start address
+     * @param data  a character pointer to the destination
      * @param size  the size of the desired block
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   ReadBlock(uint8_t *buf, uint32_t addr, size_t size);
+    uint8_t   ReadBlock(uint32_t addr, uint8_t *data, size_t size);
 
 
     /**
@@ -74,13 +74,13 @@ namespace SD {
      * data is not large enough, fills the rest of the block
      * with FILL_BYTE.
      *
-     * @param data  pointer to the source of data to write
      * @param addr  the start address (32bit, must be block aligned)
+     * @param data  pointer to the source of data to write
      * @param size  the size of the source data
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   WriteBlock(const uint8_t *data, uint32_t addr, size_t size);
+    uint8_t   WriteBlock(uint32_t addr, const uint8_t *data, size_t size);
 
 
     /**

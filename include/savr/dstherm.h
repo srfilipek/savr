@@ -101,6 +101,16 @@ public:
     bool WaitForConversion(void);
 
 
+    /**
+     * Returns true if the conversion is done, false otherwise.
+     *
+     * This simply checks to see if the line is held low.
+     *
+     * @return true if conversion completed (line is high), false otherwise.
+     */
+    bool ConversionDone(void);
+
+
 private:
     void            __DSTherm(const W1::Address &address);
 
