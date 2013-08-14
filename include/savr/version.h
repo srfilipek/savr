@@ -30,7 +30,7 @@
 
 
 #define SAVR_MAJOR   1  ///< Major version number
-#define SAVR_MINOR   1  ///< Minor version number
+#define SAVR_MINOR   2  ///< Minor version number
 #define SAVR_DEVEL
 #define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
 
