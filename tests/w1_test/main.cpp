@@ -287,9 +287,9 @@ int main(void) {
     W1 localWire(GPIO::D6);
     wire = &localWire;
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
-
     Interrupts_Enable();
+
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     Term::Run();
 

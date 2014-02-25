@@ -53,9 +53,9 @@ int main(void) {
 
     SCI::Init(38400); // bps
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
-
     Interrupts_Enable();
+
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     Term::Run();
 

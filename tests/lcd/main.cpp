@@ -73,9 +73,9 @@ int main(void) {
 
     locallcd.OutString("Hello world!");
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
-
     Interrupts_Enable();
+
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     Term::Run();
 

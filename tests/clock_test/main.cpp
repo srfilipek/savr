@@ -279,9 +279,9 @@ int main(void) {
     // Enable internal pullups for the TWI bus
     TWI::Init(100000, true); // Bus freq in Hz
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
-
     Interrupts_Enable();
+
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     Term::Run();
 
