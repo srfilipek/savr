@@ -77,11 +77,11 @@ main(void) {
     // Setup the SPI interface
     SPI::Init(F_CPU/2);
 
-    // Init UART terminal
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
-
     // Enable interrupts for all services
     Interrupts_Enable();
+
+    // Init UART terminal
+    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
 
     // Run the terminal
     Term::Run();
