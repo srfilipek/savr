@@ -1,5 +1,3 @@
-#ifndef _savr_stringhistory_h_included_
-#define _savr_stringhistory_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_stringhistory_h_included_
+#define _savr_stringhistory_h_included_
 
 /**
  * @file stringhistory.h
@@ -37,6 +37,7 @@
 
 #include <savr/utils.h>
 
+namespace savr {
 
 /**
  * StringHistory
@@ -214,6 +215,7 @@ private:
                                     // Always points to the next string to be returned by older()
 
 };
+}
 
 #endif /* _savr_stringhistory_h_included_ */
 

@@ -1,5 +1,3 @@
-#ifndef _savr_version_h_included_
-#define _savr_version_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,12 +19,14 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_version_h_included_
+#define _savr_version_h_included_
 
 /**
  * @file version.h
  */
- #define __str(s) #s
- #define __xstr(s) __str(s)
+#define __str(s) #s
+#define __xstr(s) __str(s)
 
 
 #define SAVR_MAJOR   2  ///< Major version number

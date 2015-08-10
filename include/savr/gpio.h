@@ -1,5 +1,3 @@
-#ifndef _savr_gpio_h_included_
-#define _savr_gpio_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,14 +19,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_gpio_h_included_
+#define _savr_gpio_h_included_
 
 /**
  * @file gpio.h
  */
 
 #include <stdint.h>
+#include <stddef.h>
 
-namespace GPIO {
+namespace savr {
+namespace gpio {
 
 /**
  * This data structure must be defined here to allow the template functions to
@@ -294,6 +296,7 @@ void toggle()
     }
 }
 
+}
 }
 
 #endif /* _savr_gpio_h_included_ */

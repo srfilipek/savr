@@ -1,5 +1,3 @@
-#ifndef _savr_queue_h_included_
-#define _savr_queue_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -18,7 +16,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
-
+#ifndef _savr_queue_h_included_
+#define _savr_queue_h_included_
 
 /**
  * @file queue.h
@@ -28,8 +27,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
+
 #include <util/atomic.h>
 
+namespace savr {
 
 template <typename T, uint8_t MAX_SIZE>
 class Queue {
@@ -109,6 +110,7 @@ public:
     }
 
 };
+}
 
 #endif /* _savr_queue_h_included_ */
 

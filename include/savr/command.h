@@ -1,5 +1,3 @@
-#ifndef _savr_command_h_included_
-#define _savr_command_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_command_h_included_
+#define _savr_command_h_included_
 
 /**
  * @file command.h
@@ -40,46 +40,52 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-namespace CMD {
+namespace savr {
+namespace cmd {
 
-    //! Takes a character pointer containing arguments entered after the command
-    typedef uint8_t (*CommandCallback)(char *args);
+//! Takes a character pointer containing arguments entered after the command
+typedef uint8_t (*CommandCallback)(char *args);
 
-    //! Name and callback for a command
-    typedef struct {
-        //! Name of the command
-        const char *command_name;
+//! Name and callback for a command
+typedef struct {
+    //! Name of the command
+    const char *command_name;
 
-        //! Callback function
-        CMD::CommandCallback callback;
+    //! Callback function
+    CMD::CommandCallback callback;
 
-        //! Brief (very brief) description
-        const char *help_text;
-    } CommandDef;
-
-
-    typedef const CommandDef CommandList[];     ///< List of command definitions for const initialization
-    typedef const CommandDef *CommandListPtr;   ///< List of command definitions for argument passing
-
-    /**
-     * Initialize the Command subsystem
-     *
-     * @param commandList   List of supported commands
-     * @param length        Number of commands in list
-     */
-    void init(const CommandList command_list, size_t length);
+    //! Brief (very brief) description
+    const char *help_text;
+} CommandDef;
 
 
-    /**
-     * Parse a given line and run a command, if found
-     *
-     * @param line  The null-terminated line to parse
-     *
-     * If the command is not found, a small help text is displayed
-     */
-    void run_command(char *line);
+//! List of command definitions for const initialization
+typedef const CommandDef CommandList[];
 
-};
+//! List of command definitions for argument passing
+typedef const CommandDef *CommandListPtr;
+
+
+/**
+ * Initialize the Command subsystem
+ *
+ * @param commandList   List of supported commands
+ * @param length        Number of commands in list
+ */
+void init(const CommandList command_list, size_t length);
+
+
+/**
+ * Parse a given line and run a command, if found
+ *
+ * @param line  The null-terminated line to parse
+ *
+ * If the command is not found, a small help text is displayed
+ */
+void run_command(char *line);
+
+}
+}
 
 #endif /* _savr_command_h_included_ */
 

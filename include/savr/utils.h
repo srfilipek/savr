@@ -1,5 +1,3 @@
-#ifndef _savr_utils_h_included_
-#define _savr_utils_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_utils_h_included_
+#define _savr_utils_h_included_
 
 /**
  * @file utils.h
@@ -40,9 +40,8 @@
  */
 #define ISAVR(x) defined(__AVR_ ## x ## __)
 
-
-
-namespace Utils {
+namespace savr {
+namespace utils {
 
 /**
  * Prints a bunch of hex
@@ -75,7 +74,7 @@ void print_hex(const void *data, size_t size);
  */
 void print_block(const void *data, size_t size, uint32_t index=0, size_t width=16);
 
-
+}
 }
 
 #endif /* _savr_utils_h_included_ */

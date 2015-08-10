@@ -1,5 +1,3 @@
-#ifndef _savr_w1_h_included_
-#define _savr_w1_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_w1_h_included_
+#define _savr_w1_h_included_
 
 /**
  * @file w1.h
@@ -35,6 +35,7 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/gpio.h>
 
+namespace savr {
 class W1 {
 
 public:
@@ -249,7 +250,7 @@ private:
 
     GPIO::Pin           _pin;   ///< GPIO Pin to control for this bus
 };
-
+}
 
 #endif /* _savr_w1_h_included_ */
 

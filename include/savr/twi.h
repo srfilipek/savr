@@ -1,5 +1,3 @@
-#ifndef _savr_twi_h_included_
-#define _savr_twi_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,116 +19,121 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_twi_h_included_
+#define _savr_twi_h_included_
 
-#include <inttypes.h>
+#include <stdint.h>
+#include <stddef.h>
+
 #include <util/twi.h>
-
 
 #if defined(TWBR) && defined(TWCR) // Not everything has a TWI
 
-namespace TWI {
+namespace savr {
+namespace twi {
 
-    static const bool RW_READ   = true;
-    static const bool RW_WRITE  = false;
+static const bool RW_READ   = true;
+static const bool RW_WRITE  = false;
 
-    /**
-     * Initialize the TWI subsystem without internal pull-ups
-     *
-     * @param outputFreq    The desired TWI bus frequency in Hz
-     */
-    void    init(uint32_t output_freq);
-
-
-    /**
-     * Initialize the TWI subsystem with internal pull-up control
-     *
-     * @param outputFreq    The desired TWI bus frequency in Hz
-     * @param pullups       Enable (true) or disable (false) internal pull-ups for SDA/SCL
-     *
-     * If pullups is false, the SDA and SCL lines are left untouched.
-     */
-    void    init(uint32_t output_freq, bool pullups);
+/**
+ * Initialize the TWI subsystem without internal pull-ups
+ *
+ * @param outputFreq    The desired TWI bus frequency in Hz
+ */
+void    init(uint32_t output_freq);
 
 
-    /**
-     * Prints a textual description of the bus state
-     */
-    void    print_state(void);
+/**
+ * Initialize the TWI subsystem with internal pull-up control
+ *
+ * @param outputFreq    The desired TWI bus frequency in Hz
+ * @param pullups       Enable (true) or disable (false) internal pull-ups for SDA/SCL
+ *
+ * If pullups is false, the SDA and SCL lines are left untouched.
+ */
+void    init(uint32_t output_freq, bool pullups);
 
 
-    /**
-     * Addresses the given endpoint for read or write
-     *
-     * @param address   The address of the endpoint
-     * @param read      True to read, false to write
-     * @return 0 on success, non-zero on error
-     */
-    uint8_t address(uint8_t address, bool read);
+/**
+ * Prints a textual description of the bus state
+ */
+void    print_state(void);
 
 
-    /**
-     * Read a byte with acknowledgment
-     *
-     * @return The byte read
-     */
-    uint8_t get_ack(void);
+/**
+ * Addresses the given endpoint for read or write
+ *
+ * @param address   The address of the endpoint
+ * @param read      True to read, false to write
+ * @return 0 on success, non-zero on error
+ */
+uint8_t address(uint8_t address, bool read);
 
 
-    /**
-     * Read a byte with no acknowledgment
-     *
-     * @return The byte read
-     */
-    uint8_t get(void);
+/**
+ * Read a byte with acknowledgment
+ *
+ * @return The byte read
+ */
+uint8_t get_ack(void);
 
 
-    /**
-     * Send a byte
-     *
-     * @param b     The byte to send
-     */
-    void    send(uint8_t b);
+/**
+ * Read a byte with no acknowledgment
+ *
+ * @return The byte read
+ */
+uint8_t get(void);
 
 
-    /**
-     * Send a byte without any waiting
-     *
-     * @param b     The byte to send
-     */
-    void    send_async(uint8_t b);
+/**
+ * Send a byte
+ *
+ * @param b     The byte to send
+ */
+void    send(uint8_t b);
 
 
-    /**
-     * Send bus Start
-     */
-    void    start(void);
+/**
+ * Send a byte without any waiting
+ *
+ * @param b     The byte to send
+ */
+void    send_async(uint8_t b);
 
 
-    /**
-     * Send bus stop
-     */
-    void    stop(void);
+/**
+ * Send bus Start
+ */
+void    start(void);
 
 
-    /**
-     * Get the state of the bus
-     *
-     * @return The bus state byte
-     *
-     * See util/twi.h from the avr-libc for a state enumeration
-     */
-    uint8_t state(void);
+/**
+ * Send bus stop
+ */
+void    stop(void);
 
 
-    /**
-     * Polling wait on the TWI bus
-     */
-    static inline void
-    wait(void) {
-        while(!(TWCR & _BV(TWINT))) ;
-    }
+/**
+ * Get the state of the bus
+ *
+ * @return The bus state byte
+ *
+ * See util/twi.h from the avr-libc for a state enumeration
+ */
+uint8_t state(void);
 
-};
+
+/**
+ * Polling wait on the TWI bus
+ */
+static inline void
+wait(void) {
+    while(!(TWCR & _BV(TWINT))) ;
+}
+
+}
+}
 
 #endif /* defined(TWBR) && defined(TWCR) */
 #endif /* _savr_twi_h_included_ */

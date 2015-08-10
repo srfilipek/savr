@@ -1,5 +1,3 @@
-#ifndef _savr_sci_h_included_
-#define _savr_sci_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_sci_h_included_
+#define _savr_sci_h_included_
 
 /**
  * @file sci.h
@@ -35,21 +35,25 @@
  * This is intended to be one-per-system as the 'debug console'.
  */
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <stdio.h>
 
-namespace SCI {
+namespace savr {
+namespace sci {
 
-    /**
-     * Initialize the SCI subsystem
-     *
-     * @param baud      The desired baud rate
-     */
-    void init(uint32_t baud);
+/**
+ * Initialize the SCI subsystem
+ *
+ * @param baud      The desired baud rate
+ */
+void init(uint32_t baud);
 
-    size_t size(FILE *stream);
+size_t size(FILE *stream);
 
-};
-
+}
+}
 
 #endif /* _savr_sci_h_included_ */
 

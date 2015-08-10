@@ -1,5 +1,3 @@
-#ifndef _savr_terminal_h_included_
-#define _savr_terminal_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_terminal_h_included_
+#define _savr_terminal_h_included_
 
 /**
  * @file terminal.h
@@ -35,61 +35,64 @@
  *   - Ctrl+U (clear line)
  */
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <savr/cpp_pgmspace.h>
 #include <savr/command.h>
 
+namespace savr {
+namespace term {
+
+static const uint8_t LINESIZE = 64;    ///< Line size for work/run()
+
+
 /**
- * Terminal
+ * Initializes the terminal settings and prints a welcome message
+ *
+ * @param message a pointer to the welcome message
+ * @param prompt a pointer to the prompt string
+ * @param commandList the list of supported commands
+ * @param length the length of the commandList
  */
-namespace Term {
-
-    static const uint8_t LINESIZE = 64;    ///< Line size for work/run()
-
-
-    /**
-     * Initializes the terminal settings and prints a welcome message
-     *
-     * @param message a pointer to the welcome message
-     * @param prompt a pointer to the prompt string
-     * @param commandList the list of supported commands
-     * @param length the length of the commandList
-     */
-    void init(PGM_P message, PGM_P prompt,
-              const CMD::CommandList commandList,
-              size_t length);
+void init(PGM_P message, PGM_P prompt,
+          const CMD::CommandList commandList,
+          size_t length);
 
 
-    /**
-     * Run the Terminal subsystem, never returning
-     *
-     * This continually gets lines from standard in and runs the
-     * associated command, if any.
-     */
-    void run(void) __attribute__ ((noreturn));
+/**
+ * Run the Terminal subsystem, never returning
+ *
+ * This continually gets lines from standard in and runs the
+ * associated command, if any.
+ */
+void run(void) __attribute__ ((noreturn));
 
 
-    /**
-     * Do some work, if needed, for the terminal interface
-     *
-     * This checks to see if there is any new input from standard in and runs
-     * the associated command, if any and if needed.
-     *
-     * This can be used to provide a terminal interface while still performing other tasks in
-     * the main execution loop.
-     */
-    void work(void);
+/**
+ * Do some work, if needed, for the terminal interface
+ *
+ * This checks to see if there is any new input from standard in and runs
+ * the associated command, if any and if needed.
+ *
+ * This can be used to provide a terminal interface while still performing
+ * other tasks in the main execution loop.
+ */
+void work(void);
 
 
-    /**
-     * Reads a line of text from stdin
-     *
-     * Has some basic features, such as CTRL+U to clear a line
-     *
-     * @param string the user supplied buffer to store the input line
-     * @param max_length the maximum number of characters to read
-     */
-    void read_line(char * string, uint8_t max_length);
+/**
+ * Reads a line of text from stdin
+ *
+ * Has some basic features, such as CTRL+U to clear a line
+ *
+ * @param string the user supplied buffer to store the input line
+ * @param max_length the maximum number of characters to read
+ */
+void read_line(char * string, uint8_t max_length);
 
-};
+}
+}
+
 #endif /* _savr_terminal_h_included_ */
 

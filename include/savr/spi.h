@@ -1,5 +1,3 @@
-#ifndef _savr_spi_h_included_
-#define _savr_spi_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_spi_h_included_
+#define _savr_spi_h_included_
 
 /**
  * @file spi.h
@@ -31,57 +31,62 @@
  *  The SS line must be manually set by the user.
  */
 
-namespace SPI {
+#include <stdint.h>
+#include <stddef.h>
+
+namespace savr {
+namespace spi {
+
+/**
+ * Initialize the SPI subsystem
+ *
+ * @param spi_freq   Desired SPI clock frequency
+ */
+void init(uint32_t spi_freq);
 
 
-    /**
-     * Initialize the SPI subsystem
-     *
-     * @param spiFreq   Desired SPI clock frequency
-     */
-    void init(uint32_t spiFreq);
+/**
+ * Write (send) a block of data over the SPI
+ *
+ * @param input a pointer to the source data
+ * @param length the size of the source data
+ */
+void write_block(const uint8_t *input, size_t length);
 
 
-    /**
-     * Write (send) a block of data over the SPI
-     *
-     * @param input a pointer to the source data
-     * @param length the size of the source data
-     */
-    void write_block(const uint8_t *input, size_t length);
+/**
+ * Reads a block of data from the SPI
+ *
+ * @param input a pointer to the destination buffer
+ * @param length the number of bytes to read
+ * @param filler a byte to send continuously while reading
+ */
+void read_block(uint8_t *input, size_t length, uint8_t filler);
 
 
-    /**
-     * Reads a block of data from the SPI
-     *
-     * @param input a pointer to the destination buffer
-     * @param length the number of bytes to read
-     * @param filler a byte to send continuously while reading
-     */
-    void read_block(uint8_t *input, size_t length, uint8_t filler);
+/**
+ * Tx/Rx a byte
+ *
+ * @param input the byte to send
+ *
+ * @return the byte read from the SPI line
+ */
+uint8_t trx_byte(uint8_t input);
 
 
-    /**
-     * Tx/Rx a byte
-     *
-     * @param input the byte to send
-     *
-     * @return the byte read from the SPI line
-     */
-    uint8_t trx_byte(uint8_t input);
+/**
+ * Set the default SS line for this chip high
+ */
+void ss_high(void);
 
 
-    /**
-     * Set the default SS line for this chip high
-     */
-    void ss_high(void);
+/**
+ * Set the default SS line for this chip low
+ */
+void ss_low(void);
 
-    /**
-     * Set the default SS line for this chip low
-     */
-    void ss_low(void);
-
-};
+}
+}
 
 #endif /* _savr_spi_h_included_ */
 

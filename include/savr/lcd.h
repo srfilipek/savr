@@ -1,5 +1,3 @@
-#ifndef _savr_lcd_h_included_
-#define _savr_lcd_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_lcd_h_included_
+#define _savr_lcd_h_included_
 
 /**
  * @file lcd.h
@@ -28,10 +28,12 @@
  * LCD Interface
  */
 
-
 #include <stdint.h>
+#include <stddef.h>
+
 #include <savr/gpio.h>
 
+namespace savr {
 
 class LCD {
 public:
@@ -218,6 +220,7 @@ private:
     GPIO::Pin       _pin_rs;
 
 };
+}
 
 #endif /* _savr_lcd_h_included_ */
 

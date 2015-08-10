@@ -1,5 +1,3 @@
-#ifndef _savr_sd_h_included_
-#define _savr_sd_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_sd_h_included_
+#define _savr_sd_h_included_
 
 /**
  * @file sd.h
@@ -34,69 +34,72 @@
  * to disable this, compile with -DSD_NO_CRC.
  */
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <savr/gpio.h>
 
-namespace SD {
+namespace savr {
+namespace sd {
 
-    /**
-     * Initialize the SD card.
-     *
-     * Attempts to initialize an SD card on the SPI bus. Will
-     * go through the standard initialization procedures, and
-     * then print out the CID and CSD in hex.
-     *
-     * @param ss    The slave-select line for the card
-     *
-     * @return 1 if sucessful, 0 otherwise
-     */
-    uint8_t   init(GPIO::Pin ss);
-
-
-    /**
-     * Read a block of data from the SD card.
-     *
-     * Will read a block of data into the specified
-     * buffer.
-     *
-     * @param addr  a 32bit start address
-     * @param data  a character pointer to the destination
-     * @param size  the size of the desired block
-     *
-     * @return 1 if sucessful, 0 otherwise
-     */
-    uint8_t   read_block(uint32_t addr, uint8_t *data, size_t size);
+/**
+ * Initialize the SD card.
+ *
+ * Attempts to initialize an SD card on the SPI bus. Will go through the
+ * standard initialization procedures, and then print out the CID and CSD in
+ * hex.
+ *
+ * @param ss    the slave-select line for the card
+ *
+ * @return 1 if sucessful, 0 otherwise
+ */
+uint8_t   init(GPIO::Pin ss);
 
 
-    /**
-     * Writes a block of data to the SD card.
-     *
-     * Writes to the SD card in 512byte block sizes. If the
-     * data is not large enough, fills the rest of the block
-     * with FILL_BYTE.
-     *
-     * @param addr  the start address (32bit, must be block aligned)
-     * @param data  pointer to the source of data to write
-     * @param size  the size of the source data
-     *
-     * @return 1 if sucessful, 0 otherwise
-     */
-    uint8_t   write_block(uint32_t addr, const uint8_t *data, size_t size);
+/**
+ * Read a block of data from the SD card.
+ *
+ * Will read a block of data into the specified buffer.
+ *
+ * @param addr  a 32bit start address
+ * @param data  a character pointer to the destination
+ * @param size  the size of the desired block
+ *
+ * @return 1 if sucessful, 0 otherwise
+ */
+uint8_t   read_block(uint32_t addr, uint8_t *data, size_t size);
 
 
-    /**
-     * Erases a block of data from the SD card.
-     *
-     * Erases data starting at addr and ending at
-     * addr+size (inclusive). The SD card will erase
-     * all 512byte blocks that the range touches.
-     *
-     * @param addr the 32bit start address
-     * @param size the size of the block to erase (32bit)
-     *
-     * @return 1 if sucessful, 0 otherwise
-     */
-    uint8_t   erase_block(uint32_t addr, uint32_t size);
+/**
+ * Writes a block of data to the SD card.
+ *
+ * Writes to the SD card in 512byte block sizes. If the data is not large
+ * enough, fills the rest of the block with FILL_BYTE.
+ *
+ * @param addr  the start address (32bit, must be block aligned)
+ * @param data  pointer to the source of data to write
+ * @param size  the size of the source data
+ *
+ * @return 1 if sucessful, 0 otherwise
+ */
+uint8_t   write_block(uint32_t addr, const uint8_t *data, size_t size);
 
-};
+
+/**
+ * Erases a block of data from the SD card.
+ *
+ * Erases data starting at addr and ending at addr+size (inclusive). The SD
+ * card will erase all 512byte blocks that the range touches.
+ *
+ * @param addr the 32bit start address
+ * @param size the size of the block to erase (32bit)
+ *
+ * @return 1 if sucessful, 0 otherwise
+ */
+uint8_t   erase_block(uint32_t addr, uint32_t size);
+
+}
+}
+
 #endif /* _savr_sd_h_included_ */
 

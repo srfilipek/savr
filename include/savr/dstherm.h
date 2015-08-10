@@ -1,5 +1,3 @@
-#ifndef _savr_dstherm_h_included_
-#define _savr_dstherm_h_included_
 /*********************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_dstherm_h_included_
+#define _savr_dstherm_h_included_
 
 /**
  * @file dstherm.h
@@ -28,8 +28,12 @@
  * Dallas 1-Wire thermometer interface
  */
 
+#include <stdint.h>
+#include <stddef.h>
+
 #include <savr/w1.h>
 
+namespace savr {
 
 /**
  * Dallas Semiconductor thermometer interface
@@ -116,7 +120,9 @@ private:
 
     W1              _wire;      ///< Copy of a 1-wire interface (it's only a byte in size...)
     W1::Address     _address;   ///< Copy of a given address
+
 };
+}
 
 
 #endif /* _savr_dstherm_h_Included_ */
