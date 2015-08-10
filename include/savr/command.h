@@ -1,7 +1,7 @@
-#ifndef _savr_command_h_Included_
-#define _savr_command_h_Included_
+#ifndef _savr_command_h_included_
+#define _savr_command_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -48,13 +48,13 @@ namespace CMD {
     //! Name and callback for a command
     typedef struct {
         //! Name of the command
-        const char *commandName;
+        const char *command_name;
 
         //! Callback function
         CMD::CommandCallback callback;
 
         //! Brief (very brief) description
-        const char *helpText;
+        const char *help_text;
     } CommandDef;
 
 
@@ -67,7 +67,7 @@ namespace CMD {
      * @param commandList   List of supported commands
      * @param length        Number of commands in list
      */
-    void Init(const CommandList commandList, size_t length);
+    void init(const CommandList command_list, size_t length);
 
 
     /**
@@ -77,9 +77,9 @@ namespace CMD {
      *
      * If the command is not found, a small help text is displayed
      */
-    void RunCommand(char *line);
+    void run_command(char *line);
 
 };
 
-#endif /* _savr_command_h_Included_ */
+#endif /* _savr_command_h_included_ */
 

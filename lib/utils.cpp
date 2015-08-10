@@ -38,7 +38,7 @@ static const char CPP_PROGMEM dPAD[]     = "  ";
  * @par Implementation notes:
  */
 void
-PrintHex(const void *data, size_t size)
+print_hex(const void *data, size_t size)
 {
 
     const uint8_t *input = static_cast<const uint8_t *>(data);
@@ -54,7 +54,7 @@ PrintHex(const void *data, size_t size)
  * @par Implementation notes:
  */
 void
-PrintBlock(const void *data, size_t size, uint32_t index, size_t width)
+print_block(const void *data, size_t size, uint32_t index, size_t width)
 {
 
     const uint8_t *input = static_cast<const uint8_t *>(data);
@@ -86,3 +86,4 @@ PrintBlock(const void *data, size_t size, uint32_t index, size_t width)
 }
 
 };
+

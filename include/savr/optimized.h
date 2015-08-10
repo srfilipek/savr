@@ -1,7 +1,7 @@
-#ifndef _savr_optimized_h_Included_
-#define _savr_optimized_h_Included_
+#ifndef _savr_optimized_h_included_
+#define _savr_optimized_h_included_
 /*********************************************************************************
- Copyright (C) 2013 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ namespace Opt {
  * @return A byte with the corresponding bit set
  */
 inline uint8_t
-BitVal(uint8_t bit)
+bit_val(uint8_t bit)
 {
     uint8_t ret;
     asm volatile (
@@ -66,3 +66,4 @@ BitVal(uint8_t bit)
 
 
 #endif
+

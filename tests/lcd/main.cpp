@@ -21,26 +21,8 @@
 #include <savr/w1.h>
 #include <savr/gpio.h>
 
-#define Interrupts_Disable() cli()
-#define Interrupts_Enable() sei()
-
-
-
-/**
- * Terminal command callbacks
- */
-
-// Command list
-static CMD::CommandList cmdList = {
-
-};
-
-static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
-
-
-// Terminal display
-#define welcomeMessage PSTR("\nLCD Test\n")
-#define promptString   PSTR("] ")
+#define interrupts_disable() cli()
+#define interrupts_enable() sei()
 
 
 static LCD *lcd = NULL;
@@ -48,10 +30,29 @@ static LCD *lcd = NULL;
 /**
  * For binding to a file stream
  */
-static int PutChar(char input, FILE * stream) {
-    lcd->OutChar(input);
+uint8_t
+write_char(char *input) {
+    lcd->clear();
+    lcd->write_string(input);
     return 0;
 }
+
+
+/**
+ * Terminal command callbacks
+ */
+
+// Command list
+static CMD::CommandList cmd_list = {
+    {"write",    write_char,    "Write to the LCD"}
+};
+
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
+
+
+// Terminal display
+#define welcome_message PSTR("\nLCD Test\n")
+#define prompt_string   PSTR("] ")
 
 
 /**
@@ -59,25 +60,25 @@ static int PutChar(char input, FILE * stream) {
  */
 int main(void) {
 
-    SCI::Init(38400);  // bps
+    SCI::init(38400);  // bps
 
-    GPIO::Out(GPIO::B1);
-    GPIO::Low(GPIO::B1);
-    GPIO::Out(GPIO::B2);
-    GPIO::Low(GPIO::B2);
+    GPIO::out(GPIO::B1);
+    GPIO::low(GPIO::B1);
+    GPIO::out(GPIO::B2);
+    GPIO::low(GPIO::B2);
 
-    LCD locallcd(GPIO::D3, GPIO::D5, GPIO::D2, GPIO::D4, GPIO::B0, GPIO::D7, GPIO::D6);
-    lcd = &locallcd;
-    locallcd.SetBlink(false);
-    locallcd.SetCursor(false);
+    LCD local_lcd(GPIO::D3, GPIO::D5, GPIO::D2, GPIO::D4, GPIO::B0, GPIO::D7, GPIO::D6);
+    lcd = &local_lcd;
+    local_lcd.set_blink(false);
+    local_lcd.set_cursor(false);
 
-    locallcd.OutString("Hello world!");
+    local_lcd.write_string("Hello world!");
 
-    Interrupts_Enable();
+    interrupts_enable();
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
+    Term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
-    Term::Run();
+    Term::run();
 
     /* NOTREACHED */
     return 0;
@@ -85,3 +86,4 @@ int main(void) {
 
 
 EMPTY_INTERRUPT(__vector_default)
+

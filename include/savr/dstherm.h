@@ -1,7 +1,7 @@
-#ifndef _savr_dstherm_h_Included_
-#define _savr_dstherm_h_Included_
+#ifndef _savr_dstherm_h_included_
+#define _savr_dstherm_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ public:
      * This should be called after StartConversion() or StartConversionAll(). This
      * will call WaitForConversion() for you.
      */
-    float GetTemp(bool fahrenheit=false);
+    float get_temp(bool fahrenheit=false);
 
 
     /**
@@ -79,7 +79,7 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool StartConversion(void);
+    bool start_conversion(void);
 
 
     /**
@@ -87,7 +87,7 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool StartConversionAll(void);
+    bool start_conversion_all(void);
 
 
     /**
@@ -98,7 +98,7 @@ public:
      *
      * @return true if conversion completed within 750-ish ms. false if conversion timed out.
      */
-    bool WaitForConversion(void);
+    bool wait_for_conversion(void);
 
 
     /**
@@ -108,7 +108,7 @@ public:
      *
      * @return true if conversion completed (line is high), false otherwise.
      */
-    bool ConversionDone(void);
+    bool conversion_done(void);
 
 
 private:
@@ -120,5 +120,4 @@ private:
 
 
 #endif /* _savr_dstherm_h_Included_ */
-
 

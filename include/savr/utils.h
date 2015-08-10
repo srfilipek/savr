@@ -1,7 +1,7 @@
-#ifndef _savr_utils_h_Included_
-#define _savr_utils_h_Included_
+#ifndef _savr_utils_h_included_
+#define _savr_utils_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ namespace Utils {
  * @param data a pointer to the data to print
  * @param size the number of bytes to print
  */
-void PrintHex(const void *data, size_t size);
+void print_hex(const void *data, size_t size);
 
 
 /**
@@ -73,9 +73,10 @@ void PrintHex(const void *data, size_t size);
  * @param index a starting address to print with the data
  * @param width the number of bytes to print on a single line
  */
-void PrintBlock(const void *data, size_t size, uint32_t index=0, size_t width=16);
+void print_block(const void *data, size_t size, uint32_t index=0, size_t width=16);
 
 
 }
 
-#endif /* _savr_utils_h_Included_ */
+#endif /* _savr_utils_h_included_ */
+

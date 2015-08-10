@@ -1,7 +1,7 @@
-#ifndef _savr_w1_h_Included_
-#define _savr_w1_h_Included_
+#ifndef _savr_w1_h_included_
+#define _savr_w1_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -35,26 +35,25 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/gpio.h>
 
-
-#define W1_EMPTY_TOKEN 0
-
-
-
 class W1 {
 
 public:
+    static const uint8_t EMPTY_TOKEN = 0;
+
     /**
      * @brief 64-bit 1-Wire device address type
      *
-     * Internally, the address is stored in proper bit order in a 64bit unsigned integer. This
-     * results in the 8-byte address ordering, when accessed through the array field, to be:
+     * Internally, the address is stored in proper bit order in a 64bit
+     * unsigned integer. This results in the 8-byte address ordering, when
+     * accessed through the array field, to be:
      *   Field: [ CRC | 48-bit serial | Family ]
      *   Index:    7     6 5 4 3 2 1      0
      *
-     * The ordering of bytes is a consequence of GCC's implementation of this systems "endianness".
+     * The ordering of bytes is a consequence of GCC's implementation of this
+     * systems "endianness".
      *
-     * The PrintAddress() function prints the hexadecimal characters in proper address order, from
-     * 7 down to 0, to match the above field order.
+     * The PrintAddress() function prints the hexadecimal characters in proper
+     * address order, from 7 down to 0, to match the above field order.
      */
     typedef union {
         uint64_t raw;
@@ -64,7 +63,7 @@ public:
             uint8_t serial[6];
             uint8_t crc;
         };
-    }Address;
+    } Address;
 
     // Token for reentrant bus searches
     typedef uint8_t Token;
@@ -91,7 +90,7 @@ public:
      *
      * @return true if presence found, false otherwise.
      */
-    bool Reset(void);
+    bool reset(void);
 
 
     /**
@@ -99,24 +98,25 @@ public:
      *
      * @param address   The address of the source
      */
-    void MatchROM(const Address &address);
+    void match_rom(const Address &address);
 
 
     /**
      * Select all devices on the bus.
      */
-    void SkipROM(void);
+    void skip_rom(void);
 
 
     /**
      * Scan the bus for devices (0xF0 Search)
      *
-     * This can be called multiple times while it returns True. The same address must be
-     * passed back in, as it is used for state between calls. For instance:
+     * This can be called multiple times while it returns True. The same
+     * address must be passed back in, as it is used for state between
+     * calls. For instance:
      *
      * @code
      *  W1::Address address;
-     *  W1::Token   token = W1_EMPTY_TOKEN;
+     *  W1::Token   token = W1::EMPTY_TOKEN;
      *  while(wire->SearchROM(address, token)) {
      *      W1::PrintAddress(address);
      *      putchar('\n');
@@ -124,23 +124,24 @@ public:
      * @endcode
      *
      * @param address   An address to manipulate and update
-     * @param token     Token that keeps state between calls. This must be 0 on the first call. And
-     *                  must never be modified by the caller.
+     * @param token     Token that keeps state between calls. This must be 0 on
+     *                  the first call. It must never be modified by the caller.
      *
      * @return true if we found a device, false otherwise.
      */
-    bool SearchROM(Address &address, Token &token);
+    bool search_rom(Address &address, Token &token);
 
 
     /**
      * Scan the bus for devices that are in an Alarm state (0xEC Search)
      *
-     * This can be called multiple times while it returns True. The same address must be
-     * passed back in, as it is used for state between calls. For instance:
+     * This can be called multiple times while it returns True. The same
+     * address must be passed back in, as it is used for state between
+     * calls. For instance:
      *
      * @code
      *  W1::Address address;
-     *  W1::Token   token = W1_EMPTY_TOKEN;
+     *  W1::Token   token = W1::EMPTY_TOKEN;
      *  while(wire->AlarmSearch(address, token)) {
      *      W1::PrintAddress(address);
      *      putchar('\n');
@@ -148,12 +149,12 @@ public:
      * @endcode
      *
      * @param address   An address to manipulate and update
-     * @param token     Token that keeps state between calls. This must be 0 on the first call. And
-     *                  must never be modified by the caller.
+     * @param token     Token that keeps state between calls. This must be 0 on
+     *                  the first call. It must never be modified by the caller.
      *
      * @return true if we found a device, false otherwise.
      */
-    bool AlarmSearch(Address &address, Token &token);
+    bool alarm_search(Address &address, Token &token);
 
 
     /**
@@ -161,7 +162,7 @@ public:
      *
      * @return 1 if bit is high, 0 otherwise
      */
-    uint8_t ReadBit(void);
+    uint8_t read_bit(void);
 
 
     /**
@@ -171,21 +172,21 @@ public:
      *
      * @param bit   Bit to write
      */
-    void WriteBit(bool bit);
+    void write_bit(bool bit);
 
 
     /**
      * Read a full byte from the bus
      * @return The byte read
      */
-    uint8_t ReadByte(void);
+    uint8_t read_byte(void);
 
 
     /**
      * Write a full byte to the bus
      * @param byte  The byte write
      */
-    void WriteByte(uint8_t byte);
+    void write_byte(uint8_t byte);
 
 
     /**
@@ -194,7 +195,7 @@ public:
      * @param byte  Pointer to a destination byte array
      * @param size  Number of bytes to read
      */
-    void ReadBytes(uint8_t *byte, size_t size);
+    void read_bytes(uint8_t *byte, size_t size);
 
 
     /**
@@ -205,28 +206,28 @@ public:
      *
      * Writes bytes starting at 0, to size-1
      */
-    void WriteBytes(const uint8_t *byte, size_t size);
+    void write_bytes(const uint8_t *byte, size_t size);
 
 
     /**
      * Set a bit in the address
      *
      * @param address   The address to manipulate
-     * @param bitNum    Bit number to set (0 is LSB)
+     * @param bit_num   Bit number to set (0 is LSB)
      * @param set       Set the bit to 1 if true, 0 otherwise
      */
-    static void SetBit(Address &address, uint8_t bitNum, bool set);
+    static void set_bit(Address &address, uint8_t bit_num, bool set);
 
 
     /**
      * Get a bit in the address
      *
      * @param address   The address to examine
-     * @param bitNum    Bit number to get (0 is LSB)
+     * @param bit_num   Bit number to get (0 is LSB)
      *
      * @return 0 if the bit is 0, 1 if the bit is 1...
      */
-    static uint8_t GetBit(const Address &address, uint8_t bitNum);
+    static uint8_t get_bit(const Address &address, uint8_t bit_num);
 
 
     /**
@@ -234,14 +235,14 @@ public:
      *
      * @param address  The address to print
      */
-    static void PrintAddress(const Address &address);
+    static void print_address(const Address &address);
 
 protected:
 
-    bool _Searcher(uint8_t command, Address &address, Token &token);
-    void _DriveLow();
-    void _Release();
-    bool _ReadState();
+    bool _searcher(uint8_t command, Address &address, Token &token);
+    void _drive_low();
+    void _release();
+    bool _read_state();
 
 private:
     void __W1(GPIO::Pin pin);
@@ -250,4 +251,5 @@ private:
 };
 
 
-#endif /* _savr_w1_h_Included_ */
+#endif /* _savr_w1_h_included_ */
+

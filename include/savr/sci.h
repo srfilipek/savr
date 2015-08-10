@@ -1,7 +1,7 @@
-#ifndef _savr_sci_h_Included_
-#define _savr_sci_h_Included_
+#ifndef _savr_sci_h_included_
+#define _savr_sci_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -44,11 +44,12 @@ namespace SCI {
      *
      * @param baud      The desired baud rate
      */
-    void Init(uint32_t baud);
+    void init(uint32_t baud);
 
-    size_t Size(FILE *stream);
+    size_t size(FILE *stream);
 
 };
 
 
-#endif /* _savr_sci_h_Included_ */
+#endif /* _savr_sci_h_included_ */
+

@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -31,12 +31,12 @@
 #include <savr/twi.h>
 #include <savr/gpio.h>
 
-static const char CPP_PROGMEM SentData[]    = "Send data, got";
-static const char CPP_PROGMEM RcvdData[]    = "Rcvd data and";
-static const char CPP_PROGMEM SLAW[]        = "SLA+W";
-static const char CPP_PROGMEM SLAR[]        = "SLA+R";
-static const char CPP_PROGMEM eACK[]        = " ACK";
-static const char CPP_PROGMEM eNACK[]       = " NACK";
+static const char CPP_PROGMEM sent_data[]   = "Sent data, got";
+static const char CPP_PROGMEM rcvd_data[]   = "Rcvd data and";
+static const char CPP_PROGMEM slaw[]        = "SLA+W";
+static const char CPP_PROGMEM slar[]        = "SLA+R";
+static const char CPP_PROGMEM eack[]        = " ACK";
+static const char CPP_PROGMEM enack[]       = " NACK";
 
 #if     ISAVR(ATmega8)      || \
         ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
@@ -67,9 +67,9 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t outputFreq)
+TWI::init(uint32_t output_freq)
 {
-    Init(outputFreq, false);
+    init(output_freq, false);
 }
 
 
@@ -77,21 +77,21 @@ TWI::Init(uint32_t outputFreq)
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t outputFreq, bool pullup)
+TWI::init(uint32_t output_freq, bool pullup)
 {
 
     // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
     // TWBR =  ((CPU Freq / SCL Freq) - 16) / 2 / (PrescalerValue)
-    TWBR = ((F_CPU/outputFreq) - 16) / 2;
+    TWBR = ((F_CPU/output_freq) - 16) / 2;
 
     // Clear interrupt flag, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
 
     if(pullup) {
-        GPIO::In<TWI_GPIO_SDA>();
-        GPIO::High<TWI_GPIO_SDA>();
-        GPIO::In<TWI_GPIO_SCL>();
-        GPIO::High<TWI_GPIO_SCL>();
+        GPIO::in<TWI_GPIO_SDA>();
+        GPIO::high<TWI_GPIO_SDA>();
+        GPIO::in<TWI_GPIO_SCL>();
+        GPIO::high<TWI_GPIO_SCL>();
     }
 }
 
@@ -100,22 +100,22 @@ TWI::Init(uint32_t outputFreq, bool pullup)
  * @par Implementation notes:
  */
 void
-TWI::PrintState(void)
+TWI::print_state(void)
 {
     char temp[5];
-    switch (TWI::State()) {
+    switch (TWI::state()) {
         case TW_MT_DATA_ACK:
-            puts_P(SentData); puts_P(eACK);
+            puts_P(sent_data); puts_P(eack);
             break;
         case TW_MT_DATA_NACK:
-            puts_P(SentData); puts_P(eNACK);
+            puts_P(sent_data); puts_P(enack);
             break;
 
         case TW_MT_SLA_ACK:
-            puts_P(SLAW); puts_P(eACK);
+            puts_P(slaw); puts_P(eack);
             break;
         case TW_MT_SLA_NACK:
-            puts_P(SLAW); puts_P(eNACK);
+            puts_P(slaw); puts_P(enack);
             break;
 
         case TW_MR_ARB_LOST:
@@ -123,10 +123,10 @@ TWI::PrintState(void)
             break;
 
         case TW_MR_SLA_ACK:
-            puts_P(SLAR); puts_P(eACK);
+            puts_P(slar); puts_P(eack);
             break;
         case TW_MR_SLA_NACK:
-            puts_P(SLAR); puts_P(eNACK);
+            puts_P(slar); puts_P(enack);
             break;
 
         case TW_REP_START:
@@ -137,10 +137,10 @@ TWI::PrintState(void)
             break;
 
         case TW_MR_DATA_ACK:
-            puts_P(RcvdData); puts_P(eACK);
+            puts_P(rcvd_data); puts_P(eack);
             break;
         case TW_MR_DATA_NACK:
-            puts_P(RcvdData); puts_P(eNACK);
+            puts_P(rcvd_data); puts_P(enack);
             break;
 
         case TW_NO_INFO:
@@ -163,12 +163,12 @@ TWI::PrintState(void)
  * @par Implementation notes:
  */
 void
-TWI::Send(uint8_t b)
+TWI::send(uint8_t b)
 {
-    TWI::Wait();
+    TWI::wait();
     TWDR = b;
     TWCR = _BV(TWINT) | _BV(TWEN);
-    TWI::Wait();
+    TWI::wait();
 }
 
 
@@ -176,9 +176,9 @@ TWI::Send(uint8_t b)
  * @par Implementation notes:
  */
 void
-TWI::SendAsync(uint8_t b)
+TWI::send_async(uint8_t b)
 {
-    TWI::Wait();
+    TWI::wait();
     TWDR = b;
     TWCR = _BV(TWINT) | _BV(TWEN);
 }
@@ -188,11 +188,11 @@ TWI::SendAsync(uint8_t b)
  * @par Implementation notes:
  */
 uint8_t
-TWI::GetAck(void)
+TWI::get_ack(void)
 {
-    TWI::Wait();
+    TWI::wait();
     TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA); // Enable ACK
-    TWI::Wait();
+    TWI::wait();
     return TWDR;
 }
 
@@ -201,11 +201,11 @@ TWI::GetAck(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Get(void)
+TWI::get(void)
 {
-    TWI::Wait();
+    TWI::wait();
     TWCR = _BV(TWINT) | _BV(TWEN); // No ACK
-    TWI::Wait();
+    TWI::wait();
     return TWDR;
 }
 
@@ -214,22 +214,22 @@ TWI::Get(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Address(uint8_t address, bool read)
+TWI::address(uint8_t address, bool read)
 {
     // Create start condition
     uint8_t state;
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
-    TWI::Wait();
-    state = TWI::State();
+    TWI::wait();
+    state = TWI::state();
     if(state != TW_START && state != TW_REP_START) {
         return 1;
     }
 
     // Send address | RW (has waits...)
-    TWI::Send((address<<1) | ((uint8_t)read));
+    TWI::send((address<<1) | ((uint8_t)read));
 
-    state = TWI::State();
+    state = TWI::state();
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
         return 1;
     }
@@ -242,7 +242,7 @@ TWI::Address(uint8_t address, bool read)
  * @par Implementation notes:
  */
 void
-TWI::Stop(void)
+TWI::stop(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
 }
@@ -252,7 +252,7 @@ TWI::Stop(void)
  * @par Implementation notes:
  */
 void
-TWI::Start(void)
+TWI::start(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 }
@@ -262,9 +262,10 @@ TWI::Start(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::State(void)
+TWI::state(void)
 {
     return (TWSR & TW_STATUS_MASK);
 }
 
 #endif
+

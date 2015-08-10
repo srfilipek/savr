@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -54,28 +54,28 @@ DSTherm::__DSTherm(const W1::Address &address)
  * @par Implementation notes:
  */
 float
-DSTherm::GetTemp(bool fahrenheit)
+DSTherm::get_temp(bool fahrenheit)
 {
     uint16_t    temp;   // Raw
     float       ftemp;  // Converted
 
     // Bus setup
-    if(!WaitForConversion()) return NAN;
-    if(!_wire.Reset()) return NAN;
+    if(!wait_for_conversion()) return NAN;
+    if(!_wire.reset()) return NAN;
 
     // Select our device
-    _wire.MatchROM(_address);
-    _wire.WriteByte(DS_READ_SCRATCH);
+    _wire.match_rom(_address);
+    _wire.write_byte(DS_READ_SCRATCH);
 
     // Read only the first 2 bytes
-    temp  = _wire.ReadByte();                   // LSB
-    temp |= ((uint16_t)_wire.ReadByte() << 8);  // MSB
+    temp  = _wire.read_byte();                  // LSB
+    temp |= ((uint16_t)_wire.read_byte() << 8); // MSB
 
     // Stop transmission
-    _wire.Reset();
+    _wire.reset();
 
     ftemp = temp;
-    ftemp /= 16;
+    ftemp /= 16;    // Scale
 
     // Do a conversion to F if necessary
     if(!fahrenheit) return ftemp;
@@ -87,13 +87,13 @@ DSTherm::GetTemp(bool fahrenheit)
  * @par Implementation notes:
  */
 bool
-DSTherm::WaitForConversion(void)
+DSTherm::wait_for_conversion(void)
 {
     size_t count = 0;
     static const size_t MAX_COUNT = 15000;  // 750ms max for a conversion
                                             // (70us min in pure delay per bit read)
     // Wait for the therm to release the DQ line
-    while(_wire.ReadBit() == 0) {
+    while(_wire.read_bit() == 0) {
         if(count++ > MAX_COUNT) {
             return false;
         }
@@ -107,22 +107,22 @@ DSTherm::WaitForConversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::ConversionDone(void)
+DSTherm::conversion_done(void)
 {
     // Wait for the therm to release the DQ line
-    return _wire.ReadBit() != 0;
+    return _wire.read_bit() != 0;
 }
 
 /**
  * @par Implementation notes:
  */
 bool
-DSTherm::StartConversion(void)
+DSTherm::start_conversion(void)
 {
-    if(!_wire.Reset()) return false;
+    if(!_wire.reset()) return false;
 
-    _wire.MatchROM(_address);
-    _wire.WriteByte(DS_CONVERT);
+    _wire.match_rom(_address);
+    _wire.write_byte(DS_CONVERT);
     return true;
 }
 
@@ -131,11 +131,12 @@ DSTherm::StartConversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::StartConversionAll(void)
+DSTherm::start_conversion_all(void)
 {
-    if(!_wire.Reset()) return false;
+    if(!_wire.reset()) return false;
 
-    _wire.SkipROM();
-    _wire.WriteByte(DS_CONVERT);
+    _wire.skip_rom();
+    _wire.write_byte(DS_CONVERT);
     return true;
 }
+

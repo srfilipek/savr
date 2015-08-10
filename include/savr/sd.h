@@ -1,7 +1,7 @@
-#ifndef _savr_sd_h_Included_
-#define _savr_sd_h_Included_
+#ifndef _savr_sd_h_included_
+#define _savr_sd_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   Init(GPIO::Pin ss);
+    uint8_t   init(GPIO::Pin ss);
 
 
     /**
@@ -64,7 +64,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   ReadBlock(uint32_t addr, uint8_t *data, size_t size);
+    uint8_t   read_block(uint32_t addr, uint8_t *data, size_t size);
 
 
     /**
@@ -80,7 +80,7 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   WriteBlock(uint32_t addr, const uint8_t *data, size_t size);
+    uint8_t   write_block(uint32_t addr, const uint8_t *data, size_t size);
 
 
     /**
@@ -95,7 +95,8 @@ namespace SD {
      *
      * @return 1 if sucessful, 0 otherwise
      */
-    uint8_t   EraseBlock(uint32_t addr, uint32_t size);
+    uint8_t   erase_block(uint32_t addr, uint32_t size);
 
 };
-#endif /* _savr_sd_h_Included_ */
+#endif /* _savr_sd_h_included_ */
+

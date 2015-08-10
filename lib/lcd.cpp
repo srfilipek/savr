@@ -66,16 +66,16 @@
  * @par Implementation notes:
  */
 void
-LCD::_SetDataOut(void)
+LCD::_set_data_out(void)
 {
-    GPIO::Low(_pinD4);
-    GPIO::Low(_pinD5);
-    GPIO::Low(_pinD6);
-    GPIO::Low(_pinD7);
-    GPIO::Out(_pinD4);
-    GPIO::Out(_pinD5);
-    GPIO::Out(_pinD6);
-    GPIO::Out(_pinD7);
+    GPIO::low(_pin_d4);
+    GPIO::low(_pin_d5);
+    GPIO::low(_pin_d6);
+    GPIO::low(_pin_d7);
+    GPIO::out(_pin_d4);
+    GPIO::out(_pin_d5);
+    GPIO::out(_pin_d6);
+    GPIO::out(_pin_d7);
 }
 
 
@@ -83,16 +83,16 @@ LCD::_SetDataOut(void)
  * @par Implementation notes:
  */
 void
-LCD::_SetDataIn(void)
+LCD::_set_data_in(void)
 {
-    GPIO::Low(_pinD4);
-    GPIO::Low(_pinD5);
-    GPIO::Low(_pinD6);
-    GPIO::Low(_pinD7);
-    GPIO::In(_pinD4);
-    GPIO::In(_pinD5);
-    GPIO::In(_pinD6);
-    GPIO::In(_pinD7);
+    GPIO::low(_pin_d4);
+    GPIO::low(_pin_d5);
+    GPIO::low(_pin_d6);
+    GPIO::low(_pin_d7);
+    GPIO::in(_pin_d4);
+    GPIO::in(_pin_d5);
+    GPIO::in(_pin_d6);
+    GPIO::in(_pin_d7);
 }
 
 
@@ -100,16 +100,16 @@ LCD::_SetDataIn(void)
  * @par Implementation notes:
  */
 uint8_t
-LCD::_ReadDataNibble(void)
+LCD::_read_data_nibble(void)
 {
     uint8_t ret = 0;
-    ret |= GPIO::Get(_pinD7);
+    ret |= GPIO::get(_pin_d7);
     ret <<= 1;
-    ret |= GPIO::Get(_pinD6);
+    ret |= GPIO::get(_pin_d6);
     ret <<= 1;
-    ret |= GPIO::Get(_pinD5);
+    ret |= GPIO::get(_pin_d5);
     ret <<= 1;
-    ret |= GPIO::Get(_pinD4);
+    ret |= GPIO::get(_pin_d4);
     return ret;
 }
 
@@ -118,12 +118,12 @@ LCD::_ReadDataNibble(void)
  * @par Implementation notes:
  */
 void
-LCD::_SetDataNibble(uint8_t nibble)
+LCD::_set_data_nibble(uint8_t nibble)
 {
-    GPIO::Set(_pinD4, nibble & _BV(0));
-    GPIO::Set(_pinD5, nibble & _BV(1));
-    GPIO::Set(_pinD6, nibble & _BV(2));
-    GPIO::Set(_pinD7, nibble & _BV(3));
+    GPIO::set(_pin_d4, nibble & _BV(0));
+    GPIO::set(_pin_d5, nibble & _BV(1));
+    GPIO::set(_pin_d6, nibble & _BV(2));
+    GPIO::set(_pin_d7, nibble & _BV(3));
 }
 
 
@@ -136,43 +136,43 @@ LCD::__LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
             GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e)
 {
 
-    _pinD4 = d4;
-    _pinD5 = d5;
-    _pinD6 = d6;
-    _pinD7 = d7;
-    _pinRS = rs;
-    _pinRW = rw;
-    _pinE  = e;
+    _pin_d4 = d4;
+    _pin_d5 = d5;
+    _pin_d6 = d6;
+    _pin_d7 = d7;
+    _pin_rs = rs;
+    _pin_rw = rw;
+    _pin_e  = e;
 
-    GPIO::Out(_pinE);
-    GPIO::Out(_pinRS);
-    GPIO::Out(_pinRW);
-    GPIO::Low(_pinE);
-    GPIO::Low(_pinRS);
-    GPIO::Low(_pinRW);
+    GPIO::out(_pin_e);
+    GPIO::out(_pin_rs);
+    GPIO::out(_pin_rw);
+    GPIO::low(_pin_e);
+    GPIO::low(_pin_rs);
+    GPIO::low(_pin_rw);
 
-    _SetDataOut();
+    _set_data_out();
 
     // Init for 4 data lines...
     _delay_ms(50); // Power-on delay
-    _OutNib(0x03);
+    _write_nib(0x03);
     _delay_ms(5);
-    _OutNib(0x03);
+    _write_nib(0x03);
     _delay_ms(5);
-    _OutNib(0x03);
+    _write_nib(0x03);
 
-    _OutNib(0x02);
-    _Wait();
+    _write_nib(0x02);
+    _wait();
 
-    _functionSet    = LCD_FUNCTION  | LCD_FUNCTION_2LINE | LCD_FUNCTION_5x8 | LCD_FUNCTION_4BIT;
-    _entryMode      = LCD_ENTRYMODE | LCD_ENTRYMODE_INC | LCD_ENTRYMODE_DISPLAYSHIFT_OFF;
-    _displayCtrl    = LCD_DISPLAY   | LCD_DISPLAY_DISPLAY_ON | LCD_DISPLAY_BLINK_OFF | LCD_DISPLAY_CURSOR_OFF;
+    _function_set   = LCD_FUNCTION  | LCD_FUNCTION_2LINE | LCD_FUNCTION_5x8 | LCD_FUNCTION_4BIT;
+    _entry_mode     = LCD_ENTRYMODE | LCD_ENTRYMODE_INC | LCD_ENTRYMODE_DISPLAYSHIFT_OFF;
+    _display_ctrl   = LCD_DISPLAY   | LCD_DISPLAY_DISPLAY_ON | LCD_DISPLAY_BLINK_OFF | LCD_DISPLAY_CURSOR_OFF;
 
-    OutCmd(_functionSet);
-    OutCmd(_entryMode);
-    OutCmd(_displayCtrl);
-    OutCmd(_displayShift);
-    Clear();
+    write_cmd(_function_set);
+    write_cmd(_entry_mode);
+    write_cmd(_display_ctrl);
+    write_cmd(_display_shift);
+    clear();
 
 }
 
@@ -181,16 +181,16 @@ LCD::__LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
  * @par Implementation notes:
  */
 void
-LCD::SetCursor(bool cursor)
+LCD::set_cursor(bool cursor)
 {
     if(cursor) {
-        _displayCtrl &= ~LCD_DISPLAY_CURSOR_OFF;
-        _displayCtrl |=  LCD_DISPLAY_CURSOR_ON;
+        _display_ctrl &= ~LCD_DISPLAY_CURSOR_OFF;
+        _display_ctrl |=  LCD_DISPLAY_CURSOR_ON;
     }else{
-        _displayCtrl &= ~LCD_DISPLAY_CURSOR_ON;
-        _displayCtrl |=  LCD_DISPLAY_CURSOR_OFF;
+        _display_ctrl &= ~LCD_DISPLAY_CURSOR_ON;
+        _display_ctrl |=  LCD_DISPLAY_CURSOR_OFF;
     }
-    OutCmd(_displayCtrl);
+    write_cmd(_display_ctrl);
 }
 
 
@@ -198,16 +198,16 @@ LCD::SetCursor(bool cursor)
  * @par Implementation notes:
  */
 void
-LCD::SetBlink(bool blink)
+LCD::set_blink(bool blink)
 {
     if(blink) {
-        _displayCtrl &= ~LCD_DISPLAY_BLINK_OFF;
-        _displayCtrl |=  LCD_DISPLAY_BLINK_ON;
+        _display_ctrl &= ~LCD_DISPLAY_BLINK_OFF;
+        _display_ctrl |=  LCD_DISPLAY_BLINK_ON;
     }else{
-        _displayCtrl &= ~LCD_DISPLAY_BLINK_ON;
-        _displayCtrl |=  LCD_DISPLAY_BLINK_OFF;
+        _display_ctrl &= ~LCD_DISPLAY_BLINK_ON;
+        _display_ctrl |=  LCD_DISPLAY_BLINK_OFF;
     }
-    OutCmd(_displayCtrl);
+    write_cmd(_display_ctrl);
 }
 
 
@@ -215,16 +215,16 @@ LCD::SetBlink(bool blink)
  * @par Implementation notes:
  */
 void
-LCD::SetDisplay(bool on)
+LCD::set_display(bool on)
 {
     if(on) {
-        _displayCtrl &= ~LCD_DISPLAY_DISPLAY_OFF;
-        _displayCtrl |=  LCD_DISPLAY_DISPLAY_ON;
+        _display_ctrl &= ~LCD_DISPLAY_DISPLAY_OFF;
+        _display_ctrl |=  LCD_DISPLAY_DISPLAY_ON;
     }else{
-        _displayCtrl &= ~LCD_DISPLAY_DISPLAY_ON;
-        _displayCtrl |=  LCD_DISPLAY_DISPLAY_OFF;
+        _display_ctrl &= ~LCD_DISPLAY_DISPLAY_ON;
+        _display_ctrl |=  LCD_DISPLAY_DISPLAY_OFF;
     }
-    OutCmd(_displayCtrl);
+    write_cmd(_display_ctrl);
 }
 
 
@@ -232,30 +232,30 @@ LCD::SetDisplay(bool on)
  * @par Implementation notes:
  */
 uint8_t
-LCD::_GetByte(uint8_t mode)
+LCD::_get_byte(uint8_t mode)
 {
     uint8_t x;
 
-    _SetDataIn();
+    _set_data_in();
 
-    GPIO::High(_pinRW);
-    if(mode) GPIO::High(_pinRS);
+    GPIO::high(_pin_rw);
+    if(mode) GPIO::high(_pin_rs);
 
 
-    GPIO::High(_pinE);
-    x = _ReadDataNibble() << 4;
-    GPIO::Low(_pinE);
+    GPIO::high(_pin_e);
+    x = _read_data_nibble() << 4;
+    GPIO::low(_pin_e);
 
     // GPIO:X function call is enough delay...
 
-    GPIO::High(_pinE);
-    x |= _ReadDataNibble();
-    GPIO::Low(_pinE);
+    GPIO::high(_pin_e);
+    x |= _read_data_nibble();
+    GPIO::low(_pin_e);
 
-    GPIO::Low(_pinRW);
-    GPIO::Low(_pinRS);
+    GPIO::low(_pin_rw);
+    GPIO::low(_pin_rs);
 
-    _SetDataOut();
+    _set_data_out();
 
     return x;
 }
@@ -265,11 +265,11 @@ LCD::_GetByte(uint8_t mode)
  * @par Implementation notes:
  */
 void
-LCD::OutByte(uint8_t byte, uint8_t mode)
+LCD::write_byte(uint8_t byte, uint8_t mode)
 {
-    _Wait();
-    _OutNib(byte >> 4, mode);
-    _OutNib(byte,      mode);
+    _wait();
+    _write_nib(byte >> 4, mode);
+    _write_nib(byte,      mode);
 }
 
 
@@ -277,10 +277,10 @@ LCD::OutByte(uint8_t byte, uint8_t mode)
  * @par Implementation notes:
  */
 void
-LCD::OutString(const char * string)
+LCD::write_string(const char * string)
 {
     while(*string) {
-        OutChar(*string++);
+        write_char(*string++);
     }
 }
 
@@ -289,9 +289,9 @@ LCD::OutString(const char * string)
  * @par Implementation notes:
  */
 void
-LCD::_Wait(void)
+LCD::_wait(void)
 {
-    while(_GetByte() & LCD_READ_BUSYFLAG) {
+    while(_get_byte() & READ_BUSYFLAG) {
         // Nothing
     }
 }
@@ -301,14 +301,14 @@ LCD::_Wait(void)
  * @par Implementation notes:
  */
 void
-LCD::_OutNib(uint8_t nib, uint8_t mode)
+LCD::_write_nib(uint8_t nib, uint8_t mode)
 {
-    GPIO::High(_pinE);
+    GPIO::high(_pin_e);
 
-    _SetDataNibble(nib);
-    if(mode) GPIO::High(_pinRS);
+    _set_data_nibble(nib);
+    if(mode) GPIO::high(_pin_rs);
 
-    GPIO::Low(_pinE);
-    GPIO::Low(_pinRS);
+    GPIO::low(_pin_e);
+    GPIO::low(_pin_rs);
 }
 

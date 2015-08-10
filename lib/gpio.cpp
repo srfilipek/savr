@@ -33,12 +33,12 @@ namespace GPIO {
  * @par Implementation notes:
  */
 void
-Set(GPIO::Pin pin, uint8_t set)
+set(GPIO::Pin pin, uint8_t set)
 {
     if(set) {
-        High(pin);
+        high(pin);
     }else{
-        Low(pin);
+        low(pin);
     }
 }
 
@@ -47,15 +47,15 @@ Set(GPIO::Pin pin, uint8_t set)
  * @par Implementation notes:
  */
 void
-Toggle(GPIO::Pin pin)
+toggle(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
 
     if(PORTOF(_port) & _pin) {
-        Low(pin);
+        low(pin);
     }else{
-        High(pin);
+        high(pin);
     }
 }
 
@@ -64,10 +64,10 @@ Toggle(GPIO::Pin pin)
  * @par Implementation notes:
  */
 uint8_t
-Get(GPIO::Pin pin)
+get(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
     return ((PINOF(_port) & _pin) ? 1 : 0);
 }
 
@@ -76,10 +76,10 @@ Get(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-High(GPIO::Pin pin)
+high(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
     PORTOF(_port) |= _pin;
 }
 
@@ -88,10 +88,10 @@ High(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Low(GPIO::Pin pin)
+low(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
     PORTOF(_port) &= ~_pin;
 }
 
@@ -100,10 +100,10 @@ Low(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-In(GPIO::Pin pin)
+in(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
     DDROF(_port) &= ~_pin;
 }
 
@@ -112,12 +112,13 @@ In(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Out(GPIO::Pin pin)
+out(GPIO::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = Opt::bit_val(pin % 8);
     DDROF(_port) |= _pin;
 }
 
 
 }
+

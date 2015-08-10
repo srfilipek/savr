@@ -16,34 +16,33 @@
 #include <savr/sci.h>
 #include <savr/terminal.h>
 
-#define Interrupts_Disable() cli()
-#define Interrupts_Enable() sei()
+#define interrupts_disable() cli()
+#define interrupts_enable() sei()
 
 
 
+/**
+ * Terminal command callbacks
+ */
 static uint8_t
-Echo(char* args)
+echo(char* args)
 {
     printf_P(PSTR("Echo got: '%s'\n"), args);
     return 0;
 }
 
 
-/**
- * Terminal command callbacks
- */
-
 // Command list
-static CMD::CommandList cmdList = {
-        {"Echo", Echo, "Prints the given argument string"},
+static CMD::CommandList cmd_list = {
+        {"echo", echo, "Prints the given argument string"},
 };
 
-static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
 
 
 // Terminal display
-#define welcomeMessage PSTR("Hello World Test\n")
-#define promptString   PSTR("] ")
+#define welcome_message PSTR("Hello World Test\n")
+#define prompt_string   PSTR("] ")
 
 
 /**
@@ -51,13 +50,13 @@ static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::Init(38400); // bps
+    SCI::init(38400); // bps
 
-    Interrupts_Enable();
+    interrupts_enable();
 
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
+    Term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
-    Term::Run();
+    Term::run();
 
     /* NOTREACHED */
     return 0;
@@ -65,3 +64,4 @@ int main(void) {
 
 
 EMPTY_INTERRUPT(__vector_default)
+

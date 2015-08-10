@@ -1,7 +1,7 @@
-#ifndef _savr_cpp_pgmspace_h_Included_
-#define _savr_cpp_pgmspace_h_Included_
+#ifndef _savr_cpp_pgmspace_h_included_
+#define _savr_cpp_pgmspace_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -39,4 +39,5 @@
 #define PSTR(s) (__extension__({static const char CPP_PROGMEM __c[] = (s); &__c[0];}))
 
 
-#endif /*_savr_cpp_pgmspace_h_Included_ */
+#endif /*_savr_cpp_pgmspace_h_included_ */
+

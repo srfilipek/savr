@@ -1,7 +1,7 @@
-#ifndef _savr_terminal_h_Included_
-#define _savr_terminal_h_Included_
+#ifndef _savr_terminal_h_included_
+#define _savr_terminal_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@
  */
 namespace Term {
 
-    const uint8_t LINESIZE = 64;    ///< Line size for Run()
+    static const uint8_t LINESIZE = 64;    ///< Line size for work/run()
 
 
     /**
@@ -54,7 +54,9 @@ namespace Term {
      * @param commandList the list of supported commands
      * @param length the length of the commandList
      */
-    void Init(PGM_P message, PGM_P prompt, const CMD::CommandList commandList, size_t length);
+    void init(PGM_P message, PGM_P prompt,
+              const CMD::CommandList commandList,
+              size_t length);
 
 
     /**
@@ -63,7 +65,7 @@ namespace Term {
      * This continually gets lines from standard in and runs the
      * associated command, if any.
      */
-    void Run(void) __attribute__ ((noreturn));
+    void run(void) __attribute__ ((noreturn));
 
 
     /**
@@ -75,18 +77,19 @@ namespace Term {
      * This can be used to provide a terminal interface while still performing other tasks in
      * the main execution loop.
      */
-    void Work(void);
+    void work(void);
 
 
     /**
-     * Gets a line of text from stdin
+     * Reads a line of text from stdin
      *
      * Has some basic features, such as CTRL+U to clear a line
      *
      * @param string the user supplied buffer to store the input line
-     * @param maxLength the number of characters to read in at max
+     * @param max_length the maximum number of characters to read
      */
-    void GetLine(char * string, uint8_t maxLength);
+    void read_line(char * string, uint8_t max_length);
 
 };
-#endif /* _savr_terminal_h_Included_ */
+#endif /* _savr_terminal_h_included_ */
+

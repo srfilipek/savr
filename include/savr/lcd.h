@@ -1,7 +1,7 @@
-#ifndef _savr_lcd_h_Included_
-#define _savr_lcd_h_Included_
+#ifndef _savr_lcd_h_included_
+#define _savr_lcd_h_included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -33,11 +33,11 @@
 #include <savr/gpio.h>
 
 
-#define LCD_READ_BUSYFLAG           0x80
-
 class LCD {
-
 public:
+
+    static const uint8_t READ_BUSYFLAG = 0x80;
+
     /**
      * Initialize the LCD
      *
@@ -60,7 +60,7 @@ public:
      *
      * @param cursor Boolean true/false (true = show cursor)
      */
-    void SetCursor(bool cursor);
+    void set_cursor(bool cursor);
 
 
     /**
@@ -68,7 +68,7 @@ public:
      *
      * @param blink Boolean true/false (true = blink)
      */
-    void SetBlink(bool blink);
+    void set_blink(bool blink);
 
 
     /**
@@ -76,7 +76,7 @@ public:
      *
      * @param on Boolean true/false (true = on)
      */
-    void SetDisplay(bool on);
+    void set_display(bool on);
 
 
     /**
@@ -84,7 +84,7 @@ public:
      *
      * @param string The null-terminated string to display
      */
-    void OutString(const char * string);
+    void write_string(const char * string);
 
 
     /**
@@ -93,7 +93,7 @@ public:
      * @param byte  The byte to send
      * @param mode  RS line control
      */
-    void OutByte(uint8_t byte, uint8_t mode=0);
+    void write_byte(uint8_t byte, uint8_t mode=0);
 
 
     /**
@@ -101,8 +101,8 @@ public:
      *
      * @param cmd  The command byte to send
      */
-    inline void OutCmd(uint8_t cmd) {
-        OutByte(cmd);
+    inline void write_cmd(uint8_t cmd) {
+        write_byte(cmd);
     }
 
 
@@ -111,24 +111,24 @@ public:
      *
      * @param c  The character to write
      */
-    inline void OutChar(char c) {
-        OutByte(c, 1);
+    inline void write_char(char c) {
+        write_byte(c, 1);
     }
 
 
     /**
      * Clear the display, cursor to home position
      */
-    inline void Clear(void) {
-        OutCmd(0x01);
+    inline void clear(void) {
+        write_cmd(0x01);
     }
 
 
     /**
      * Set the cursor to the home position
      */
-    inline void Home(void) {
-        OutCmd(0x02);
+    inline void home(void) {
+        write_cmd(0x02);
     }
 
 
@@ -137,8 +137,8 @@ public:
      *
      * @param pos The DDRAM address
      */
-    inline void SetPos(uint8_t pos) {
-        OutCmd(0x80 | pos);
+    inline void set_pos(uint8_t pos) {
+        write_cmd(0x80 | pos);
     }
 
 
@@ -147,8 +147,8 @@ public:
      *
      * @return The current cursor position
      */
-    inline uint8_t GetPos(void) {
-        return _GetByte() & ~LCD_READ_BUSYFLAG;
+    inline uint8_t get_pos(void) {
+        return _get_byte() & ~READ_BUSYFLAG;
     }
 
 
@@ -162,37 +162,37 @@ private:
      * @param nib  Nibble (least significant 4 bits)
      * @param mode RS control
      */
-    void _OutNib(uint8_t nib, uint8_t mode=0);
+    void _write_nib(uint8_t nib, uint8_t mode=0);
 
 
     /**
      * Wait for the busy flag to not be set
      */
-    void _Wait(void);
+    void _wait(void);
 
 
     /**
      * Change data direction
      */
-    void _SetDataOut(void);
+    void _set_data_out(void);
 
 
     /**
      * Change data direction
      */
-    void _SetDataIn(void);
+    void _set_data_in(void);
 
 
     /**
      * Read a nibble from the data lines
      */
-    uint8_t _ReadDataNibble(void);
+    uint8_t _read_data_nibble(void);
 
 
     /**
      * Write a nibble to the data lines
      */
-    void _SetDataNibble(uint8_t nibble);
+    void _set_data_nibble(uint8_t nibble);
 
 
     /**
@@ -200,23 +200,24 @@ private:
      *
      * @param mode  RS control. 0 for address/busy flag. 1 for data.
      */
-    uint8_t _GetByte(uint8_t mode = 0);
+    uint8_t _get_byte(uint8_t mode = 0);
 
 
-    uint8_t         _entryMode;
-    uint8_t         _displayCtrl;
-    uint8_t         _displayShift;
-    uint8_t         _functionSet;
+    uint8_t         _entry_mode;
+    uint8_t         _display_ctrl;
+    uint8_t         _display_shift;
+    uint8_t         _function_set;
 
-    GPIO::Pin       _pinD4;
-    GPIO::Pin       _pinD5;
-    GPIO::Pin       _pinD6;
-    GPIO::Pin       _pinD7;
+    GPIO::Pin       _pin_d4;
+    GPIO::Pin       _pin_d5;
+    GPIO::Pin       _pin_d6;
+    GPIO::Pin       _pin_d7;
 
-    GPIO::Pin       _pinRW;
-    GPIO::Pin       _pinE;
-    GPIO::Pin       _pinRS;
+    GPIO::Pin       _pin_rw;
+    GPIO::Pin       _pin_e;
+    GPIO::Pin       _pin_rs;
 
 };
 
-#endif /* _savr_lcd_h_Included_ */
+#endif /* _savr_lcd_h_included_ */
+

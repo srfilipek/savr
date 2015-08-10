@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -112,21 +112,21 @@
 
 #ifndef SAVR_NO_SCI
 
-static FILE mystdout;
-static FILE mystdin;
+static FILE my_stdout;
+static FILE my_stdin;
 
-static int PutChar(char, FILE *);
-static int GetChar(FILE *);
+static int write_char(char, FILE *);
+static int read_char(FILE *);
 
 #define __GETBAUD(base, baud) (base/16/(baud)-1)
 
 typedef Queue<uint8_t, 8> IOBuffer;
 
 //! Circular receive buffer
-static IOBuffer TxBuffer;
+static IOBuffer tx_buffer;
 
 //! Circular transmit buffer
-static IOBuffer RxBuffer;
+static IOBuffer rx_buffer;
 
 
 
@@ -136,16 +136,16 @@ static IOBuffer RxBuffer;
  * Blocking Function - Place a single character on the TxBuffer
  */
 int
-PutChar(char input, FILE * stream)
+write_char(char input, FILE * stream)
 {
     uint8_t err;
     if(input == '\n')
-        PutChar('\r', stream);
+        write_char('\r', stream);
 
     IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
 
     do{
-        err = buff->Enq(input);
+        err = buff->enq(input);
     }while(err);
     __CTRLB |= _BV(__CTRLB_UDRIE);
     return 0;
@@ -158,13 +158,13 @@ PutChar(char input, FILE * stream)
  * Blocking Function - Get next char on the RxBuffer
  */
 int
-GetChar(FILE * stream)
+read_char(FILE * stream)
 {
     char ret_val;
     uint8_t err;
     IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
     do{
-        err = buff->Deq((uint8_t *)&ret_val);
+        err = buff->deq((uint8_t *)&ret_val);
     }while(err); // Poll till something is in buffer
     return ret_val;
 }
@@ -174,10 +174,10 @@ GetChar(FILE * stream)
  * Get the size of a stream.
  */
 size_t
-SCI::Size(FILE * stream)
+SCI::size(FILE * stream)
 {
     IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
-    return buff->Size();
+    return buff->size();
 }
 
 
@@ -188,7 +188,7 @@ SCI::Size(FILE * stream)
  * stdin and stdout to the serial port.
  */
 void
-SCI::Init(uint32_t baud)
+SCI::init(uint32_t baud)
 {
     // Set Baud Rate.
     uint16_t brate  = static_cast<uint16_t>(__GETBAUD(F_CPU, baud));
@@ -202,12 +202,12 @@ SCI::Init(uint32_t baud)
     /* NEED URSEL FOR MEGA16/32 */
     __CTRLC = __CTRLC_ENABLE | _BV(__CTRLC_UCSZ1) | _BV(__CTRLC_UCSZ0);// | _BV(UPM1) | _BV(UPM0);
 
-    stdout  = &mystdout;
-    stdin   = &mystdin;
-    fdev_setup_stream(stdout, PutChar, NULL, _FDEV_SETUP_WRITE);
-    fdev_setup_stream(stdin,  NULL, GetChar, _FDEV_SETUP_READ);
-    fdev_set_udata(stdout, (void*)&TxBuffer);
-    fdev_set_udata(stdin,  (void*)&RxBuffer);
+    stdout  = &my_stdout;
+    stdin   = &my_stdin;
+    fdev_setup_stream(stdout, write_char, NULL, _FDEV_SETUP_WRITE);
+    fdev_setup_stream(stdin,  NULL, read_char, _FDEV_SETUP_READ);
+    fdev_set_udata(stdout, (void*)&tx_buffer);
+    fdev_set_udata(stdin,  (void*)&rx_buffer);
 }
 
 
@@ -217,7 +217,7 @@ SCI::Init(uint32_t baud)
 ISR(__RX_VECT)
 {
     uint8_t rx_data = __DATAR;
-    RxBuffer.Enq(rx_data); // Fail silently
+    rx_buffer.enq(rx_data); // Fail silently
 }
 
 
@@ -229,7 +229,7 @@ ISR(__TX_VECT)
     uint8_t tx_data;
     uint8_t err;
 
-    err = TxBuffer.Deq(&tx_data);
+    err = tx_buffer.deq(&tx_data);
     if(err)
         __CTRLB &= ~_BV(__CTRLB_UDRIE);
     else
