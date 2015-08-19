@@ -22,12 +22,11 @@
 
 #include <savr/crc.h>
 
-
 /**
  * @par Implementation Notes:
  */
 uint8_t
-crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly) {
+savr::crc::crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly) {
     while(length-->0) {
         crc ^= *data++;
 
@@ -48,7 +47,7 @@ crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly) {
  * @par Implementation Notes:
  */
 uint16_t
-crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t poly) {
+savr::crc::crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t poly) {
     while(length-->0) {
         crc ^= ((uint16_t)*data++) << 8;
 

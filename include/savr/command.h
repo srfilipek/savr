@@ -31,7 +31,7 @@
  * A list of commands is defined by the user at compile time, which
  * is passed to the initialization routine at run time.
  *
- * "Command line" strings are passed to the CMD::FindAndRun() routine
+ * "Command line" strings are passed to the cmd::FindAndRun() routine
  * which then parses the command, searches for a match, and runs the
  * callback routine.
  */
@@ -52,7 +52,7 @@ typedef struct {
     const char *command_name;
 
     //! Callback function
-    CMD::CommandCallback callback;
+    CommandCallback callback;
 
     //! Brief (very brief) description
     const char *help_text;

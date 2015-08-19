@@ -28,6 +28,8 @@
 
 #include <savr/dstherm.h>
 
+using namespace savr;
+
 
 // Documented commands from DS18B20 spec
 

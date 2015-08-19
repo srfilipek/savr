@@ -32,10 +32,12 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/command.h>
 
+using namespace savr;
+
 static void find_and_run(char *cmd, char *args);
 static void help(void);
 
-static CMD::CommandListPtr cmd_list = NULL;
+static cmd::CommandListPtr cmd_list = NULL;
 
 static size_t   cmd_length;
 static size_t   command_col_width;
@@ -51,7 +53,7 @@ static char     formatter[32];
  * @param length the length of the CommandList
  */
 void
-CMD::init(const CMD::CommandList command_list, size_t length)
+cmd::init(const cmd::CommandList command_list, size_t length)
 {
     cmd_list = command_list;
     cmd_length = length;
@@ -78,7 +80,7 @@ CMD::init(const CMD::CommandList command_list, size_t length)
  * @param line a character pointer to the line to parse (and destroy)
  */
 void
-CMD::run_command(char *line)
+cmd::run_command(char *line)
 {
     char *cmd   = line;
     char *args  = line;
@@ -109,7 +111,7 @@ CMD::run_command(char *line)
 /**
  * @brief Scan through the command list and run the callback, if any.
  *
- * CMD::init should have been called first, but the length
+ * cmd::init should have been called first, but the length
  * would be zero if it hasn't... so I guess it's ok.
  *
  * @param cmd a pointer to the command string

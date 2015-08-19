@@ -75,7 +75,7 @@ public:
      *
      * @param pin       GPIO Pin to use for the bus.
      */
-    W1(GPIO::Pin pin) {
+    W1(gpio::Pin pin) {
         __W1(pin);
     }
 
@@ -246,9 +246,9 @@ protected:
     bool _read_state();
 
 private:
-    void __W1(GPIO::Pin pin);
+    void __W1(gpio::Pin pin);
 
-    GPIO::Pin           _pin;   ///< GPIO Pin to control for this bus
+    gpio::Pin           _pin;   ///< GPIO Pin to control for this bus
 };
 }
 

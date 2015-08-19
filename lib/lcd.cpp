@@ -28,6 +28,7 @@
 #include <savr/gpio.h>
 #include <savr/lcd.h>
 
+using namespace savr;
 
 #define LCD_ENTRYMODE_DISPLAYSHIFT_ON   _BV(0)
 #define LCD_ENTRYMODE_DISPLAYSHIFT_OFF  0
@@ -68,14 +69,14 @@
 void
 LCD::_set_data_out(void)
 {
-    GPIO::low(_pin_d4);
-    GPIO::low(_pin_d5);
-    GPIO::low(_pin_d6);
-    GPIO::low(_pin_d7);
-    GPIO::out(_pin_d4);
-    GPIO::out(_pin_d5);
-    GPIO::out(_pin_d6);
-    GPIO::out(_pin_d7);
+    gpio::low(_pin_d4);
+    gpio::low(_pin_d5);
+    gpio::low(_pin_d6);
+    gpio::low(_pin_d7);
+    gpio::out(_pin_d4);
+    gpio::out(_pin_d5);
+    gpio::out(_pin_d6);
+    gpio::out(_pin_d7);
 }
 
 
@@ -85,14 +86,14 @@ LCD::_set_data_out(void)
 void
 LCD::_set_data_in(void)
 {
-    GPIO::low(_pin_d4);
-    GPIO::low(_pin_d5);
-    GPIO::low(_pin_d6);
-    GPIO::low(_pin_d7);
-    GPIO::in(_pin_d4);
-    GPIO::in(_pin_d5);
-    GPIO::in(_pin_d6);
-    GPIO::in(_pin_d7);
+    gpio::low(_pin_d4);
+    gpio::low(_pin_d5);
+    gpio::low(_pin_d6);
+    gpio::low(_pin_d7);
+    gpio::in(_pin_d4);
+    gpio::in(_pin_d5);
+    gpio::in(_pin_d6);
+    gpio::in(_pin_d7);
 }
 
 
@@ -103,13 +104,13 @@ uint8_t
 LCD::_read_data_nibble(void)
 {
     uint8_t ret = 0;
-    ret |= GPIO::get(_pin_d7);
+    ret |= gpio::get(_pin_d7);
     ret <<= 1;
-    ret |= GPIO::get(_pin_d6);
+    ret |= gpio::get(_pin_d6);
     ret <<= 1;
-    ret |= GPIO::get(_pin_d5);
+    ret |= gpio::get(_pin_d5);
     ret <<= 1;
-    ret |= GPIO::get(_pin_d4);
+    ret |= gpio::get(_pin_d4);
     return ret;
 }
 
@@ -120,10 +121,10 @@ LCD::_read_data_nibble(void)
 void
 LCD::_set_data_nibble(uint8_t nibble)
 {
-    GPIO::set(_pin_d4, nibble & _BV(0));
-    GPIO::set(_pin_d5, nibble & _BV(1));
-    GPIO::set(_pin_d6, nibble & _BV(2));
-    GPIO::set(_pin_d7, nibble & _BV(3));
+    gpio::set(_pin_d4, nibble & _BV(0));
+    gpio::set(_pin_d5, nibble & _BV(1));
+    gpio::set(_pin_d6, nibble & _BV(2));
+    gpio::set(_pin_d7, nibble & _BV(3));
 }
 
 
@@ -132,8 +133,8 @@ LCD::_set_data_nibble(uint8_t nibble)
  * @par Implementation notes:
  */
 void
-LCD::__LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
-            GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e)
+LCD::__LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
+            gpio::Pin rs, gpio::Pin rw, gpio::Pin e)
 {
 
     _pin_d4 = d4;
@@ -144,12 +145,12 @@ LCD::__LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
     _pin_rw = rw;
     _pin_e  = e;
 
-    GPIO::out(_pin_e);
-    GPIO::out(_pin_rs);
-    GPIO::out(_pin_rw);
-    GPIO::low(_pin_e);
-    GPIO::low(_pin_rs);
-    GPIO::low(_pin_rw);
+    gpio::out(_pin_e);
+    gpio::out(_pin_rs);
+    gpio::out(_pin_rw);
+    gpio::low(_pin_e);
+    gpio::low(_pin_rs);
+    gpio::low(_pin_rw);
 
     _set_data_out();
 
@@ -238,22 +239,22 @@ LCD::_get_byte(uint8_t mode)
 
     _set_data_in();
 
-    GPIO::high(_pin_rw);
-    if(mode) GPIO::high(_pin_rs);
+    gpio::high(_pin_rw);
+    if(mode) gpio::high(_pin_rs);
 
 
-    GPIO::high(_pin_e);
+    gpio::high(_pin_e);
     x = _read_data_nibble() << 4;
-    GPIO::low(_pin_e);
+    gpio::low(_pin_e);
 
     // GPIO:X function call is enough delay...
 
-    GPIO::high(_pin_e);
+    gpio::high(_pin_e);
     x |= _read_data_nibble();
-    GPIO::low(_pin_e);
+    gpio::low(_pin_e);
 
-    GPIO::low(_pin_rw);
-    GPIO::low(_pin_rs);
+    gpio::low(_pin_rw);
+    gpio::low(_pin_rs);
 
     _set_data_out();
 
@@ -303,12 +304,12 @@ LCD::_wait(void)
 void
 LCD::_write_nib(uint8_t nib, uint8_t mode)
 {
-    GPIO::high(_pin_e);
+    gpio::high(_pin_e);
 
     _set_data_nibble(nib);
-    if(mode) GPIO::high(_pin_rs);
+    if(mode) gpio::high(_pin_rs);
 
-    GPIO::low(_pin_e);
-    GPIO::low(_pin_rs);
+    gpio::low(_pin_e);
+    gpio::low(_pin_rs);
 }
 

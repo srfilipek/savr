@@ -29,6 +29,7 @@
 #include <savr/w1.h>
 #include <savr/optimized.h>
 
+using namespace savr;
 
 /**
  * After examining the code, and some testing, adjusting by the given number of
@@ -62,13 +63,13 @@ static uint16_t DELAY_J = CALC_DELAY(410);
  * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3187
  */
 void
-W1::__W1(GPIO::Pin pin)
+W1::__W1(gpio::Pin pin)
 {
     _pin  = pin;
 
     // Set to tristate
-    GPIO::low(_pin);
-    GPIO::in(_pin);
+    gpio::low(_pin);
+    gpio::in(_pin);
 }
 
 
@@ -345,7 +346,7 @@ __attribute__ ((noinline)) void
 W1::_drive_low()
 {
     // Tri-state to low, DDR to 1
-    GPIO::out(_pin);
+    gpio::out(_pin);
 }
 
 
@@ -356,7 +357,7 @@ __attribute__ ((noinline)) void
 W1::_release()
 {
     // Low to tri-state, DDR to 0
-    GPIO::in(_pin);
+    gpio::in(_pin);
 }
 
 
@@ -366,7 +367,7 @@ W1::_release()
 __attribute__ ((noinline)) bool
 W1::_read_state()
 {
-    return static_cast<bool>(GPIO::get(_pin));
+    return static_cast<bool>(gpio::get(_pin));
 }
 
 
@@ -376,7 +377,7 @@ W1::_read_state()
 void
 W1::set_bit(Address &address, uint8_t bitNum, bool set)
 {
-    uint8_t bit     = Opt::bit_val(bitNum%8);
+    uint8_t bit     = opt::bit_val(bitNum%8);
     uint8_t byte    = bitNum / 8;
 
     if(set) {
@@ -393,7 +394,7 @@ W1::set_bit(Address &address, uint8_t bitNum, bool set)
 uint8_t
 W1::get_bit(const Address &address, uint8_t bitNum)
 {
-    return !!(address.array[bitNum/8] & Opt::bit_val(bitNum%8));
+    return !!(address.array[bitNum/8] & opt::bit_val(bitNum%8));
 }
 
 

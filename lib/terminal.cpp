@@ -29,6 +29,8 @@
 #include <savr/stringhistory.h>
 #include <savr/sci.h>
 
+using namespace savr;
+
 #define BACKSPACE_CHAR  0x08
 #define DEL_CHAR        0x7F
 #define CLR_CHAR        0x15
@@ -38,7 +40,7 @@
 static PGM_P welcome_message;
 static PGM_P prompt_string;
 
-static StringHistory<Term::LINESIZE> history;
+static StringHistory<term::LINESIZE> history;
 
 
 ///! File-scope terminal state
@@ -50,7 +52,7 @@ struct TermState {
 static TermState state;
 
 
-static char string_buf[Term::LINESIZE];
+static char string_buf[term::LINESIZE];
 
 /**
  * @par Implementation notes:
@@ -195,7 +197,7 @@ handle_char(char c) {
  * @par Implementation Notes:
  */
 void
-Term::read_line(char * string, uint8_t max_length)
+term::read_line(char * string, uint8_t max_length)
 {
     while(!handle_char(getchar())) { /* Nothing */ }
     strncpy(string, state.dest, max_length);
@@ -207,18 +209,18 @@ Term::read_line(char * string, uint8_t max_length)
  * @par Implementation Notes:
  */
 void
-Term::init(PGM_P message, PGM_P prompt,
-        const CMD::CommandList command_list, size_t length)
+term::init(PGM_P message, PGM_P prompt,
+        const cmd::CommandList command_list, size_t length)
 {
     welcome_message = message;
     prompt_string = prompt;
 
     printf_P(welcome_message);
-    CMD::init(command_list, length);
+    cmd::init(command_list, length);
 
     state.size      = 0;
     state.dest      = string_buf;
-    state.max_length = Term::LINESIZE;
+    state.max_length = term::LINESIZE;
 
     printf_P(prompt_string);
 }
@@ -229,13 +231,13 @@ Term::init(PGM_P message, PGM_P prompt,
  * @par Implementation Notes:
  */
 void
-Term::run(void)
+term::run(void)
 {
     while (1) {
         while(!handle_char(getchar())) { /* Nothing */ }
         if(state.size) {
             history.add(string_buf);
-            CMD::run_command(string_buf);
+            cmd::run_command(string_buf);
             state.size = 0;
         }
         printf_P(prompt_string);
@@ -248,13 +250,13 @@ Term::run(void)
  * @par Implementation Notes:
  */
 void
-Term::work(void)
+term::work(void)
 {
-    while(SCI::size(stdin)) {
+    while(sci::size(stdin)) {
         if(handle_char(getchar())) {
             if(state.size) {
                 history.add(string_buf);
-                CMD::run_command(string_buf);
+                cmd::run_command(string_buf);
                 state.size = 0;
             }
             printf_P(prompt_string);

@@ -53,7 +53,7 @@ namespace sd {
  *
  * @return 1 if sucessful, 0 otherwise
  */
-uint8_t   init(GPIO::Pin ss);
+uint8_t   init(gpio::Pin ss);
 
 
 /**

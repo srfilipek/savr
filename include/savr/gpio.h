@@ -82,7 +82,7 @@ static volatile uint8_t * const PORT_BANKS[] = {
  * port and pin definition in the form X# where 'X' is the
  * port letter and '#' is the pin number, 0-7.
  *
- * Examples are GPIO::C3 or GPIO::A0
+ * Examples are gpio::C3 or gpio::A0
  */
 typedef enum {
 #if defined(PORTA)
@@ -118,7 +118,7 @@ typedef enum {
 #if defined(PORTL)
     MAKEPINS(L),
 #endif
-    NONE,   ///< Do not pass into GPIO::*() functions(!!), but use for your own boundary checks
+    NONE,   ///< Do not pass into gpio::*() functions(!!), but use for your own boundary checks
 } Pin;
 
 
@@ -131,19 +131,19 @@ inline volatile uint8_t & PINOF  (uint8_t x) { return (*(PORT_BANKS[(x)]-2)); }
 /**
  * Get the pin's value from the PIN register
  *
- * @param pin   The GPIO::Pin to read
+ * @param pin   The gpio::Pin to read
  * @return 0 if the pin is logic low, 1 if logic high
  */
-uint8_t get(GPIO::Pin pin);
+uint8_t get(gpio::Pin pin);
 
 
 /**
  * Get the pin's value from the PIN register
  *
- * @tparam pin   The GPIO::Pin to read
+ * @tparam pin   The gpio::Pin to read
  * @return 0 if the pin is logic low, 1 if logic high
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 uint8_t get()
 {
     uint8_t _port = pin / 8;
@@ -155,17 +155,17 @@ uint8_t get()
 /**
  * Set the pin (PORT register) high
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  */
-void high(GPIO::Pin pin);
+void high(gpio::Pin pin);
 
 
 /**
  * Set the pin (PORT register) high
  *
- * @tparam pin   The GPIO::Pin to control
+ * @tparam pin   The gpio::Pin to control
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void high()
 {
     uint8_t _port = pin / 8;
@@ -177,17 +177,17 @@ void high()
 /**
  * Set the pin (PORT register) low
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  */
-void low(GPIO::Pin pin);
+void low(gpio::Pin pin);
 
 
 /**
  * Set the pin (PORT register) low
  *
- * @tparam pin   The GPIO::Pin to control
+ * @tparam pin   The gpio::Pin to control
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void low()
 {
     uint8_t _port = pin / 8;
@@ -199,17 +199,17 @@ void low()
 /**
  * Set the pin direction to be an input
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  */
-void in(GPIO::Pin pin);
+void in(gpio::Pin pin);
 
 
 /**
  * Set the pin direction to be an input
  *
- * @tparam pin   The GPIO::Pin to control
+ * @tparam pin   The gpio::Pin to control
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void in()
 {
     uint8_t _port = pin / 8;
@@ -221,17 +221,17 @@ void in()
 /**
  * Set the pin direction to be an output
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  */
-void out(GPIO::Pin pin);
+void out(gpio::Pin pin);
 
 
 /**
  * Set the pin direction to be an output
  *
- * @tparam pin   The GPIO::Pin to control
+ * @tparam pin   The gpio::Pin to control
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void out()
 {
     uint8_t _port = pin / 8;
@@ -243,19 +243,19 @@ void out()
 /**
  * Set the pin high or low.
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  * @param set   zero = Low, non-zero = High
  */
-void set(GPIO::Pin pin, uint8_t set);
+void set(gpio::Pin pin, uint8_t set);
 
 
 /**
  * Set the pin high or low.
  *
- * @tparam pin  The GPIO::Pin to control
+ * @tparam pin  The gpio::Pin to control
  * @param set   zero = Low, non-zero = High
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void set(uint8_t set)
 {
     if(set) {
@@ -271,9 +271,9 @@ void set(uint8_t set)
  *
  * If the PORT is currently low, set to high, and vice versa.
  *
- * @param pin   The GPIO::Pin to control
+ * @param pin   The gpio::Pin to control
  */
-void toggle(GPIO::Pin pin);
+void toggle(gpio::Pin pin);
 
 
 /**
@@ -281,9 +281,9 @@ void toggle(GPIO::Pin pin);
  *
  * If the PORT is currently low, set to high, and vice versa.
  *
- * @tparam pin  The GPIO::Pin to control
+ * @tparam pin  The gpio::Pin to control
  */
-template<GPIO::Pin pin>
+template<gpio::Pin pin>
 void toggle()
 {
     uint8_t _port = pin / 8;

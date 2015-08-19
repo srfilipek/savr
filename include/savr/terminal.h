@@ -56,7 +56,7 @@ static const uint8_t LINESIZE = 64;    ///< Line size for work/run()
  * @param length the length of the commandList
  */
 void init(PGM_P message, PGM_P prompt,
-          const CMD::CommandList commandList,
+          const cmd::CommandList commandList,
           size_t length);
 
 

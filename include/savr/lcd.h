@@ -43,16 +43,16 @@ public:
     /**
      * Initialize the LCD
      *
-     * @param d4        GPIO::Pin for DB4
-     * @param d5        GPIO::Pin for DB5
-     * @param d6        GPIO::Pin for DB6
-     * @param d7        GPIO::Pin for DB7
-     * @param rs        GPIO::Pin for the RS line
-     * @param rw        GPIO::Pin for the R/W line
-     * @param e         GPIO::Pin for the Enable line
+     * @param d4        gpio::Pin for DB4
+     * @param d5        gpio::Pin for DB5
+     * @param d6        gpio::Pin for DB6
+     * @param d7        gpio::Pin for DB7
+     * @param rs        gpio::Pin for the RS line
+     * @param rw        gpio::Pin for the R/W line
+     * @param e         gpio::Pin for the Enable line
      */
-    LCD(GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
-        GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e) {
+    LCD(gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
+        gpio::Pin rs, gpio::Pin rw, gpio::Pin e) {
         __LCD(d4, d5, d6, d7, rs, rw, e);
     }
 
@@ -155,8 +155,8 @@ public:
 
 
 private:
-    void __LCD( GPIO::Pin d4, GPIO::Pin d5, GPIO::Pin d6, GPIO::Pin d7,
-                GPIO::Pin rs, GPIO::Pin rw, GPIO::Pin e);
+    void __LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
+                gpio::Pin rs, gpio::Pin rw, gpio::Pin e);
 
 
     /**
@@ -210,14 +210,14 @@ private:
     uint8_t         _display_shift;
     uint8_t         _function_set;
 
-    GPIO::Pin       _pin_d4;
-    GPIO::Pin       _pin_d5;
-    GPIO::Pin       _pin_d6;
-    GPIO::Pin       _pin_d7;
+    gpio::Pin       _pin_d4;
+    gpio::Pin       _pin_d5;
+    gpio::Pin       _pin_d6;
+    gpio::Pin       _pin_d7;
 
-    GPIO::Pin       _pin_rw;
-    GPIO::Pin       _pin_e;
-    GPIO::Pin       _pin_rs;
+    gpio::Pin       _pin_rw;
+    gpio::Pin       _pin_e;
+    gpio::Pin       _pin_rs;
 
 };
 }

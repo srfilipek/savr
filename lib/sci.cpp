@@ -29,6 +29,8 @@
 #include <savr/queue.h>
 #include <savr/utils.h>
 
+using namespace savr;
+
 #if     ISAVR(ATmega8)      || \
         ISAVR(ATmega16)     || \
         ISAVR(ATmega32)
@@ -174,7 +176,7 @@ read_char(FILE * stream)
  * Get the size of a stream.
  */
 size_t
-SCI::size(FILE * stream)
+sci::size(FILE * stream)
 {
     IOBuffer *buff = (IOBuffer*)fdev_get_udata(stream);
     return buff->size();
@@ -188,7 +190,7 @@ SCI::size(FILE * stream)
  * stdin and stdout to the serial port.
  */
 void
-SCI::init(uint32_t baud)
+sci::init(uint32_t baud)
 {
     // Set Baud Rate.
     uint16_t brate  = static_cast<uint16_t>(__GETBAUD(F_CPU, baud));

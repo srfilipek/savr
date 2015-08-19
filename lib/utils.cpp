@@ -28,7 +28,7 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/utils.h>
 
-namespace Utils {
+using namespace savr;
 
 static const char CPP_PROGMEM BYTEwPAD[] = "%02X ";
 static const char CPP_PROGMEM dPAD[]     = "  ";
@@ -38,7 +38,7 @@ static const char CPP_PROGMEM dPAD[]     = "  ";
  * @par Implementation notes:
  */
 void
-print_hex(const void *data, size_t size)
+utils::print_hex(const void *data, size_t size)
 {
 
     const uint8_t *input = static_cast<const uint8_t *>(data);
@@ -54,7 +54,7 @@ print_hex(const void *data, size_t size)
  * @par Implementation notes:
  */
 void
-print_block(const void *data, size_t size, uint32_t index, size_t width)
+utils::print_block(const void *data, size_t size, uint32_t index, size_t width)
 {
 
     const uint8_t *input = static_cast<const uint8_t *>(data);
@@ -84,6 +84,4 @@ print_block(const void *data, size_t size, uint32_t index, size_t width)
         fflush(stdout); // Null op for avr-libc, included for copy/paste compatibility
     }
 }
-
-};
 
