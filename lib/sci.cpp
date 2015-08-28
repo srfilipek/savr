@@ -197,12 +197,13 @@ sci::init(uint32_t baud)
     __BAUD_HIGH     = static_cast<uint8_t>(brate>>8);
     __BAUD_LOW      = static_cast<uint8_t>(brate);
 
-    /* Enable Rx and Tx, and interrupt */
-    __CTRLB = _BV(__CTRLB_RXCIE) | _BV(__CTRLB_RXEN) | _BV(__CTRLB_TXEN);
-
     /* Frame Format - 8 data, no parity */
     /* NEED URSEL FOR MEGA16/32 */
+    __CTRLA = 0;
     __CTRLC = __CTRLC_ENABLE | _BV(__CTRLC_UCSZ1) | _BV(__CTRLC_UCSZ0);// | _BV(UPM1) | _BV(UPM0);
+
+    /* Enable Rx and Tx, and interrupt */
+    __CTRLB = _BV(__CTRLB_RXCIE) | _BV(__CTRLB_RXEN) | _BV(__CTRLB_TXEN);
 
     stdout  = &my_stdout;
     stdin   = &my_stdin;
