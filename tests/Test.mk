@@ -31,11 +31,11 @@ COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned
 
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=gnu++11 -fno-exceptions $(INCLUDES)
 
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 
-LDFLAGS   = $(ARCHFLAGS) -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
+LDFLAGS   = $(ARCHFLAGS) -Os -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
 
 ## Objects that must be built in order to link
 CINPUTS     = $(wildcard *.c)
