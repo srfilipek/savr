@@ -19,8 +19,9 @@
 #include <savr/twi.h>
 #include <savr/gpio.h>
 
-#define interrupts_disable() cli()
-#define interrupts_enable() sei()
+#define enable_interrupts() sei()
+
+using namespace savr;
 
 uint8_t scan_twi(char *args) {
     uint8_t i=0;
@@ -30,24 +31,24 @@ uint8_t scan_twi(char *args) {
     printf_P(PSTR("Devices found:\n"));
     for(i=0; i<0x7F; ++i) {
         // Try to read from the address...
-        res = TWI::address(i, 1);
+        res = twi::address(i, 1);
         if(res == 0) {
             printf_P(PSTR("  0x%02X\n"), i);
         }
 
         // If we get an ACK, read out a byte or else errors can occur
         // Else, we can do a repeated Start and look at the next address...
-        state = TWI::state();
+        state = twi::state();
         if(state == TW_MR_SLA_ACK) {
-            TWI::get();
-            TWI::stop();
+            twi::get();
+            twi::stop();
         }
     }
-    TWI::stop();
+    twi::stop();
     return 0;
 }
 
-uint8_t __to_bcd_nib(char value) {
+uint8_t _to_bcd_nib(char value) {
     if(value < '0' || value > '9') return 0;
     return value - '0';
 }
@@ -56,9 +57,9 @@ uint8_t __to_bcd_nib(char value) {
 uint8_t to_bcd(const char* value) {
     uint8_t ret = 0;
 
-    ret |= __to_bcd_nib(value[0]);
+    ret |= _to_bcd_nib(value[0]);
     ret <<= 4;
-    ret |= __to_bcd_nib(value[1]);
+    ret |= _to_bcd_nib(value[1]);
 
     return ret;
 }
@@ -73,13 +74,13 @@ uint8_t set_time(char *args) {
     addr = strtoul(current_arg, (char**) NULL, 0);
 
     // Write mode first to set the pointer to 0
-    res = TWI::address(addr, 0);
+    res = twi::address(addr, 0);
     if(res != 0) {
         printf_P(PSTR("Failed to address 0x%02X\n"), addr);
-        TWI::print_state();
+        twi::print_state();
         return 1;
     }
-    TWI::send(0);
+    twi::send(0);
 
     current_arg = strtok_r(NULL, " ", &token);
     uint8_t year    = to_bcd(current_arg+0);
@@ -89,15 +90,15 @@ uint8_t set_time(char *args) {
     uint8_t minute  = to_bcd(current_arg+8);
     uint8_t second  = to_bcd(current_arg+10);
 
-    TWI::send(second);
-    TWI::send(minute);
-    TWI::send(hour);
-    TWI::send(0);
-    TWI::send(day);
-    TWI::send(month);
-    TWI::send(year);
+    twi::send(second);
+    twi::send(minute);
+    twi::send(hour);
+    twi::send(0);
+    twi::send(day);
+    twi::send(month);
+    twi::send(year);
 
-    TWI::stop();
+    twi::stop();
 
     return 0;
 }
@@ -116,30 +117,30 @@ uint8_t get_time(char *args) {
     addr = strtoul(current_arg, (char**) NULL, 0);
 
     // Write mode first to set the pointer to 0
-    res = TWI::address(addr, 0);
+    res = twi::address(addr, 0);
     if(res != 0) {
         printf_P(PSTR("Failed to address 0x%02X\n"), addr);
-        TWI::print_state();
+        twi::print_state();
         return 1;
     }
-    TWI::send(0);
-    TWI::stop();
+    twi::send(0);
+    twi::stop();
 
 
-    res = TWI::address(addr, 1);
+    res = twi::address(addr, 1);
     if(res != 0) {
         printf_P(PSTR("Failed to address 0x%02X\n"), addr);
-        TWI::print_state();
+        twi::print_state();
         return 1;
     }
 
     for(i=0; i<sizeof(buff)-1; ++i) {
-        buff[i] = TWI::get_ack();
+        buff[i] = twi::get_ack();
     }
-    buff[7] = TWI::get(); // Last read has no ACK
+    buff[7] = twi::get(); // Last read has no ACK
 
     printf_P(PSTR("Raw: "));
-    Utils::print_hex(buff, 8);
+    utils::print_hex(buff, 8);
     putchar('\n');
 
     printf_P(PSTR(" Year    :   xx%02x\n"), buff[6]);
@@ -158,12 +159,12 @@ uint8_t get_time(char *args) {
     buff[0] &= 0x7F; // Mask out CH bit
     printf_P(PSTR(" Seconds :   %02x\n"),   buff[0]);
 
-    TWI::stop();
+    twi::stop();
     return 0;
 }
 
 uint8_t wrap_twi_print_state(char *args) {
-    TWI::print_state();
+    twi::print_state();
     return 0;
 }
 
@@ -180,21 +181,21 @@ uint8_t wrap_twi_address(char *args) {
     rw = strtoul(current_arg, (char**) NULL, 0);
     printf_P(PSTR("Addressing 0x%02X, %S\n"), b, (rw?PSTR("Read"):PSTR("Write")));
 
-    res = TWI::address(b, rw);
+    res = twi::address(b, rw);
     printf_P(PSTR("Res: 0x%02X\n"), res);
-    TWI::print_state();
+    twi::print_state();
     return 0;
 }
 
 uint8_t wrap_twi_get_ack(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::get_ack());
-    TWI::print_state();
+    printf_P(PSTR("Res: 0x%02X\n"), twi::get_ack());
+    twi::print_state();
     return 0;
 }
 
 uint8_t wrap_twi_get(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::get());
-    TWI::print_state();
+    printf_P(PSTR("Res: 0x%02X\n"), twi::get());
+    twi::print_state();
     return 0;
 }
 
@@ -207,27 +208,27 @@ uint8_t wrap_twi_send(char *args) {
     b = strtoul(current_arg, (char**) NULL, 0);
 
     printf_P(PSTR("Sending: 0x%02X\n"), b);
-    TWI::send(b);
-    TWI::print_state();
+    twi::send(b);
+    twi::print_state();
     return 0;
 }
 
 uint8_t wrap_twi_stop(char *args) {
-    TWI::stop();
-    TWI::print_state();
+    twi::stop();
+    twi::print_state();
     return 0;
 }
 
 uint8_t wrap_twi_start(char *args) {
-    TWI::start();
-    TWI::wait();
-    TWI::print_state();
+    twi::start();
+    twi::wait();
+    twi::print_state();
     return 0;
 }
 
 uint8_t wrap_twi_state(char *args) {
-    printf_P(PSTR("Res: 0x%02X\n"), TWI::state());
-    TWI::print_state();
+    printf_P(PSTR("Res: 0x%02X\n"), twi::state());
+    twi::print_state();
     return 0;
 }
 
@@ -245,7 +246,7 @@ uint8_t wrap_pins(char *args) {
  */
 
 // Command list
-static CMD::CommandList cmd_list = {
+static cmd::CommandList cmd_list = {
     {"gettime",         get_time,               "Gets the time: gettime [addr]"},
     {"settime",         set_time,               "Sets the time: settime [addr] [YYMMDDHHMMSS]"},
     {"scan",            scan_twi,               "Scans the bus and prints any addresses found"},
@@ -261,7 +262,7 @@ static CMD::CommandList cmd_list = {
 
 
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
 // Terminal display
@@ -274,16 +275,16 @@ static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::init(38400);  // bps
+    sci::init(38400);  // bps
 
     // Enable internal pullups for the TWI bus
-    TWI::init(100000, true); // Bus freq in Hz
+    twi::init(100000, true); // Bus freq in Hz
 
-    interrupts_enable();
+    enable_interrupts();
 
-    Term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
-    Term::run();
+    term::run();
 
     /* NOTREACHED */
     return 0;

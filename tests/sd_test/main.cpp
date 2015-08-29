@@ -14,7 +14,6 @@
 *
 ******************************************************************/
 
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -33,14 +32,13 @@
 #include <savr/utils.h>
 #include <savr/gpio.h>
 
-
-#define interrupts_disable() cli()
-#define interrupts_enable() sei()
-
+#define enable_interrupts() sei()
 
 // Terminal display
 #define welcome_message PSTR("\n\nSD Test for the " SAVR_TARGET_STR ", SAVR " SAVR_VERSION_STR "\n")
 #define prompt_string   PSTR("] ")
+
+using namespace savr;
 
 static uint8_t get(char*);
 static uint8_t read(char*);
@@ -51,7 +49,7 @@ static uint8_t sdinit(char*);
 static uint8_t help(char*);
 
 // Command list
-static CMD::CommandList cmd_list = {
+static cmd::CommandList cmd_list = {
     {"get", get, NULL},
     {"read", read, NULL},
     {"write", write, NULL},
@@ -59,10 +57,10 @@ static CMD::CommandList cmd_list = {
     {"scan", scan, NULL},
     {"sdinit", sdinit, NULL},
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
-static const GPIO::Pin SD_SS = GPIO::B0;
+static const gpio::Pin SD_SS = gpio::B0;
 
 
 /**
@@ -71,19 +69,19 @@ static const GPIO::Pin SD_SS = GPIO::B0;
 int
 main(void) {
     // Setup UART
-    SCI::init(38400);  // bps
+    sci::init(38400);  // bps
 
     // Setup the SPI interface
-    SPI::init(F_CPU/2);
+    spi::init(F_CPU/2);
 
     // Enable interrupts for all services
-    interrupts_enable();
+    enable_interrupts();
 
     // Init UART terminal
-    Term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
     // Run the terminal
-    Term::run();
+    term::run();
 
     /* NOTREACHED */
     return 0;
@@ -105,13 +103,13 @@ uint8_t get(char * args)
 
     printf("Getting %u bytes\n", read_length);
 
-    GPIO::low<SD_SS>();
+    gpio::low<SD_SS>();
     while (read_length) {
-        read_byte = SPI::trx_byte(0xFF);
+        read_byte = spi::trx_byte(0xFF);
         printf("%02hX ", read_byte);
         read_length--;
     }
-    GPIO::high<SD_SS>();
+    gpio::high<SD_SS>();
 
     printf("\n");
 
@@ -162,7 +160,7 @@ uint8_t scan(char * args)
     // Read from SD in 32-byte block sizes and print
     for (i = 0; i < size; i += BLOCKSIZE, addr += BLOCKSIZE) {
 
-        if (!SD::read_block(addr, curr, BLOCKSIZE)) {
+        if (!sd::read_block(addr, curr, BLOCKSIZE)) {
             printf("Error reading addr 0x%08lX\n", addr);
             break; // On error
         }
@@ -170,7 +168,7 @@ uint8_t scan(char * args)
         // Only print the block if it differs from last line
         if(first || (memcmp(curr, prev, BLOCKSIZE) != 0)) {
             first = false;
-            Utils::print_block(curr, BLOCKSIZE, addr, 16);
+            utils::print_block(curr, BLOCKSIZE, addr, 16);
             continuation = false;
             memcpy(prev, curr, BLOCKSIZE);
 
@@ -219,10 +217,10 @@ uint8_t read(char * args)
     printf("addr: %08lX, size: %08X\n", addr, size);
 
     for (i = 0; i < size; i += 32) {
-        if (!SD::read_block(addr, buff, 32))
+        if (!sd::read_block(addr, buff, 32))
             break;
 
-        Utils::print_block(buff, 32, addr, 16);
+        utils::print_block(buff, 32, addr, 16);
         addr += 32;
     }
 
@@ -265,7 +263,7 @@ uint8_t write(char * args)
     printf("addr: %08lX, size: %08lX\n", addr, size);
 
     // Write
-    return SD::write_block(addr, (uint8_t*)message, size);
+    return sd::write_block(addr, (uint8_t*)message, size);
 }
 
 
@@ -297,13 +295,13 @@ uint8_t erase(char * args)
 
     printf("Erasing addr: %08lX, size: %08lX\n", addr, size);
     printf("Type \"yes\" to confirm ");
-    Term::read_line(buff, 16);
+    term::read_line(buff, 16);
 
     if (strcmp(buff, "yes") != 0) {
         printf("Canceled.\n");
     }
 
-    SD::erase_block(addr, size);
+    sd::erase_block(addr, size);
 
     return 1;
 }
@@ -318,7 +316,7 @@ uint8_t erase(char * args)
 uint8_t sdinit(char * args)
 {
     printf("Initializing SD Card...\n");
-    SD::init(SD_SS);
+    sd::init(SD_SS);
     return 1;
 }
 

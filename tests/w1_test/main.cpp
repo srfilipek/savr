@@ -20,8 +20,9 @@
 #include <savr/w1.h>
 #include <savr/dstherm.h>
 
-#define interrupts_disable() cli()
-#define interrupts_enable() sei()
+#define enable_interrupts() sei()
+
+using namespace savr;
 
 
 // Choose features!
@@ -249,7 +250,7 @@ uint8_t wrap_poll_all(char *args) {
  */
 
 // Command list
-static CMD::CommandList cmd_list = {
+static cmd::CommandList cmd_list = {
     {"reset",           wrap_w1_reset,          DESC("Reset 1-Wire bus, look for presence.")},
     {"search",          wrap_w1_search,         DESC("Scan bus and print any addresses found")},
 
@@ -269,7 +270,7 @@ static CMD::CommandList cmd_list = {
 
 
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
 // Terminal display
@@ -282,16 +283,16 @@ static const size_t cmd_length = sizeof(cmd_list) / sizeof(CMD::CommandDef);
  */
 int main(void) {
 
-    SCI::init(38400);  // bps
+    sci::init(38400);  // bps
 
-    W1 local_wire(GPIO::D6);
+    W1 local_wire(gpio::D6);
     wire = &local_wire;
 
-    interrupts_enable();
+    enable_interrupts();
 
-    Term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
-    Term::run();
+    term::run();
 
     /* NOTREACHED */
     return 0;
@@ -299,3 +300,4 @@ int main(void) {
 
 
 EMPTY_INTERRUPT(__vector_default)
+
