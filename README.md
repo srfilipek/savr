@@ -160,3 +160,39 @@ int main(void) {
     }
 }
 ```
+# Hardware Tested Devices #
+The library has been tested with hardware in the loop (HIL) for:
+  * ATmega328P (Arduino)
+  * ATmega8
+  * ATmega88
+  * ATmega8515
+  * ATmega16
+  * ATmega32
+  * ATmega644P
+
+# Compilation Support #
+In addition to HIL testing many additional micros have been "compile tested".
+That is, I've just made sure that the compilation doesn't fail. The following
+are the names specified to GCC with `-mmcu=`:
+  * atmega8
+  * atmega16
+  * atmega32
+  * atmega644
+  * atmega8515
+  * atmega48
+  * atmega88
+  * atmega168
+  * atmega48p
+  * atmega88p
+  * atmega168p
+  * atmega88pa
+  * atmega328p
+  * atmega164p
+  * atmega324p
+  * atmega644p
+  * atmega164a
+  * atmega324a
+  * atmega324pa
+  * atmega644a
+  * atmega644pa
+  * atmega1284p
