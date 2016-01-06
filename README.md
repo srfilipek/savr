@@ -36,11 +36,19 @@ The library has been at least somewhat tested with the following:
 * ATmega32
 * ATmega644P
 
-Variants to the devices listed above, if they share the same specification document, are also considered as supported. For instance, the ATmega48, 88, and 168. Adding support for new devices is usually trivial.
+Variants to the devices listed above, if they share the same specification
+document, are also considered as supported. For instance, the ATmega48, 88,
+and 168. Adding support for new devices is usually trivial.
 
-The SAVR library compiles for nearly every AVR that's supported by GCC<span title="OK, so I have no data to back that up. I think that's the case, and it sure does sound good, right?"><sup>[+]</sup></span>. There are some micro-specific sections that rely on knowledge of the exact AVR in use, such as the SCI, SPI, and TWI interfaces. If the target micro isn't known to the SAVR library, those sections will be removed.
+The SAVR library compiles for nearly every AVR that's supported by GCC<span
+title="OK, so I have no data to back that up. I think that's the case, and it
+sure does sound good, right?"><sup>[+]</sup></span>. There are some
+micro-specific sections that rely on knowledge of the exact AVR in use, such as
+the SCI, SPI, and TWI interfaces. If the target micro isn't known to the SAVR
+library, those sections will be removed.
 
-This library relies on avr-libc and AVR GCC, such as distributed through WinAVR and CrossPack for AVR.
+This library relies on avr-libc and AVR GCC, such as distributed through WinAVR
+and CrossPack for AVR.
 
 # Compiling the Library #
 
@@ -56,9 +64,11 @@ Command line:
 
 1. CD to the lib/ directory
 1. Run something like `make MCU=atmega328p F_CPU=16000000`
-1. Substitute the MCU with whatever you will be using (the GCC supported target for `-mmcu=xxxx`)
+1. Substitute the MCU with whatever you will be using (the GCC supported target
+for `-mmcu=xxxx`)
 1. Substitute the CPU clock speed with your target's speed
-1. If your MCU isn't supported by my library, let me know, or better yet, create a patch!
+1. If your MCU isn't supported by my library, let me know, or better yet, create
+a patch!
 
 Eclipse:
 
@@ -115,7 +125,7 @@ stack object.
 
 Static initialization:
 ```c++
-static W1 wire(GPIO::C0);
+static W1 wire(gpio::C0);
 
 ...
 
@@ -140,7 +150,7 @@ foo() {
 ...
 
 int main(void) {
-    W1 local_wire(GPIO::C0);
+    W1 local_wire(gpio::C0);
     wire = &local_wire;
 
     ...
