@@ -30,15 +30,16 @@
 #include <savr/utils.h>
 #include <savr/gpio.h>
 
+using namespace savr;
 
 #if     ISAVR(ATmega8)      || \
         ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
         ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
         ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
-#define SPI_SS   GPIO::B2
-#define SPI_MOSI GPIO::B3
-#define SPI_MISO GPIO::B4
-#define SPI_SCK  GPIO::B5
+#define SPI_SS   gpio::B2
+#define SPI_MOSI gpio::B3
+#define SPI_MISO gpio::B4
+#define SPI_SCK  gpio::B5
 
 #elif   ISAVR(ATmega16)     || \
         ISAVR(ATmega32)     || \
@@ -47,10 +48,10 @@
         ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
         ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
         ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
-#define SPI_SS   GPIO::B4
-#define SPI_MOSI GPIO::B5
-#define SPI_MISO GPIO::B6
-#define SPI_SCK  GPIO::B7
+#define SPI_SS   gpio::B4
+#define SPI_MOSI gpio::B5
+#define SPI_MISO gpio::B6
+#define SPI_SCK  gpio::B7
 
 // This fixes improper register/field names in avr-libc for the atmega324pa
 #ifndef SPI2X
@@ -95,8 +96,8 @@ typedef struct {
 } SPIConfig;
 
 
-//! For a divider of 2^x, use regFreqCfg[x-1]
-static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
+//! For a divider of 2^x, use reg_freq_cfg[x-1]
+static const SPIConfig CPP_PROGMEM reg_freq_cfg[] = {
     {                    0, _BV(SPI2X)},    // /2   ... 2^1
     {                    0,          0},    // /4   ... 2^2
     {            _BV(SPR0), _BV(SPI2X)},    // /8   ... 2^3
@@ -105,28 +106,28 @@ static const SPIConfig CPP_PROGMEM regFreqCfg[] = {
     {_BV(SPR1)            ,          0},    // /64  ... 2^6
     {_BV(SPR1) | _BV(SPR0), _BV(SPI2X)},    // /128 ... 2^7
 };
-#define FREQ_CFG_SIZE sizeof(regFreqCfg)/sizeof(SPIConfig)
+#define FREQ_CFG_SIZE sizeof(reg_freq_cfg)/sizeof(SPIConfig)
 
 void
-SPI::SSHigh(void)
+spi::ss_high(void)
 {
-    GPIO::High(SPI_SS);
+    gpio::high(SPI_SS);
 }
 void
-SPI::SSLow(void)
+spi::ss_low(void)
 {
-    GPIO::Low(SPI_SS);
+    gpio::low(SPI_SS);
 }
 
 /**
  * @par Implementation Notes:
  */
 void
-SPI::SendBlock(const uint8_t * input, size_t length)
+spi::write_block(const uint8_t * input, size_t length)
 {
     size_t i = 0;
     while(i < length)
-        SPI::TrxByte(input[i++]);
+        spi::trx_byte(input[i++]);
 }
 
 
@@ -134,11 +135,11 @@ SPI::SendBlock(const uint8_t * input, size_t length)
  * @par Implementation Notes:
  */
 void
-SPI::GetBlock(uint8_t * input, size_t length, uint8_t filler)
+spi::read_block(uint8_t * input, size_t length, uint8_t filler)
 {
     size_t i = 0;
     while(i < length)
-        input[i++] = SPI::TrxByte(filler);
+        input[i++] = spi::trx_byte(filler);
 }
 
 
@@ -146,7 +147,7 @@ SPI::GetBlock(uint8_t * input, size_t length, uint8_t filler)
  * @par Implementation Notes:
  */
 uint8_t
-SPI::TrxByte(uint8_t input)
+spi::trx_byte(uint8_t input)
 {
     uint8_t status;
 
@@ -166,17 +167,18 @@ SPI::TrxByte(uint8_t input)
  *
  * Note that MSB is 7, LSB is 0
  */
-uint8_t HighestBit(uint8_t word)
+uint8_t
+highest_bit(uint8_t word)
 {
-    uint8_t bitCount = 0;
+    uint8_t bit_count = 0;
 
     if(word == 0) return 0;
 
     while(word != 1) {
-        bitCount++;
+        bit_count++;
         word>>=1;
     }
-    return bitCount;
+    return bit_count;
 }
 
 
@@ -184,9 +186,9 @@ uint8_t HighestBit(uint8_t word)
  * @par Implementation Notes:
  */
 void
-SPI::Init(uint32_t spiFreq)
+spi::init(uint32_t spiFreq)
 {
-    uint8_t divExp;
+    uint8_t div_exp;
 
     /**
      * Master mode: MISO is Input; MOSI, SCK, and SS are output
@@ -195,25 +197,25 @@ SPI::Init(uint32_t spiFreq)
      *   Setup MISO with a pull-up resistor
      *   The SS must be an output, else we may auto-switch to slave mode
      */
-    GPIO::Out<SPI_SCK>();
+    gpio::out<SPI_SCK>();
 
-    GPIO::Out<SPI_MOSI>();
+    gpio::out<SPI_MOSI>();
 
-    GPIO::In<SPI_MISO>();
-    GPIO::High<SPI_MISO>();
+    gpio::in<SPI_MISO>();
+    gpio::high<SPI_MISO>();
 
-    GPIO::Out<SPI_SS>();
-    GPIO::High<SPI_SS>();
+    gpio::out<SPI_SS>();
+    gpio::high<SPI_SS>();
 
 
     // Round down divider and find 2^x (highest bit)
-    divExp = HighestBit(static_cast<uint8_t>(F_CPU/spiFreq));
+    div_exp = highest_bit(static_cast<uint8_t>(F_CPU/spiFreq));
 
-    // Bounds. divExp to be subtracted by one in a few lines...
+    // Bounds. div_exp to be subtracted by one in a few lines...
     // Sooo, our bounds are [1, FREQ_CFG_SIZE], not the normal [0, FREQ_CFG_SIZE-1] (both inclusive)
-    if(divExp == 0) divExp = 1;
-    if(divExp > FREQ_CFG_SIZE) divExp = FREQ_CFG_SIZE;
-    divExp--;
+    if(div_exp == 0) div_exp = 1;
+    if(div_exp > FREQ_CFG_SIZE) div_exp = FREQ_CFG_SIZE;
+    div_exp--;
 
 
     /**
@@ -221,8 +223,9 @@ SPI::Init(uint32_t spiFreq)
      *   SPI enabled, master mode, fck/2, MSB first
      *   Mode 0
      */
-    SPCR |= _BV(SPE) | _BV(MSTR) | pgm_read_byte(&regFreqCfg[divExp].spcr);
-    SPSR |= pgm_read_byte(&regFreqCfg[divExp].spsr);
+    SPCR |= _BV(SPE) | _BV(MSTR) | pgm_read_byte(&reg_freq_cfg[div_exp].spcr);
+    SPSR |= pgm_read_byte(&reg_freq_cfg[div_exp].spsr);
 }
 
 #endif
+

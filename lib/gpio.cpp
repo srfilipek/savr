@@ -26,19 +26,18 @@
 #include <savr/gpio.h>
 #include <savr/optimized.h>
 
-namespace GPIO {
-
+using namespace savr;
 
 /**
  * @par Implementation notes:
  */
 void
-Set(GPIO::Pin pin, uint8_t set)
+gpio::set(gpio::Pin pin, uint8_t set)
 {
     if(set) {
-        High(pin);
+        high(pin);
     }else{
-        Low(pin);
+        low(pin);
     }
 }
 
@@ -47,15 +46,15 @@ Set(GPIO::Pin pin, uint8_t set)
  * @par Implementation notes:
  */
 void
-Toggle(GPIO::Pin pin)
+gpio::toggle(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
 
     if(PORTOF(_port) & _pin) {
-        Low(pin);
+        low(pin);
     }else{
-        High(pin);
+        high(pin);
     }
 }
 
@@ -64,10 +63,10 @@ Toggle(GPIO::Pin pin)
  * @par Implementation notes:
  */
 uint8_t
-Get(GPIO::Pin pin)
+gpio::get(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
     return ((PINOF(_port) & _pin) ? 1 : 0);
 }
 
@@ -76,10 +75,10 @@ Get(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-High(GPIO::Pin pin)
+gpio::high(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
     PORTOF(_port) |= _pin;
 }
 
@@ -88,10 +87,10 @@ High(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Low(GPIO::Pin pin)
+gpio::low(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
     PORTOF(_port) &= ~_pin;
 }
 
@@ -100,10 +99,10 @@ Low(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-In(GPIO::Pin pin)
+gpio::in(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
     DDROF(_port) &= ~_pin;
 }
 
@@ -112,12 +111,10 @@ In(GPIO::Pin pin)
  * @par Implementation notes:
  */
 void
-Out(GPIO::Pin pin)
+gpio::out(gpio::Pin pin)
 {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = Opt::BitVal(pin % 8);
+    uint8_t _pin  = opt::bit_val(pin % 8);
     DDROF(_port) |= _pin;
 }
 
-
-}

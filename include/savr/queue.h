@@ -1,7 +1,5 @@
-#ifndef _savr_queue_h_Included_
-#define _savr_queue_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -18,7 +16,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
-
+#ifndef _savr_queue_h_included_
+#define _savr_queue_h_included_
 
 /**
  * @file queue.h
@@ -28,17 +27,19 @@
 
 #include <stdint.h>
 #include <stddef.h>
+
 #include <util/atomic.h>
 
+namespace savr {
 
 template <typename T, uint8_t MAX_SIZE>
 class Queue {
 
 private:
-    T       data[MAX_SIZE];         ///< Queue data
-    uint8_t top;                    ///< Index to top
-    uint8_t bottom;                 ///< Index to bottom
-    uint8_t size;                   ///< Current size of the queue
+    T       _data[MAX_SIZE];        ///< Queue data
+    uint8_t _top;                   ///< Index to top
+    uint8_t _bottom;                ///< Index to bottom
+    uint8_t _size;                  ///< Current size of the queue
 
 public:
 
@@ -46,7 +47,7 @@ public:
      * Allocate a queue of qsize bytes on the heap
      * @param qsize     Size of the desired queue, in bytes.
      */
-    Queue() : top(0), bottom(0), size(0) {
+    Queue() : _top(0), _bottom(0), _size(0) {
     }
 
 
@@ -59,15 +60,15 @@ public:
      *
      * @return 1 if successful, 0 otherwise
      */
-    uint8_t Enq(T input)
+    uint8_t enq(T input)
     {
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
         {
-            if(size == MAX_SIZE) return 1;
+            if(_size == MAX_SIZE) return 1;
 
-            data[bottom++] = input;
-            if(bottom >= MAX_SIZE) bottom = 0;
-            size++;
+            _data[_bottom++] = input;
+            if(_bottom >= MAX_SIZE) _bottom = 0;
+            _size++;
         }
         return 0;
     }
@@ -82,15 +83,15 @@ public:
      *
      * @return 1 if successful, 0 otherwise
      */
-    uint8_t Deq(T* target)
+    uint8_t deq(T* target)
     {
         ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
         {
-            if(size == 0) return 1;
+            if(_size == 0) return 1;
 
-            *target = data[top++];
-            if(top >= MAX_SIZE) top = 0;
-            size--;
+            *target = _data[_top++];
+            if(_top >= MAX_SIZE) _top = 0;
+            _size--;
         }
         return 0;
     }
@@ -103,11 +104,13 @@ public:
      *
      * @return Number of elements in the queue
      */
-    uint8_t Size(void)
+    uint8_t size(void)
     {
-        return size;
+        return _size;
     }
 
 };
+}
 
-#endif /* _savr_queue_h_Included_ */
+#endif /* _savr_queue_h_included_ */
+

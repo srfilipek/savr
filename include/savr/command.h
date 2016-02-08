@@ -1,7 +1,5 @@
-#ifndef _savr_command_h_Included_
-#define _savr_command_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_command_h_included_
+#define _savr_command_h_included_
 
 /**
  * @file command.h
@@ -31,7 +31,7 @@
  * A list of commands is defined by the user at compile time, which
  * is passed to the initialization routine at run time.
  *
- * "Command line" strings are passed to the CMD::FindAndRun() routine
+ * "Command line" strings are passed to the cmd::FindAndRun() routine
  * which then parses the command, searches for a match, and runs the
  * callback routine.
  */
@@ -40,46 +40,52 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-namespace CMD {
+namespace savr {
+namespace cmd {
 
-    //! Takes a character pointer containing arguments entered after the command
-    typedef uint8_t (*CommandCallback)(char *args);
+//! Takes a character pointer containing arguments entered after the command
+typedef uint8_t (*CommandCallback)(char *args);
 
-    //! Name and callback for a command
-    typedef struct {
-        //! Name of the command
-        const char *commandName;
+//! Name and callback for a command
+typedef struct {
+    //! Name of the command
+    const char *command_name;
 
-        //! Callback function
-        CMD::CommandCallback callback;
+    //! Callback function
+    CommandCallback callback;
 
-        //! Brief (very brief) description
-        const char *helpText;
-    } CommandDef;
-
-
-    typedef const CommandDef CommandList[];     ///< List of command definitions for const initialization
-    typedef const CommandDef *CommandListPtr;   ///< List of command definitions for argument passing
-
-    /**
-     * Initialize the Command subsystem
-     *
-     * @param commandList   List of supported commands
-     * @param length        Number of commands in list
-     */
-    void Init(const CommandList commandList, size_t length);
+    //! Brief (very brief) description
+    const char *help_text;
+} CommandDef;
 
 
-    /**
-     * Parse a given line and run a command, if found
-     *
-     * @param line  The null-terminated line to parse
-     *
-     * If the command is not found, a small help text is displayed
-     */
-    void RunCommand(char *line);
+//! List of command definitions for const initialization
+typedef const CommandDef CommandList[];
 
-};
+//! List of command definitions for argument passing
+typedef const CommandDef *CommandListPtr;
 
-#endif /* _savr_command_h_Included_ */
+
+/**
+ * Initialize the Command subsystem
+ *
+ * @param commandList   List of supported commands
+ * @param length        Number of commands in list
+ */
+void init(const CommandList command_list, size_t length);
+
+
+/**
+ * Parse a given line and run a command, if found
+ *
+ * @param line  The null-terminated line to parse
+ *
+ * If the command is not found, a small help text is displayed
+ */
+void run_command(char *line);
+
+}
+}
+
+#endif /* _savr_command_h_included_ */
 

@@ -1,7 +1,5 @@
-#ifndef _savr_version_h_Included_
-#define _savr_version_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2016 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +19,18 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_version_h_included_
+#define _savr_version_h_included_
 
 /**
  * @file version.h
  */
- #define __str(s) #s
- #define __xstr(s) __str(s)
+#define __str(s) #s
+#define __xstr(s) __str(s)
 
 
-#define SAVR_MAJOR   1  ///< Major version number
-#define SAVR_MINOR   2  ///< Minor version number
+#define SAVR_MAJOR   2  ///< Major version number
+#define SAVR_MINOR   0  ///< Minor version number
 //#define SAVR_DEVEL
 #define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
 
@@ -41,4 +41,5 @@
 #define SAVR_VERSION_STR    __xstr(SAVR_MAJOR) "." __xstr(SAVR_MINOR)
 #endif
 
-#endif /* _savr_version_h_Included_ */
+#endif /* _savr_version_h_included_ */
+

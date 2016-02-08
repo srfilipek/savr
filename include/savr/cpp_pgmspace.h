@@ -1,7 +1,5 @@
-#ifndef _savr_cpp_pgmspace_h_Included_
-#define _savr_cpp_pgmspace_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
-#include <avr/pgmspace.h>
+#ifndef _savr_cpp_pgmspace_h_included_
+#define _savr_cpp_pgmspace_h_included_
 
 /**
  * @file cpp_pgmspace.h
@@ -29,6 +28,9 @@
  * This is to fix issues with avr-libc / GCC combination for defining strings
  * in program space.
  */
+
+#include <avr/pgmspace.h>
+
 
 #define CPP_PROGMEM __attribute__((section(".progmem.cpp")))
 
@@ -39,4 +41,5 @@
 #define PSTR(s) (__extension__({static const char CPP_PROGMEM __c[] = (s); &__c[0];}))
 
 
-#endif /*_savr_cpp_pgmspace_h_Included_ */
+#endif /*_savr_cpp_pgmspace_h_included_ */
+

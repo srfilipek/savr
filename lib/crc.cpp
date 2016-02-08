@@ -19,41 +19,48 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
-#ifndef _savr_sci_h_included_
-#define _savr_sci_h_included_
+
+#include <savr/crc.h>
 
 /**
- * @file sci.h
- *
- * SCI/UART interface
- *
- * This interface relies on avr-libc. It binds the compile-time
- * configured UART to stdin and stdout, allowing the user to
- * read/write data over the serial line using printf and similar
- * calls.
- *
- * This is intended to be one-per-system as the 'debug console'.
+ * @par Implementation Notes:
  */
+uint8_t
+savr::crc::crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly) {
+    while(length-->0) {
+        crc ^= *data++;
 
-#include <stdint.h>
-#include <stddef.h>
+        for(uint8_t ibit=0; ibit<8; ibit++) {
+            if(crc & 0x80) {
+                crc = (crc << 1) ^ poly;
+            }else{
+                crc <<= 1;
+            }
+        }
 
-#include <stdio.h>
+    }
+    return crc;
+}
 
-namespace savr {
-namespace sci {
 
 /**
- * Initialize the SCI subsystem
- *
- * @param baud      The desired baud rate
+ * @par Implementation Notes:
  */
-void init(uint32_t baud);
+uint16_t
+savr::crc::crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t poly) {
+    while(length-->0) {
+        crc ^= ((uint16_t)*data++) << 8;
 
-size_t size(FILE *stream);
+        for(uint8_t ibit=0; ibit<8; ibit++) {
+            if(crc & 0x8000) {
+                crc = (crc << 1) ^ poly;
+            }else{
+                crc <<= 1;
+            }
+        }
 
+    }
+    return crc;
 }
-}
 
-#endif /* _savr_sci_h_included_ */
 

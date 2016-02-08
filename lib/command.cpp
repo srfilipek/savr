@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -32,13 +32,15 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/command.h>
 
-static void FindAndRun(char *cmd, char *args);
-static void Help(void);
+using namespace savr;
 
-static CMD::CommandListPtr cmdList = NULL;
+static void find_and_run(char *cmd, char *args);
+static void help(void);
 
-static size_t   cmdLength;
-static size_t   commandColWidth;
+static cmd::CommandListPtr cmd_list = NULL;
+
+static size_t   cmd_length;
+static size_t   command_col_width;
 static char     formatter[32];
 
 
@@ -51,22 +53,22 @@ static char     formatter[32];
  * @param length the length of the CommandList
  */
 void
-CMD::Init(const CMD::CommandList commandList, size_t length)
+cmd::init(const cmd::CommandList command_list, size_t length)
 {
-    cmdList = commandList;
-    cmdLength = length;
+    cmd_list = command_list;
+    cmd_length = length;
 
-    commandColWidth = 0;
+    command_col_width = 0;
 
     for (size_t i = 0; i < length; ++i) {
-        size_t temp = strlen(commandList[i].commandName);
-        if (temp > commandColWidth) {
-            commandColWidth = temp;
+        size_t temp = strlen(command_list[i].command_name);
+        if (temp > command_col_width) {
+            command_col_width = temp;
         }
     }
 
     // For pretty help formatting
-    sprintf_P(formatter, PSTR("  %%-%ds  %%s\n"), commandColWidth);
+    sprintf_P(formatter, PSTR("  %%-%ds  %%s\n"), command_col_width);
 }
 
 
@@ -78,7 +80,7 @@ CMD::Init(const CMD::CommandList commandList, size_t length)
  * @param line a character pointer to the line to parse (and destroy)
  */
 void
-CMD::RunCommand(char *line)
+cmd::run_command(char *line)
 {
     char *cmd   = line;
     char *args  = line;
@@ -102,29 +104,29 @@ CMD::RunCommand(char *line)
     }
 
     // Else, try to run the command
-    FindAndRun(cmd, args);
+    find_and_run(cmd, args);
 }
 
 
 /**
  * @brief Scan through the command list and run the callback, if any.
  *
- * CMD::Init should have been called first, but the length
+ * cmd::init should have been called first, but the length
  * would be zero if it hasn't... so I guess it's ok.
  *
  * @param cmd a pointer to the command string
  * @param args a pointer to the argument string to pass to the command callback
  */
 void
-FindAndRun(char *cmd, char *args)
+find_and_run(char *cmd, char *args)
 {
     uint8_t found;
 
     // Linear search, but it's not that important... right?
     found = 0;
-    for (size_t i = 0; i < cmdLength; i++) {
-        if (strcmp(cmdList[i].commandName, cmd) == 0) {
-            cmdList[i].callback(args);
+    for (size_t i = 0; i < cmd_length; i++) {
+        if (strcmp(cmd_list[i].command_name, cmd) == 0) {
+            cmd_list[i].callback(args);
             found = 1;
             break;
         }
@@ -132,7 +134,7 @@ FindAndRun(char *cmd, char *args)
 
     if (!found) {
         if (strcmp_P(cmd, PSTR("help")) == 0) {
-            Help();
+            help();
         } else {
             printf_P(PSTR("Unk cmd. Try 'help'.\n"));
         }
@@ -144,15 +146,15 @@ FindAndRun(char *cmd, char *args)
  * @brief Prints out a list of supported commands.
  */
 void
-Help(void)
+help(void)
 {
     // List out all available commands
     printf_P(PSTR("Available commands:\n"));
-    for (size_t i = 0; i < cmdLength; i++) {
-        if (cmdList[i].helpText == NULL) {
-            printf_P(PSTR("  %s\n"), cmdList[i].commandName);
+    for (size_t i = 0; i < cmd_length; i++) {
+        if (cmd_list[i].help_text == NULL) {
+            printf_P(PSTR("  %s\n"), cmd_list[i].command_name);
         } else {
-            printf(formatter, cmdList[i].commandName, cmdList[i].helpText);
+            printf(formatter, cmd_list[i].command_name, cmd_list[i].help_text);
         }
     }
 }

@@ -14,7 +14,6 @@
 *
 ******************************************************************/
 
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -33,14 +32,13 @@
 #include <savr/utils.h>
 #include <savr/gpio.h>
 
-
-#define Interrupts_Disable() cli()
-#define Interrupts_Enable() sei()
-
+#define enable_interrupts() sei()
 
 // Terminal display
-#define welcomeMessage PSTR("\n\nSD Test for the " SAVR_TARGET_STR ", SAVR " SAVR_VERSION_STR "\n")
-#define promptString   PSTR("] ")
+#define welcome_message PSTR("\n\nSD Test for the " SAVR_TARGET_STR ", SAVR " SAVR_VERSION_STR "\n")
+#define prompt_string   PSTR("] ")
+
+using namespace savr;
 
 static uint8_t get(char*);
 static uint8_t read(char*);
@@ -51,19 +49,18 @@ static uint8_t sdinit(char*);
 static uint8_t help(char*);
 
 // Command list
-static CMD::CommandList cmdList = {
+static cmd::CommandList cmd_list = {
     {"get", get, NULL},
     {"read", read, NULL},
     {"write", write, NULL},
     {"erase", erase, NULL},
     {"scan", scan, NULL},
     {"sdinit", sdinit, NULL},
-    {"help", help, NULL}
 };
-static const size_t cmdLength = sizeof(cmdList) / sizeof(CMD::CommandDef);
+static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
-static const GPIO::Pin SD_SS = GPIO::B0;
+static const gpio::Pin SD_SS = gpio::B0;
 
 
 /**
@@ -72,19 +69,19 @@ static const GPIO::Pin SD_SS = GPIO::B0;
 int
 main(void) {
     // Setup UART
-    SCI::Init(38400);  // bps
+    sci::init(38400);  // bps
 
     // Setup the SPI interface
-    SPI::Init(F_CPU/2);
+    spi::init(F_CPU/2);
 
     // Enable interrupts for all services
-    Interrupts_Enable();
+    enable_interrupts();
 
     // Init UART terminal
-    Term::Init(welcomeMessage, promptString, cmdList, cmdLength);
+    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
 
     // Run the terminal
-    Term::Run();
+    term::run();
 
     /* NOTREACHED */
     return 0;
@@ -99,20 +96,20 @@ main(void) {
  */
 uint8_t get(char * args)
 {
-    uint8_t readByte;
-    uint8_t readLength;
+    uint8_t read_byte;
+    uint8_t read_length;
 
-    readLength = (uint8_t) strtoul(args, (char**) NULL, 0);
+    read_length = (uint8_t) strtoul(args, (char**) NULL, 0);
 
-    printf("Getting %u bytes\n", readLength);
+    printf("Getting %u bytes\n", read_length);
 
-    GPIO::Low<SD_SS>();
-    while (readLength) {
-        readByte = SPI::TrxByte(0xFF);
-        printf("%02hX ", readByte);
-        readLength--;
+    gpio::low<SD_SS>();
+    while (read_length) {
+        read_byte = spi::trx_byte(0xFF);
+        printf("%02hX ", read_byte);
+        read_length--;
     }
-    GPIO::High<SD_SS>();
+    gpio::high<SD_SS>();
 
     printf("\n");
 
@@ -140,7 +137,7 @@ uint8_t get(char * args)
 uint8_t scan(char * args)
 {
     char * token;
-    char * currentArg;
+    char * current_arg;
     uint32_t i;
     bool continuation = false;
     bool first = true;
@@ -154,16 +151,16 @@ uint8_t scan(char * args)
     uint32_t size = 0;
 
     // Convert arguments to longs
-    currentArg = strtok_r(args, " ", &token);
-    addr = strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(args, " ", &token);
+    addr = strtoul(current_arg, (char**) NULL, 0);
 
-    currentArg = strtok_r(NULL, " ", &token);
-    size = strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(NULL, " ", &token);
+    size = strtoul(current_arg, (char**) NULL, 0);
 
     // Read from SD in 32-byte block sizes and print
     for (i = 0; i < size; i += BLOCKSIZE, addr += BLOCKSIZE) {
 
-        if (!SD::ReadBlock(addr, curr, BLOCKSIZE)) {
+        if (!sd::read_block(addr, curr, BLOCKSIZE)) {
             printf("Error reading addr 0x%08lX\n", addr);
             break; // On error
         }
@@ -171,7 +168,7 @@ uint8_t scan(char * args)
         // Only print the block if it differs from last line
         if(first || (memcmp(curr, prev, BLOCKSIZE) != 0)) {
             first = false;
-            Utils::PrintBlock(curr, BLOCKSIZE, addr, 16);
+            utils::print_block(curr, BLOCKSIZE, addr, 16);
             continuation = false;
             memcpy(prev, curr, BLOCKSIZE);
 
@@ -202,7 +199,7 @@ uint8_t scan(char * args)
 uint8_t read(char * args)
 {
     char * token;
-    char * currentArg;
+    char * current_arg;
     uint32_t i;
 
     uint8_t buff[32];
@@ -211,19 +208,19 @@ uint8_t read(char * args)
     uint16_t size = 0;
 
     // Convert args to longs
-    currentArg = strtok_r(args, " ", &token);
-    addr = strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(args, " ", &token);
+    addr = strtoul(current_arg, (char**) NULL, 0);
 
-    currentArg = strtok_r(NULL, " ", &token);
-    size = (uint16_t) strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(NULL, " ", &token);
+    size = (uint16_t) strtoul(current_arg, (char**) NULL, 0);
 
     printf("addr: %08lX, size: %08X\n", addr, size);
 
     for (i = 0; i < size; i += 32) {
-        if (!SD::ReadBlock(addr, buff, 32))
+        if (!sd::read_block(addr, buff, 32))
             break;
 
-        Utils::PrintBlock(buff, 32, addr, 16);
+        utils::print_block(buff, 32, addr, 16);
         addr += 32;
     }
 
@@ -248,7 +245,7 @@ uint8_t write(char * args)
 
     uint32_t addr = 0;
     uint32_t size = 0;
-    char * argEnd = strlen(args) + args;
+    char * arg_end = strlen(args) + args;
 
     // Special tokenization
     message = args;
@@ -257,8 +254,8 @@ uint8_t write(char * args)
     *message = '\0';
     message++;
 
-    if (message > argEnd)
-        message = argEnd;
+    if (message > arg_end)
+        message = arg_end;
 
     addr = strtoul(args, (char**) NULL, 0);
     size = strlen(message);
@@ -266,7 +263,7 @@ uint8_t write(char * args)
     printf("addr: %08lX, size: %08lX\n", addr, size);
 
     // Write
-    return SD::WriteBlock(addr, (uint8_t*)message, size);
+    return sd::write_block(addr, (uint8_t*)message, size);
 }
 
 
@@ -282,7 +279,7 @@ uint8_t write(char * args)
 uint8_t erase(char * args)
 {
     char * token;
-    char * currentArg;
+    char * current_arg;
 
     uint32_t addr = 0;
     uint32_t size = 0;
@@ -290,21 +287,21 @@ uint8_t erase(char * args)
     char buff[16];
 
     // Convert args to longs
-    currentArg = strtok_r(args, " ", &token);
-    addr = strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(args, " ", &token);
+    addr = strtoul(current_arg, (char**) NULL, 0);
 
-    currentArg = strtok_r(NULL, " ", &token);
-    size = strtoul(currentArg, (char**) NULL, 0);
+    current_arg = strtok_r(NULL, " ", &token);
+    size = strtoul(current_arg, (char**) NULL, 0);
 
     printf("Erasing addr: %08lX, size: %08lX\n", addr, size);
     printf("Type \"yes\" to confirm ");
-    Term::GetLine(buff, 16);
+    term::read_line(buff, 16);
 
     if (strcmp(buff, "yes") != 0) {
         printf("Canceled.\n");
     }
 
-    SD::EraseBlock(addr, size);
+    sd::erase_block(addr, size);
 
     return 1;
 }
@@ -319,30 +316,10 @@ uint8_t erase(char * args)
 uint8_t sdinit(char * args)
 {
     printf("Initializing SD Card...\n");
-    SD::Init(SD_SS);
-    return 1;
-}
-
-
-/**
- * Prints out a list of supported commands.
- *
- * @param args (not used)
- *
- * @return 1, always
- */
-uint8_t help(char * args)
-{
-    uint16_t i;
-
-    // List out all available commands
-    printf("Available commands:\n");
-    for (i = 0; i < cmdLength; i++) {
-        printf("  %s\n", cmdList[i].commandName);
-    }
-
+    sd::init(SD_SS);
     return 1;
 }
 
 
 EMPTY_INTERRUPT(__vector_default)
+

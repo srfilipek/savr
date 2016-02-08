@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -31,20 +31,22 @@
 #include <savr/twi.h>
 #include <savr/gpio.h>
 
-static const char CPP_PROGMEM SentData[]    = "Send data, got";
-static const char CPP_PROGMEM RcvdData[]    = "Rcvd data and";
-static const char CPP_PROGMEM SLAW[]        = "SLA+W";
-static const char CPP_PROGMEM SLAR[]        = "SLA+R";
-static const char CPP_PROGMEM eACK[]        = " ACK";
-static const char CPP_PROGMEM eNACK[]       = " NACK";
+using namespace savr;
+
+static const char CPP_PROGMEM sent_data[]   = "Sent data, got";
+static const char CPP_PROGMEM rcvd_data[]   = "Rcvd data and";
+static const char CPP_PROGMEM slaw[]        = "SLA+W";
+static const char CPP_PROGMEM slar[]        = "SLA+R";
+static const char CPP_PROGMEM eack[]        = " ACK";
+static const char CPP_PROGMEM enack[]       = " NACK";
 
 #if     ISAVR(ATmega8)      || \
         ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
         ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
         ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
 
-#define TWI_GPIO_SDA    GPIO::C4
-#define TWI_GPIO_SCL    GPIO::C5
+#define TWI_GPIO_SDA    gpio::C4
+#define TWI_GPIO_SCL    gpio::C5
 
 #elif   ISAVR(ATmega16)     || \
         ISAVR(ATmega32)     || \
@@ -53,8 +55,8 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
         ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
         ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
 
-#define TWI_GPIO_SDA    GPIO::C1
-#define TWI_GPIO_SCL    GPIO::C0
+#define TWI_GPIO_SDA    gpio::C1
+#define TWI_GPIO_SCL    gpio::C0
 
 #else
 #warning Unsupported AVR target for TWI interface
@@ -67,9 +69,9 @@ static const char CPP_PROGMEM eNACK[]       = " NACK";
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t outputFreq)
+twi::init(uint32_t output_freq)
 {
-    Init(outputFreq, false);
+    init(output_freq, false);
 }
 
 
@@ -77,21 +79,21 @@ TWI::Init(uint32_t outputFreq)
  * @par Implementation notes:
  */
 void
-TWI::Init(uint32_t outputFreq, bool pullup)
+twi::init(uint32_t output_freq, bool pullup)
 {
 
     // SCL Freq = CPU Freq / ( 16 + 2(TWBR)(PrescalerValue) )
     // TWBR =  ((CPU Freq / SCL Freq) - 16) / 2 / (PrescalerValue)
-    TWBR = ((F_CPU/outputFreq) - 16) / 2;
+    TWBR = ((F_CPU/output_freq) - 16) / 2;
 
     // Clear interrupt flag, enable the TWI
     TWCR = _BV(TWINT) | _BV(TWEN);
 
     if(pullup) {
-        GPIO::In<TWI_GPIO_SDA>();
-        GPIO::High<TWI_GPIO_SDA>();
-        GPIO::In<TWI_GPIO_SCL>();
-        GPIO::High<TWI_GPIO_SCL>();
+        gpio::in<TWI_GPIO_SDA>();
+        gpio::high<TWI_GPIO_SDA>();
+        gpio::in<TWI_GPIO_SCL>();
+        gpio::high<TWI_GPIO_SCL>();
     }
 }
 
@@ -100,22 +102,22 @@ TWI::Init(uint32_t outputFreq, bool pullup)
  * @par Implementation notes:
  */
 void
-TWI::PrintState(void)
+twi::print_state(void)
 {
     char temp[5];
-    switch (TWI::State()) {
+    switch (twi::state()) {
         case TW_MT_DATA_ACK:
-            puts_P(SentData); puts_P(eACK);
+            puts_P(sent_data); puts_P(eack);
             break;
         case TW_MT_DATA_NACK:
-            puts_P(SentData); puts_P(eNACK);
+            puts_P(sent_data); puts_P(enack);
             break;
 
         case TW_MT_SLA_ACK:
-            puts_P(SLAW); puts_P(eACK);
+            puts_P(slaw); puts_P(eack);
             break;
         case TW_MT_SLA_NACK:
-            puts_P(SLAW); puts_P(eNACK);
+            puts_P(slaw); puts_P(enack);
             break;
 
         case TW_MR_ARB_LOST:
@@ -123,10 +125,10 @@ TWI::PrintState(void)
             break;
 
         case TW_MR_SLA_ACK:
-            puts_P(SLAR); puts_P(eACK);
+            puts_P(slar); puts_P(eack);
             break;
         case TW_MR_SLA_NACK:
-            puts_P(SLAR); puts_P(eNACK);
+            puts_P(slar); puts_P(enack);
             break;
 
         case TW_REP_START:
@@ -137,10 +139,10 @@ TWI::PrintState(void)
             break;
 
         case TW_MR_DATA_ACK:
-            puts_P(RcvdData); puts_P(eACK);
+            puts_P(rcvd_data); puts_P(eack);
             break;
         case TW_MR_DATA_NACK:
-            puts_P(RcvdData); puts_P(eNACK);
+            puts_P(rcvd_data); puts_P(enack);
             break;
 
         case TW_NO_INFO:
@@ -163,12 +165,12 @@ TWI::PrintState(void)
  * @par Implementation notes:
  */
 void
-TWI::Send(uint8_t b)
+twi::send(uint8_t b)
 {
-    TWI::Wait();
+    twi::wait();
     TWDR = b;
     TWCR = _BV(TWINT) | _BV(TWEN);
-    TWI::Wait();
+    twi::wait();
 }
 
 
@@ -176,9 +178,9 @@ TWI::Send(uint8_t b)
  * @par Implementation notes:
  */
 void
-TWI::SendAsync(uint8_t b)
+twi::send_async(uint8_t b)
 {
-    TWI::Wait();
+    twi::wait();
     TWDR = b;
     TWCR = _BV(TWINT) | _BV(TWEN);
 }
@@ -188,11 +190,11 @@ TWI::SendAsync(uint8_t b)
  * @par Implementation notes:
  */
 uint8_t
-TWI::GetAck(void)
+twi::get_ack(void)
 {
-    TWI::Wait();
+    twi::wait();
     TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWEA); // Enable ACK
-    TWI::Wait();
+    twi::wait();
     return TWDR;
 }
 
@@ -201,11 +203,11 @@ TWI::GetAck(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Get(void)
+twi::get(void)
 {
-    TWI::Wait();
+    twi::wait();
     TWCR = _BV(TWINT) | _BV(TWEN); // No ACK
-    TWI::Wait();
+    twi::wait();
     return TWDR;
 }
 
@@ -214,22 +216,22 @@ TWI::Get(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::Address(uint8_t address, bool read)
+twi::address(uint8_t address, bool read)
 {
     // Create start condition
     uint8_t state;
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
-    TWI::Wait();
-    state = TWI::State();
+    twi::wait();
+    state = twi::state();
     if(state != TW_START && state != TW_REP_START) {
         return 1;
     }
 
     // Send address | RW (has waits...)
-    TWI::Send((address<<1) | ((uint8_t)read));
+    twi::send((address<<1) | ((uint8_t)read));
 
-    state = TWI::State();
+    state = twi::state();
     if(state != TW_MR_SLA_ACK && state != TW_MT_SLA_ACK) {
         return 1;
     }
@@ -242,7 +244,7 @@ TWI::Address(uint8_t address, bool read)
  * @par Implementation notes:
  */
 void
-TWI::Stop(void)
+twi::stop(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
 }
@@ -252,7 +254,7 @@ TWI::Stop(void)
  * @par Implementation notes:
  */
 void
-TWI::Start(void)
+twi::start(void)
 {
     TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 }
@@ -262,9 +264,10 @@ TWI::Start(void)
  * @par Implementation notes:
  */
 uint8_t
-TWI::State(void)
+twi::state(void)
 {
     return (TWSR & TW_STATUS_MASK);
 }
 
 #endif
+

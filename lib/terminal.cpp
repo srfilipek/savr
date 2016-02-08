@@ -1,5 +1,5 @@
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -29,34 +29,36 @@
 #include <savr/stringhistory.h>
 #include <savr/sci.h>
 
+using namespace savr;
+
 #define BACKSPACE_CHAR  0x08
 #define DEL_CHAR        0x7F
 #define CLR_CHAR        0x15
 #define ESC_CHAR        0x1B
 
 // Defined by user and linked
-static PGM_P welcomeMessage;
-static PGM_P promptString;
+static PGM_P welcome_message;
+static PGM_P prompt_string;
 
-static StringHistory<Term::LINESIZE> history;
+static StringHistory<term::LINESIZE> history;
 
 
 ///! File-scope terminal state
 struct TermState {
     uint8_t  size;
-    uint8_t  maxLength;
+    uint8_t  max_length;
     char     *dest;
 };
 static TermState state;
 
 
-static char stringBuf[Term::LINESIZE];
+static char string_buf[term::LINESIZE];
 
 /**
  * @par Implementation notes:
  */
 static void
-Backspace()
+backspace()
 {
     putchar(BACKSPACE_CHAR);
     putchar(' ');
@@ -68,18 +70,18 @@ Backspace()
  * @par Implementation notes:
  */
 static bool
-AddChar(char c)
+add_char(char c)
 {
     /* Echo back */
     putchar(c);
 
     /* If there's room, store the char, else, backup over it */
-    if (state.size < (state.maxLength - 1)) {
+    if (state.size < (state.max_length - 1)) {
         state.dest[state.size] = c;
         state.size++;
         return true;
     } else {
-        Backspace();
+        backspace();
         return false;
     }
 }
@@ -89,7 +91,7 @@ AddChar(char c)
  * @par Implementation notes:
  */
 static void
-ClearLine()
+clear_line()
 {
     while (state.size) {
         putchar(BACKSPACE_CHAR);
@@ -101,13 +103,13 @@ ClearLine()
 
 
 static void
-SetLine(const char *line)
+set_line(const char *line)
 {
-    ClearLine();
+    clear_line();
 
     if(line == NULL) return;
 
-    while(*line && AddChar(*line)) {
+    while(*line && add_char(*line)) {
         line++;
     }
 }
@@ -117,24 +119,24 @@ SetLine(const char *line)
  * @par Implementation notes:
  */
 static void
-HandleEsc()
+handle_esc()
 {
     char next = getchar();
     if(next != '[') {
-        AddChar(next);
+        add_char(next);
         return;
     }
     next = getchar();
     switch(next) {
     case 'A':
-        SetLine(history.Older());
+        set_line(history.older());
         break;
     case 'B':
-        SetLine(history.Newer());
+        set_line(history.newer());
         break;
     default:
-        AddChar('[');
-        AddChar(next);
+        add_char('[');
+        add_char(next);
         return;
     }
 }
@@ -146,7 +148,7 @@ HandleEsc()
  * @return true if a line is completed, false otherwise
  */
 bool
-HandleChar(char c) {
+handle_char(char c) {
 
     switch (c) {
 
@@ -161,25 +163,25 @@ HandleChar(char c) {
 
     /* Clear line. Erase up to prompt. */
     case CLR_CHAR:
-        ClearLine();
+        clear_line();
         break;
 
     case DEL_CHAR: /* Fall through */
     case BACKSPACE_CHAR:
         if (state.size) {
-            Backspace();
+            backspace();
             state.size--;
         }
         break;
 
     case ESC_CHAR:
-        HandleEsc();
+        handle_esc();
         break;
 
     /* All others, check for non-special character. */
     default:
         if (c >= 0x20 && c <= 0x7E) {
-            AddChar(c);
+            add_char(c);
         } else {
             //printf("0x%02X ", c);
         }
@@ -195,10 +197,10 @@ HandleChar(char c) {
  * @par Implementation Notes:
  */
 void
-Term::GetLine(char * string, uint8_t maxLength)
+term::read_line(char * string, uint8_t max_length)
 {
-    while(!HandleChar(getchar())) { /* Nothing */ }
-    strncpy(string, state.dest, maxLength);
+    while(!handle_char(getchar())) { /* Nothing */ }
+    strncpy(string, state.dest, max_length);
 }
 
 
@@ -207,19 +209,20 @@ Term::GetLine(char * string, uint8_t maxLength)
  * @par Implementation Notes:
  */
 void
-Term::Init(PGM_P message, PGM_P prompt, const CMD::CommandList commandList, size_t length)
+term::init(PGM_P message, PGM_P prompt,
+        const cmd::CommandList command_list, size_t length)
 {
-    welcomeMessage = message;
-    promptString = prompt;
+    welcome_message = message;
+    prompt_string = prompt;
 
-    printf_P(welcomeMessage);
-    CMD::Init(commandList, length);
+    printf_P(welcome_message);
+    cmd::init(command_list, length);
 
     state.size      = 0;
-    state.dest      = stringBuf;
-    state.maxLength = Term::LINESIZE;
+    state.dest      = string_buf;
+    state.max_length = term::LINESIZE;
 
-    printf_P(promptString);
+    printf_P(prompt_string);
 }
 
 
@@ -228,16 +231,16 @@ Term::Init(PGM_P message, PGM_P prompt, const CMD::CommandList commandList, size
  * @par Implementation Notes:
  */
 void
-Term::Run(void)
+term::run(void)
 {
     while (1) {
-        while(!HandleChar(getchar())) { /* Nothing */ }
+        while(!handle_char(getchar())) { /* Nothing */ }
         if(state.size) {
-            history.Add(stringBuf);
-            CMD::RunCommand(stringBuf);
+            history.add(string_buf);
+            cmd::run_command(string_buf);
             state.size = 0;
         }
-        printf_P(promptString);
+        printf_P(prompt_string);
     }
 }
 
@@ -247,16 +250,16 @@ Term::Run(void)
  * @par Implementation Notes:
  */
 void
-Term::Work(void)
+term::work(void)
 {
-    while(SCI::Size(stdin)) {
-        if(HandleChar(getchar())) {
+    while(sci::size(stdin)) {
+        if(handle_char(getchar())) {
             if(state.size) {
-                history.Add(stringBuf);
-                CMD::RunCommand(stringBuf);
+                history.add(string_buf);
+                cmd::run_command(string_buf);
                 state.size = 0;
             }
-            printf_P(promptString);
+            printf_P(prompt_string);
         }
     }
 }

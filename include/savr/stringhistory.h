@@ -1,7 +1,5 @@
-#ifndef _savr_stringhistory_h_Included_
-#define _savr_stringhistory_h_Included_
 /*********************************************************************************
- Copyright (C) 2011 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_stringhistory_h_included_
+#define _savr_stringhistory_h_included_
 
 /**
  * @file stringhistory.h
@@ -37,22 +37,26 @@
 
 #include <savr/utils.h>
 
+namespace savr {
 
 /**
  * StringHistory
  *
  * This class keeps track of a set of strings that are added over time.
  *
- * A StringHistory object has internal state that is used to retrieve historical strings. This
- * can be manipulated with the accessor methods newer(), older(), newest(), oldest(). This state is
- * reset on every call to add().
+ * A StringHistory object has internal state that is used to retrieve
+ * historical strings. This can be manipulated with the accessor methods
+ * newer(), older(), newest(), oldest(). This state is reset on every call to
+ * add().
  *
- * The template parameter MAX_SIZE controls the number of bytes dedicated to tracking history.
+ * The template parameter MAX_SIZE controls the number of bytes dedicated to
+ * tracking history.
  *
- * Note that there is an issue of fragmentation, or rather, an issue of possible efficiency given
- * that this object does not fragment its memory internally. Since the goal is to maintain
- * contiguous strings that the user can quickly access, this will not break up a string too
- * fill available space, nor will it wrap a string around.
+ * Note that there is an issue of fragmentation, or rather, an issue of
+ * possible efficiency given that this object does not fragment its memory
+ * internally. Since the goal is to maintain contiguous strings that the user
+ * can quickly access, this will not break up a string too fill available
+ * space, nor will it wrap a string around.
  */
 template <size_t MAX_SIZE>
 class StringHistory {
@@ -80,7 +84,7 @@ public:
      *
      * @param line  Null terminated string
      */
-    void Add(const char* line)
+    void add(const char* line)
     {
         size_t remaining    = MAX_SIZE - _next;     // Number of bytes in history that can be copied
         size_t to_copy      = strlen(line) + 1;     // +1 for the NULL termination
@@ -130,7 +134,7 @@ public:
      *
      * This will wrap
      */
-    const char* Newer(void)
+    const char* newer(void)
     {
         if(_history[_nav] == 0) return NULL;
 
@@ -160,7 +164,7 @@ public:
      *
      * This will wrap
      */
-    const char* Older(void)
+    const char* older(void)
     {
         if(_history[_nav] == 0) return NULL;
 
@@ -211,7 +215,7 @@ private:
                                     // Always points to the next string to be returned by older()
 
 };
+}
 
+#endif /* _savr_stringhistory_h_included_ */
 
-
-#endif /* _savr_stringhistory_h_Included_ */

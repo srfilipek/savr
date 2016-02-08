@@ -1,7 +1,5 @@
-#ifndef _savr_optimized_h_Included_
-#define _savr_optimized_h_Included_
 /*********************************************************************************
- Copyright (C) 2013 by Stefan Filipek
+ Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +19,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *********************************************************************************/
+#ifndef _savr_optimized_h_included_
+#define _savr_optimized_h_included_
 
 /**
  * @file optimized.h
@@ -32,8 +32,11 @@
  * instruction set level.
  */
 
-namespace Opt {
+#include <stdint.h>
+#include <stddef.h>
 
+namespace savr {
+namespace opt {
 
 /**
  * This is the same thing as _BV() bit shift macro, but it keeps it
@@ -46,7 +49,7 @@ namespace Opt {
  * @return A byte with the corresponding bit set
  */
 inline uint8_t
-BitVal(uint8_t bit)
+bit_val(uint8_t bit)
 {
     uint8_t ret;
     asm volatile (
@@ -63,6 +66,7 @@ BitVal(uint8_t bit)
 
 
 }
-
+}
 
 #endif
+
