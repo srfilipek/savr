@@ -60,9 +60,7 @@ public:
      * @param wire      A 1-Wire interface
      * @param address   Address of the thermometer in question
      */
-    DSTherm(W1 wire, const W1::Address &address) : _wire(wire) {
-        __DSTherm(address);
-    }
+    DSTherm(W1 wire, const W1::Address &address);
 
 
     /**
@@ -116,10 +114,8 @@ public:
 
 
 private:
-    void            __DSTherm(const W1::Address &address);
-
-    W1              _wire;      ///< Copy of a 1-wire interface (it's only a byte in size...)
-    W1::Address     _address;   ///< Copy of a given address
+    W1 _wire; ///< Copy of a 1-wire interface (it's only a byte in size...)
+    W1::Address _address; ///< Copy of a given address
 
 };
 }

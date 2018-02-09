@@ -57,16 +57,10 @@ static uint16_t DELAY_J = CALC_DELAY(410);
 
 /**
  * @par Implementation notes:
- * GCC creates two copies of the constructor and destructors. This is the 'real'
- * constructor code in a separate function to reduce code size.
- *
- * http://gcc.gnu.org/bugzilla/show_bug.cgi?id=3187
  */
-void
-W1::__W1(gpio::Pin pin)
+W1::W1(gpio::Pin pin) :
+    _pin(pin)
 {
-    _pin  = pin;
-
     // Set to tristate
     gpio::low(_pin);
     gpio::in(_pin);

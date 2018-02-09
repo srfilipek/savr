@@ -52,9 +52,7 @@ public:
      * @param e         gpio::Pin for the Enable line
      */
     LCD(gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
-        gpio::Pin rs, gpio::Pin rw, gpio::Pin e) {
-        __LCD(d4, d5, d6, d7, rs, rw, e);
-    }
+        gpio::Pin rs, gpio::Pin rw, gpio::Pin e);
 
 
     /**
@@ -155,10 +153,6 @@ public:
 
 
 private:
-    void __LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
-                gpio::Pin rs, gpio::Pin rw, gpio::Pin e);
-
-
     /**
      * Send a single nibble down with the given mode (RS)
      * @param nib  Nibble (least significant 4 bits)

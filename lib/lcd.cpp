@@ -132,19 +132,16 @@ LCD::_set_data_nibble(uint8_t nibble)
 /**
  * @par Implementation notes:
  */
-void
-LCD::__LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
-            gpio::Pin rs, gpio::Pin rw, gpio::Pin e)
+LCD::LCD(gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
+         gpio::Pin rs, gpio::Pin rw, gpio::Pin e) :
+    _pin_d4(d4),
+    _pin_d5(d5),
+    _pin_d6(d6),
+    _pin_d7(d7),
+    _pin_rw(rw),
+    _pin_e(e),
+    _pin_rs(rs)
 {
-
-    _pin_d4 = d4;
-    _pin_d5 = d5;
-    _pin_d6 = d6;
-    _pin_d7 = d7;
-    _pin_rs = rs;
-    _pin_rw = rw;
-    _pin_e  = e;
-
     gpio::out(_pin_e);
     gpio::out(_pin_rs);
     gpio::out(_pin_rw);

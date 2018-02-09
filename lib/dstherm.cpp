@@ -45,10 +45,11 @@ static const uint8_t DS_READ_SUPPLY     = 0xB4;
 /**
  * @par Implementation notes:
  */
-void
-DSTherm::__DSTherm(const W1::Address &address)
+DSTherm::DSTherm(W1 wire, const W1::Address &address) :
+    _wire(wire),
+    _address(address)
 {
-    _address = address;
+    // Empty
 }
 
 
