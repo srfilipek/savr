@@ -40,7 +40,7 @@ static const bool RW_WRITE  = false;
  *
  * @param outputFreq    The desired TWI bus frequency in Hz
  */
-void    init(uint32_t output_freq);
+void init(uint32_t output_freq);
 
 
 /**
@@ -51,13 +51,13 @@ void    init(uint32_t output_freq);
  *
  * If pullups is false, the SDA and SCL lines are left untouched.
  */
-void    init(uint32_t output_freq, bool pullups);
+void init(uint32_t output_freq, bool pullups);
 
 
 /**
  * Prints a textual description of the bus state
  */
-void    print_state(void);
+void print_state(void);
 
 
 /**
@@ -91,7 +91,7 @@ uint8_t get(void);
  *
  * @param b     The byte to send
  */
-void    send(uint8_t b);
+void send(uint8_t b);
 
 
 /**
@@ -99,19 +99,19 @@ void    send(uint8_t b);
  *
  * @param b     The byte to send
  */
-void    send_async(uint8_t b);
+void send_async(uint8_t b);
 
 
 /**
  * Send bus Start
  */
-void    start(void);
+void start(void);
 
 
 /**
  * Send bus stop
  */
-void    stop(void);
+void stop(void);
 
 
 /**

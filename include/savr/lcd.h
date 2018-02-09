@@ -199,19 +199,19 @@ private:
     uint8_t _get_byte(uint8_t mode = 0);
 
 
-    uint8_t         _entry_mode;
-    uint8_t         _display_ctrl;
-    uint8_t         _display_shift;
-    uint8_t         _function_set;
+    uint8_t _entry_mode;
+    uint8_t _display_ctrl;
+    uint8_t _display_shift;
+    uint8_t _function_set;
 
-    gpio::Pin       _pin_d4;
-    gpio::Pin       _pin_d5;
-    gpio::Pin       _pin_d6;
-    gpio::Pin       _pin_d7;
+    gpio::Pin _pin_d4;
+    gpio::Pin _pin_d5;
+    gpio::Pin _pin_d6;
+    gpio::Pin _pin_d7;
 
-    gpio::Pin       _pin_rw;
-    gpio::Pin       _pin_e;
-    gpio::Pin       _pin_rs;
+    gpio::Pin _pin_rw;
+    gpio::Pin _pin_e;
+    gpio::Pin _pin_rs;
 
 };
 }

@@ -86,8 +86,8 @@ public:
      */
     void add(const char* line)
     {
-        size_t remaining    = MAX_SIZE - _next;     // Number of bytes in history that can be copied
-        size_t to_copy      = strlen(line) + 1;     // +1 for the NULL termination
+        size_t remaining = MAX_SIZE - _next; // Number of bytes in history
+        size_t to_copy = strlen(line) + 1; // +1 for the NULL termination
 
         if (to_copy > MAX_SIZE) {
             to_copy = MAX_SIZE;
@@ -205,14 +205,14 @@ public:
 
 
 private:
-    char    _history[MAX_SIZE];     // The buffer to use for history
+    char _history[MAX_SIZE];    // The buffer to use for history
 
-    size_t  _next;                  // Next place to put a string
-                                    // Always points to a null character
+    size_t _next;   // Next place to put a string
+                    // Always points to a null character
 
-    size_t  _nav;                   // The user-state from newe(r|st) and olde(r|st)
-                                    // Always points to valid text, or NULL if there is no text
-                                    // Always points to the next string to be returned by older()
+    size_t _nav;    // The user-state from newe(r|st) and olde(r|st)
+                    // Always points to valid text, or NULL if there is no text
+                    // Always points to the next string to be returned by older()
 
 };
 }
