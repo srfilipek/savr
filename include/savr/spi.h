@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_spi_h_included_
 #define _savr_spi_h_included_
 
@@ -42,7 +42,8 @@ namespace spi {
  *
  * @param spi_freq   Desired SPI clock frequency
  */
-void init(uint32_t spi_freq);
+void
+init(uint32_t spi_freq);
 
 
 /**
@@ -51,7 +52,8 @@ void init(uint32_t spi_freq);
  * @param input a pointer to the source data
  * @param length the size of the source data
  */
-void write_block(const uint8_t *input, size_t length);
+void
+write_block(const uint8_t *input, size_t length);
 
 
 /**
@@ -61,7 +63,8 @@ void write_block(const uint8_t *input, size_t length);
  * @param length the number of bytes to read
  * @param filler a byte to send continuously while reading
  */
-void read_block(uint8_t *input, size_t length, uint8_t filler);
+void
+read_block(uint8_t *input, size_t length, uint8_t filler);
 
 
 /**
@@ -71,22 +74,24 @@ void read_block(uint8_t *input, size_t length, uint8_t filler);
  *
  * @return the byte read from the SPI line
  */
-uint8_t trx_byte(uint8_t input);
+uint8_t
+trx_byte(uint8_t input);
 
 
 /**
  * Set the default SS line for this chip high
  */
-void ss_high(void);
+void
+ss_high();
 
 
 /**
  * Set the default SS line for this chip low
  */
-void ss_low(void);
+void
+ss_low();
 
 }
 }
 
 #endif /* _savr_spi_h_included_ */
-

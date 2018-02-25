@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_w1_h_included_
 #define _savr_w1_h_included_
 
@@ -58,7 +58,7 @@ public:
      */
     typedef union {
         uint64_t raw;
-        uint8_t  array[8];
+        uint8_t array[8];
         struct {
             uint8_t family;
             uint8_t serial[6];
@@ -75,7 +75,7 @@ public:
      *
      * @param pin       GPIO Pin to use for the bus.
      */
-    W1(gpio::Pin pin);
+    explicit W1(gpio::Pin pin);
 
 
     /**
@@ -89,7 +89,8 @@ public:
      *
      * @return true if presence found, false otherwise.
      */
-    bool reset(void);
+    bool
+    reset();
 
 
     /**
@@ -97,13 +98,15 @@ public:
      *
      * @param address   The address of the source
      */
-    void match_rom(const Address &address);
+    void
+    match_rom(const Address &address);
 
 
     /**
      * Select all devices on the bus.
      */
-    void skip_rom(void);
+    void
+    skip_rom();
 
 
     /**
@@ -128,7 +131,8 @@ public:
      *
      * @return true if we found a device, false otherwise.
      */
-    bool search_rom(Address &address, Token &token);
+    bool
+    search_rom(Address &address, Token &token);
 
 
     /**
@@ -153,7 +157,8 @@ public:
      *
      * @return true if we found a device, false otherwise.
      */
-    bool alarm_search(Address &address, Token &token);
+    bool
+    alarm_search(Address &address, Token &token);
 
 
     /**
@@ -161,7 +166,8 @@ public:
      *
      * @return 1 if bit is high, 0 otherwise
      */
-    uint8_t read_bit(void);
+    uint8_t
+    read_bit();
 
 
     /**
@@ -171,21 +177,24 @@ public:
      *
      * @param bit   Bit to write
      */
-    void write_bit(bool bit);
+    void
+    write_bit(bool bit);
 
 
     /**
      * Read a full byte from the bus
      * @return The byte read
      */
-    uint8_t read_byte(void);
+    uint8_t
+    read_byte();
 
 
     /**
      * Write a full byte to the bus
      * @param byte  The byte write
      */
-    void write_byte(uint8_t byte);
+    void
+    write_byte(uint8_t byte);
 
 
     /**
@@ -194,7 +203,8 @@ public:
      * @param byte  Pointer to a destination byte array
      * @param size  Number of bytes to read
      */
-    void read_bytes(uint8_t *byte, size_t size);
+    void
+    read_bytes(uint8_t *byte, size_t size);
 
 
     /**
@@ -205,7 +215,8 @@ public:
      *
      * Writes bytes starting at 0, to size-1
      */
-    void write_bytes(const uint8_t *byte, size_t size);
+    void
+    write_bytes(const uint8_t *byte, size_t size);
 
 
     /**
@@ -215,7 +226,8 @@ public:
      * @param bit_num   Bit number to set (0 is LSB)
      * @param set       Set the bit to 1 if true, 0 otherwise
      */
-    static void set_bit(Address &address, uint8_t bit_num, bool set);
+    static void
+    set_bit(Address &address, uint8_t bit_num, bool set);
 
 
     /**
@@ -226,7 +238,8 @@ public:
      *
      * @return 0 if the bit is 0, 1 if the bit is 1...
      */
-    static uint8_t get_bit(const Address &address, uint8_t bit_num);
+    static uint8_t
+    get_bit(const Address &address, uint8_t bit_num);
 
 
     /**
@@ -234,14 +247,22 @@ public:
      *
      * @param address  The address to print
      */
-    static void print_address(const Address &address);
+    static void
+    print_address(const Address &address);
 
 protected:
 
-    bool _searcher(uint8_t command, Address &address, Token &token);
-    void _drive_low();
-    void _release();
-    bool _read_state();
+    bool
+    _searcher(uint8_t command, Address &address, Token &token);
+
+    void
+    _drive_low();
+
+    void
+    _release();
+
+    bool
+    _read_state();
 
 private:
     gpio::Pin _pin; ///< GPIO Pin to control for this bus
@@ -249,4 +270,3 @@ private:
 }
 
 #endif /* _savr_w1_h_included_ */
-

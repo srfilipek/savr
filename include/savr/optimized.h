@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_optimized_h_included_
 #define _savr_optimized_h_included_
 
@@ -51,17 +51,16 @@ namespace opt {
  * @return A byte with the corresponding bit set
  */
 FORCE_INLINE uint8_t
-bit_val(uint8_t bit)
-{
+bit_val(uint8_t bit) {
     uint8_t ret;
     asm volatile (
-            "ldi %0, 0x01\n"
-            "rjmp 2f\n"
-            "1: lsl %0\n"
-            "2: dec %1\n"
-            "brpl 1b"
-         :"=a" (ret)
-         :"b"  (bit)
+    "ldi %0, 0x01\n"
+        "rjmp 2f\n"
+        "1: lsl %0\n"
+        "2: dec %1\n"
+        "brpl 1b"
+    :"=a" (ret)
+    :"b"  (bit)
     );
     return ret;
 }
@@ -71,4 +70,3 @@ bit_val(uint8_t bit)
 }
 
 #endif
-

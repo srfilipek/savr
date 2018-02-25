@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 #include <avr/io.h>
 #include <inttypes.h>
@@ -45,9 +45,9 @@ static StringHistory<term::LINESIZE> history;
 
 ///! File-scope terminal state
 struct TermState {
-    uint8_t  size;
-    uint8_t  max_length;
-    char     *dest;
+    uint8_t size;
+    uint8_t max_length;
+    char *dest;
 };
 static TermState state;
 
@@ -58,8 +58,7 @@ static char string_buf[term::LINESIZE];
  * @par Implementation notes:
  */
 static void
-backspace()
-{
+backspace() {
     putchar(BACKSPACE_CHAR);
     putchar(' ');
     putchar(BACKSPACE_CHAR);
@@ -70,8 +69,7 @@ backspace()
  * @par Implementation notes:
  */
 static bool
-add_char(char c)
-{
+add_char(char c) {
     /* Echo back */
     putchar(c);
 
@@ -91,8 +89,7 @@ add_char(char c)
  * @par Implementation notes:
  */
 static void
-clear_line()
-{
+clear_line() {
     while (state.size) {
         putchar(BACKSPACE_CHAR);
         putchar(' ');
@@ -103,13 +100,12 @@ clear_line()
 
 
 static void
-set_line(const char *line)
-{
+set_line(const char *line) {
     clear_line();
 
-    if(line == NULL) return;
+    if (line == NULL) return;
 
-    while(*line && add_char(*line)) {
+    while (*line && add_char(*line)) {
         line++;
     }
 }
@@ -119,25 +115,24 @@ set_line(const char *line)
  * @par Implementation notes:
  */
 static void
-handle_esc()
-{
+handle_esc() {
     char next = getchar();
-    if(next != '[') {
+    if (next != '[') {
         add_char(next);
         return;
     }
     next = getchar();
-    switch(next) {
-    case 'A':
-        set_line(history.older());
-        break;
-    case 'B':
-        set_line(history.newer());
-        break;
-    default:
-        add_char('[');
-        add_char(next);
-        return;
+    switch (next) {
+        case 'A':
+            set_line(history.older());
+            break;
+        case 'B':
+            set_line(history.newer());
+            break;
+        default:
+            add_char('[');
+            add_char(next);
+            return;
     }
 }
 
@@ -152,57 +147,54 @@ handle_char(char c) {
 
     switch (c) {
 
-    /* End of line found. NULL out and return. */
-    case '\r':
-        state.dest[state.size] = '\0';
-        putchar('\n');
-        //puts(dest);
-        return true;
-        /* Not Reached */
-        break;
+        /* End of line found. NULL out and return. */
+        case '\r':
+            state.dest[state.size] = '\0';
+            putchar('\n');
+            //puts(dest);
+            return true;
+            /* Not Reached */
+            break;
 
-    /* Clear line. Erase up to prompt. */
-    case CLR_CHAR:
-        clear_line();
-        break;
+            /* Clear line. Erase up to prompt. */
+        case CLR_CHAR:
+            clear_line();
+            break;
 
-    case DEL_CHAR: /* Fall through */
-    case BACKSPACE_CHAR:
-        if (state.size) {
-            backspace();
-            state.size--;
-        }
-        break;
+        case DEL_CHAR: /* Fall through */
+        case BACKSPACE_CHAR:
+            if (state.size) {
+                backspace();
+                state.size--;
+            }
+            break;
 
-    case ESC_CHAR:
-        handle_esc();
-        break;
+        case ESC_CHAR:
+            handle_esc();
+            break;
 
-    /* All others, check for non-special character. */
-    default:
-        if (c >= 0x20 && c <= 0x7E) {
-            add_char(c);
-        } else {
-            //printf("0x%02X ", c);
-        }
+            /* All others, check for non-special character. */
+        default:
+            if (c >= 0x20 && c <= 0x7E) {
+                add_char(c);
+            } else {
+                //printf("0x%02X ", c);
+            }
 
-        break;
+            break;
     }
     return false;
 }
-
 
 
 /**
  * @par Implementation Notes:
  */
 void
-term::read_line(char * string, uint8_t max_length)
-{
-    while(!handle_char(getchar())) { /* Nothing */ }
+term::read_line(char *string, uint8_t max_length) {
+    while (!handle_char(getchar())) { /* Nothing */ }
     strncpy(string, state.dest, max_length);
 }
-
 
 
 /**
@@ -210,32 +202,29 @@ term::read_line(char * string, uint8_t max_length)
  */
 void
 term::init(PGM_P message, PGM_P prompt,
-        const cmd::CommandList command_list, size_t length)
-{
+           const cmd::CommandList command_list, size_t length) {
     welcome_message = message;
     prompt_string = prompt;
 
     printf_P(welcome_message);
     cmd::init(command_list, length);
 
-    state.size      = 0;
-    state.dest      = string_buf;
+    state.size = 0;
+    state.dest = string_buf;
     state.max_length = term::LINESIZE;
 
     printf_P(prompt_string);
 }
 
 
-
 /**
  * @par Implementation Notes:
  */
 void
-term::run(void)
-{
+term::run() {
     while (1) {
-        while(!handle_char(getchar())) { /* Nothing */ }
-        if(state.size) {
+        while (!handle_char(getchar())) { /* Nothing */ }
+        if (state.size) {
             history.add(string_buf);
             cmd::run_command(string_buf);
             state.size = 0;
@@ -245,16 +234,14 @@ term::run(void)
 }
 
 
-
 /**
  * @par Implementation Notes:
  */
 void
-term::work(void)
-{
-    while(sci::size(stdin)) {
-        if(handle_char(getchar())) {
-            if(state.size) {
+term::work() {
+    while (sci::size(stdin)) {
+        if (handle_char(getchar())) {
+            if (state.size) {
                 history.add(string_buf);
                 cmd::run_command(string_buf);
                 state.size = 0;
@@ -263,4 +250,3 @@ term::work(void)
         }
     }
 }
-

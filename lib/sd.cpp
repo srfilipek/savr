@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 #include <inttypes.h>
 #include <avr/sfr_defs.h>
@@ -75,25 +75,45 @@ using namespace savr;
 #define FILL_BYTE                   0xFF
 #define START_BLOCK                 0xFE
 
-static void delay_bytes(uint16_t bytes);
-static void send_command(uint8_t command, uint32_t arg);
-static uint8_t check_for_card(void);
-static uint8_t get_response(uint8_t *buf, uint16_t length);
-static uint8_t read_data(uint8_t *buf, uint16_t length);
+static void
+delay_bytes(uint16_t bytes);
 
-static void decode_r1(uint8_t res);
+static void
+send_command(uint8_t command, uint32_t arg);
+
+static uint8_t
+check_for_card();
+
+static uint8_t
+get_response(uint8_t *buf, uint16_t length);
+
+static uint8_t
+read_data(uint8_t *buf, uint16_t length);
+
+static void
+decode_r1(uint8_t res);
+
 //static void decode_r2(uint16_t res);
-static void decode_data_res(uint8_t res);
-static void decode_data_err(uint8_t res);
+static void
+decode_data_res(uint8_t res);
+
+static void
+decode_data_err(uint8_t res);
 
 
-static uint8_t  crc7 (const uint8_t *bytes, size_t length);
-static uint16_t crc16(const uint8_t *bytes, size_t length);
-static uint16_t crc16_fill(uint16_t crc, uint8_t const_value, size_t length);
+static uint8_t
+crc7(const uint8_t *bytes, size_t length);
+
+static uint16_t
+crc16(const uint8_t *bytes, size_t length);
+
+static uint16_t
+crc16_fill(uint16_t crc, uint8_t const_value, size_t length);
 
 
 // Error printing used all over the place
-static void error(uint8_t cmd, uint8_t res);
+static void
+error(uint8_t cmd, uint8_t res);
 
 
 // sd::* is already non-reentrant, so a global buffer is... OK...
@@ -101,13 +121,11 @@ static uint8_t scratch[32];
 static gpio::Pin _ss;
 
 
-
 /**
  * @par Implementation Notes:
  */
 uint8_t
-sd::init(gpio::Pin ss)
-{
+sd::init(gpio::Pin ss) {
     uint16_t i;
     uint8_t res;
 
@@ -119,7 +137,7 @@ sd::init(gpio::Pin ss)
     delay_bytes(20);
 
     // Check if the card is inserted
-    if(!check_for_card()) {
+    if (!check_for_card()) {
         printf_P(PSTR("Card NOT found\n"));
         return 0;
     }
@@ -133,14 +151,14 @@ sd::init(gpio::Pin ss)
     res = get_response(scratch, 5);
 
     // Wait for card to init fully
-    i=0;
+    i = 0;
     do {
         send_command(CMD_SEND_OP_COND, 0);
         res = get_response(scratch, 1);
         i++;
-    }while(res && i < 10000);
+    } while (res && i < 10000);
 
-    if(res) {
+    if (res) {
         error(CMD_SEND_OP_COND, res);
         return 0;
     }
@@ -151,7 +169,7 @@ sd::init(gpio::Pin ss)
     send_command(CMD_CRC_ONOFF, 0);
 #endif
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_SEND_CID, res);
         decode_r1(res);
         return 0;
@@ -162,7 +180,7 @@ sd::init(gpio::Pin ss)
     // 128bits + 16 CRC
     res = get_response(scratch, 1) || !read_data(scratch, 18);
 
-    if(res) {
+    if (res) {
         error(CMD_SEND_CID, res);
         return 0;
     }
@@ -176,7 +194,7 @@ sd::init(gpio::Pin ss)
     // 128bits + 16 CRC
     res = get_response(scratch, 1) || !read_data(scratch, 18);
 
-    if(res) {
+    if (res) {
         error(CMD_SEND_CID, res);
         return 0;
     }
@@ -194,14 +212,13 @@ sd::init(gpio::Pin ss)
  * @par Implementation Notes:
  */
 uint8_t
-sd::read_block(uint32_t addr, uint8_t *buf, size_t size)
-{
+sd::read_block(uint32_t addr, uint8_t *buf, size_t size) {
     uint8_t res;
 
     // Set the block length... won't work on SDHC
     send_command(CMD_SET_BLOCKLEN, size);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_SET_BLOCKLEN, res);
         decode_r1(res);
         return 0;
@@ -209,7 +226,7 @@ sd::read_block(uint32_t addr, uint8_t *buf, size_t size)
 
     send_command(CMD_READ_BLOCK, addr);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_READ_BLOCK, res);
         decode_r1(res);
         return 0;
@@ -223,19 +240,18 @@ sd::read_block(uint32_t addr, uint8_t *buf, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-sd::write_block(uint32_t addr, const uint8_t *data, size_t size)
-{
+sd::write_block(uint32_t addr, const uint8_t *data, size_t size) {
     uint8_t res;
     uint8_t func_res = 1;
     uint16_t i;
     uint16_t crc;
 
-    crc = crc16(data, (uint32_t)size);
+    crc = crc16(data, (uint32_t) size);
 
     // Set the block length... won't work on SDHC
     send_command(CMD_SET_BLOCKLEN, BLOCK_SIZE);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_SET_BLOCKLEN, res);
         decode_r1(res);
         return 0;
@@ -244,7 +260,7 @@ sd::write_block(uint32_t addr, const uint8_t *data, size_t size)
     // Tell it we want to write
     send_command(CMD_WRITE_BLOCK, addr);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_WRITE_BLOCK, res);
         decode_r1(res);
         return 0;
@@ -259,20 +275,20 @@ sd::write_block(uint32_t addr, const uint8_t *data, size_t size)
     spi::write_block(data, size);
 
     // Fill empty space
-    for(i=size; i<BLOCK_SIZE; i++) {
+    for (i = size; i < BLOCK_SIZE; i++) {
         spi::trx_byte(FILL_BYTE);
     }
 
     // Send CRC (recalc for fill bytes
-    crc = crc16_fill(crc, FILL_BYTE, BLOCK_SIZE-size);
-    spi::trx_byte((uint8_t)(crc>>8));
-    spi::trx_byte((uint8_t)crc);
+    crc = crc16_fill(crc, FILL_BYTE, BLOCK_SIZE - size);
+    spi::trx_byte((uint8_t) (crc >> 8));
+    spi::trx_byte((uint8_t) crc);
 
     gpio::high(_ss);
 
     // Response?
     res = get_response(scratch, 1);
-    if((res & 0x0F) != 0x05) {
+    if ((res & 0x0F) != 0x05) {
         printf_P(PSTR("Error: Data rejected (%02hX)\n"), res);
         decode_data_res(res);
         func_res = 0;
@@ -281,16 +297,16 @@ sd::write_block(uint32_t addr, const uint8_t *data, size_t size)
     gpio::low(_ss);
 
     // Wait for completion
-    i=0;
+    i = 0;
     do {
         res = spi::trx_byte(0xFF);
         i++;
-    }while(res != NO_RESPONSE && i < 50000);
+    } while (res != NO_RESPONSE && i < 50000);
 
     gpio::high(_ss);
 
     // Did it take a crazy amount of time?
-    if(res != NO_RESPONSE) {
+    if (res != NO_RESPONSE) {
         error(0xFF, res);
         return 0;
     }
@@ -303,21 +319,20 @@ sd::write_block(uint32_t addr, const uint8_t *data, size_t size)
  * @par Implementation Notes:
  */
 uint8_t
-sd::erase_block(uint32_t addr, uint32_t size)
-{
+sd::erase_block(uint32_t addr, uint32_t size) {
     uint8_t res;
 
     send_command(CMD_ERASE_BLOCK_START, addr);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_ERASE_BLOCK_START, res);
         decode_r1(res);
         return 0;
     }
 
-    send_command(CMD_ERASE_BLOCK_END, addr+size);
+    send_command(CMD_ERASE_BLOCK_END, addr + size);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_ERASE_BLOCK_END, res);
         decode_r1(res);
         return 0;
@@ -326,7 +341,7 @@ sd::erase_block(uint32_t addr, uint32_t size)
 
     send_command(CMD_ERASE, 0);
     res = get_response(scratch, 1);
-    if(res) {
+    if (res) {
         error(CMD_ERASE, res);
         decode_r1(res);
         return 0;
@@ -336,7 +351,7 @@ sd::erase_block(uint32_t addr, uint32_t size)
     // Wait until a non-zero response is sent back, indicating
     // that the erase is complete
     gpio::low(_ss);
-    while(spi::trx_byte(0xFF) == 0){
+    while (spi::trx_byte(0xFF) == 0) {
         // Do nothing
     }
     gpio::high(_ss);
@@ -354,8 +369,7 @@ sd::erase_block(uint32_t addr, uint32_t size)
  * @param bytes the number of bytes to clock out (16bit)
  */
 void
-delay_bytes(uint16_t bytes)
-{
+delay_bytes(uint16_t bytes) {
     while (bytes) {
         spi::trx_byte(0xFF);
         bytes--;
@@ -372,12 +386,11 @@ delay_bytes(uint16_t bytes)
  * @return 1 if card is found, 0 otherwise
  */
 uint8_t
-check_for_card(void)
-{
+check_for_card(void) {
     unsigned int i;
 
     // Reset card and check response (retry x 10)
-    for (i=0; i<10; i++) {
+    for (i = 0; i < 10; i++) {
         send_command(CMD_GO_IDLE_STATE, 0);
         if (get_response(scratch, 1) != NO_RESPONSE) {
             return 1;
@@ -401,8 +414,7 @@ check_for_card(void)
  * @param arg the 32-bit argument to send with the command
  */
 void
-send_command(uint8_t command, uint32_t arg)
-{
+send_command(uint8_t command, uint32_t arg) {
     uint8_t temp[6]; // Block of data to send
     uint8_t i;
 
@@ -412,9 +424,9 @@ send_command(uint8_t command, uint32_t arg)
     temp[0] = command;
 
     // Copy args... not the most optimal?
-    for (i=1; i<5; i++) {
+    for (i = 1; i < 5; i++) {
         // AVRs are little endian, data to send is big
-        temp[i] = ((uint8_t *)&arg)[4-i];
+        temp[i] = ((uint8_t *) &arg)[4 - i];
     }
 
     // Last byte is CRC, shifted left 1, last bit set
@@ -451,9 +463,8 @@ send_command(uint8_t command, uint32_t arg)
  * @return the first byte of the response
  */
 uint8_t
-get_response(uint8_t * buf, uint16_t length)
-{
-    uint8_t res  = NO_RESPONSE;
+get_response(uint8_t *buf, uint16_t length) {
+    uint8_t res = NO_RESPONSE;
     uint8_t resx = NO_RESPONSE;
     uint8_t i = 0;
 
@@ -467,7 +478,7 @@ get_response(uint8_t * buf, uint16_t length)
     buf[0] = res;
 
     // Read the rest of the response, up to length
-    for (i=1; i<length; i++) {
+    for (i = 1; i < length; i++) {
         resx = spi::trx_byte(0xFF);
         buf[i] = resx;
         //printf(" %02hX", resx);
@@ -495,9 +506,8 @@ get_response(uint8_t * buf, uint16_t length)
  * @return 1 if sucessful, 0 otherwise.
  */
 uint8_t
-read_data(uint8_t * buf, uint16_t length)
-{
-    uint8_t  res = 0;
+read_data(uint8_t *buf, uint16_t length) {
+    uint8_t res = 0;
     uint16_t i = 0;
     uint16_t retryCount = 100;
 
@@ -515,7 +525,7 @@ read_data(uint8_t * buf, uint16_t length)
     }
 
     // Data is comin our way...
-    for (i=0; i<length; i++) {
+    for (i = 0; i < length; i++) {
         buf[i] = spi::trx_byte(0xFF);
     }
 
@@ -535,8 +545,7 @@ read_data(uint8_t * buf, uint16_t length)
  * @param res the response byte
  */
 void
-error(uint8_t cmd, uint8_t res)
-{
+error(uint8_t cmd, uint8_t res) {
     printf_P(PSTR("  Error: cmd=%02hX, res=%02hX\n"), cmd, res);
 }
 
@@ -547,8 +556,7 @@ error(uint8_t cmd, uint8_t res)
  * @param res the R1 response
  */
 void
-decode_r1(uint8_t res)
-{
+decode_r1(uint8_t res) {
     if (res) {
         printf_P(PSTR("  Error: ")); // Padding for all responses
     }
@@ -594,8 +602,7 @@ decode_r1(uint8_t res)
  * @param res the data response
  */
 void
-decode_data_res(uint8_t res)
-{
+decode_data_res(uint8_t res) {
 
     if (res)
         printf_P(PSTR("  Error: ")); // Padding for all responses
@@ -629,8 +636,7 @@ decode_data_res(uint8_t res)
  * @param res the data error response
  */
 void
-decode_data_err(uint8_t res)
-{
+decode_data_err(uint8_t res) {
 
     if (res)
         printf_P(PSTR("  Error: ")); // Padding for all responses
@@ -662,7 +668,7 @@ decode_data_err(uint8_t res)
  * @return the resultant CRC (8bit)
  */
 uint8_t
-crc7(const uint8_t * bytes, size_t length) {
+crc7(const uint8_t *bytes, size_t length) {
     return crc::crc_8(bytes, length, 0, 0x09 << 1) >> 1;
 }
 
@@ -676,7 +682,7 @@ crc7(const uint8_t * bytes, size_t length) {
  * @return the resultant CRC (16bit)
  */
 uint16_t
-crc16(const uint8_t * bytes, size_t length) {
+crc16(const uint8_t *bytes, size_t length) {
     return crc::crc_16(bytes, length, 0, 0x1021);
 }
 
@@ -695,7 +701,7 @@ crc16(const uint8_t * bytes, size_t length) {
  */
 uint16_t
 crc16_fill(uint16_t crc, uint8_t const_value, size_t length) {
-    while (length-->0) {
+    while (length-- > 0) {
         crc = crc::crc_16(&const_value, 1, crc, 0x1021);
     }
     return crc;
@@ -719,4 +725,3 @@ crc16_fill(uint16_t crc, uint8_t const_value, size_t length) {
 }
 
 #endif
-

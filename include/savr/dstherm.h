@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_dstherm_h_included_
 #define _savr_dstherm_h_included_
 
@@ -49,7 +49,8 @@ namespace savr {
  *  In parasitic power mode, WaitForConversion() will not work as the function
  *  relies on the DS thermometer to pull down the DQ line during the conversion.
  *  If you are operating in parasitic power mode, you must do you own handling
- *  of the strong pullup, and delay between starting a conversion and calling GetTemp()
+ *  of the strong pullup, and delay between starting a conversion and calling
+ *  GetTemp().
  */
 class DSTherm {
 public:
@@ -68,12 +69,13 @@ public:
      *
      * @param fahrenheit true to convert to F, false to leave in C (default)
      *
-     * @return the temperature in degrees of the selected units, or NAN (math.h) on error
+     * @return the temperature in degrees of the selected units, or NAN on error
      *
-     * This should be called after StartConversion() or StartConversionAll(). This
-     * will call WaitForConversion() for you.
+     * This should be called after StartConversion() or StartConversionAll().
+     * This will call WaitForConversion() for you.
      */
-    float get_temp(bool fahrenheit=false);
+    float
+    get_temp(bool fahrenheit = false);
 
 
     /**
@@ -81,7 +83,8 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool start_conversion(void);
+    bool
+    start_conversion(void);
 
 
     /**
@@ -89,7 +92,8 @@ public:
      *
      * @return false if the 1-Wire reset failed
      */
-    bool start_conversion_all(void);
+    bool
+    start_conversion_all(void);
 
 
     /**
@@ -98,9 +102,10 @@ public:
      * This polls the DQ line while it is held low until it is
      * released by the thermometer. This will not work in parasitic-power mode.
      *
-     * @return true if conversion completed within 750-ish ms. false if conversion timed out.
+     * @return true if conversion completed within 750-ish ms. false otherwise.
      */
-    bool wait_for_conversion(void);
+    bool
+    wait_for_conversion(void);
 
 
     /**
@@ -110,7 +115,8 @@ public:
      *
      * @return true if conversion completed (line is high), false otherwise.
      */
-    bool conversion_done(void);
+    bool
+    conversion_done(void);
 
 
 private:
@@ -122,4 +128,3 @@ private:
 
 
 #endif /* _savr_dstherm_h_Included_ */
-

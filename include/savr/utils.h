@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_utils_h_included_
 #define _savr_utils_h_included_
 
@@ -57,7 +57,8 @@ namespace utils {
  * @param data a pointer to the data to print
  * @param size the number of bytes to print
  */
-void print_hex(const void *data, size_t size);
+void
+print_hex(const void *data, size_t size);
 
 
 /**
@@ -74,10 +75,11 @@ void print_hex(const void *data, size_t size);
  * @param index a starting address to print with the data
  * @param width the number of bytes to print on a single line
  */
-void print_block(const void *data, size_t size, uint32_t index=0, size_t width=16);
+void
+print_block(const void *data, size_t size, uint32_t index = 0,
+            size_t width = 16);
 
 }
 }
 
 #endif /* _savr_utils_h_included_ */
-

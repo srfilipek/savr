@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_gpio_h_included_
 #define _savr_gpio_h_included_
 
@@ -38,39 +38,39 @@ namespace gpio {
  * This data structure must be defined here to allow the template functions to
  * reduce down to sbi/cbi/sbis/sbic instructions.
  */
-volatile uint8_t * const PORT_BANKS[] = {
+volatile uint8_t *const PORT_BANKS[] = {
 #ifdef PORTA
-        &PORTA,
+    &PORTA,
 #endif
 #ifdef PORTB
-        &PORTB,
+    &PORTB,
 #endif
 #ifdef PORTC
-        &PORTC,
+    &PORTC,
 #endif
 #ifdef PORTD
-        &PORTD,
+    &PORTD,
 #endif
 #ifdef PORTE
-        &PORTE,
+    &PORTE,
 #endif
 #ifdef PORTF
-        &PORTF,
+    &PORTF,
 #endif
 #ifdef PORTG
-        &PORTG,
+    &PORTG,
 #endif
 #ifdef PORTH
-        &PORTH,
+    &PORTH,
 #endif
 #ifdef PORTJ
-        &PORTJ,
+    &PORTJ,
 #endif
 #ifdef PORTK
-        &PORTK,
+    &PORTK,
 #endif
 #ifdef PORTL
-        &PORTL,
+    &PORTL,
 #endif
 };
 
@@ -125,9 +125,14 @@ typedef enum {
 
 
 /* Internal functions */
-inline volatile uint8_t & PORTOF (uint8_t x) { return (*(PORT_BANKS[(x)]  )); }
-inline volatile uint8_t & DDROF  (uint8_t x) { return (*(PORT_BANKS[(x)]-1)); }
-inline volatile uint8_t & PINOF  (uint8_t x) { return (*(PORT_BANKS[(x)]-2)); }
+inline volatile uint8_t &
+PORTOF(uint8_t x) { return (*(PORT_BANKS[(x)])); }
+
+inline volatile uint8_t &
+DDROF(uint8_t x) { return (*(PORT_BANKS[(x)] - 1)); }
+
+inline volatile uint8_t &
+PINOF(uint8_t x) { return (*(PORT_BANKS[(x)] - 2)); }
 
 
 /**
@@ -136,7 +141,8 @@ inline volatile uint8_t & PINOF  (uint8_t x) { return (*(PORT_BANKS[(x)]-2)); }
  * @param pin   The gpio::Pin to read
  * @return 0 if the pin is logic low, 1 if logic high
  */
-uint8_t get(gpio::Pin pin);
+uint8_t
+get(gpio::Pin pin);
 
 
 /**
@@ -146,10 +152,10 @@ uint8_t get(gpio::Pin pin);
  * @return 0 if the pin is logic low, 1 if logic high
  */
 template<gpio::Pin pin>
-FORCE_INLINE uint8_t get()
-{
+FORCE_INLINE uint8_t
+get() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
     return ((PINOF(_port) & _pin) ? 1 : 0);
 }
 
@@ -159,7 +165,8 @@ FORCE_INLINE uint8_t get()
  *
  * @param pin   The gpio::Pin to control
  */
-void high(gpio::Pin pin);
+void
+high(gpio::Pin pin);
 
 
 /**
@@ -168,10 +175,10 @@ void high(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-FORCE_INLINE void high()
-{
+FORCE_INLINE void
+high() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
     PORTOF(_port) |= _pin;
 }
 
@@ -181,7 +188,8 @@ FORCE_INLINE void high()
  *
  * @param pin   The gpio::Pin to control
  */
-void low(gpio::Pin pin);
+void
+low(gpio::Pin pin);
 
 
 /**
@@ -190,10 +198,10 @@ void low(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-FORCE_INLINE void low()
-{
+FORCE_INLINE void
+low() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
     PORTOF(_port) &= ~_pin;
 }
 
@@ -203,7 +211,8 @@ FORCE_INLINE void low()
  *
  * @param pin   The gpio::Pin to control
  */
-void in(gpio::Pin pin);
+void
+in(gpio::Pin pin);
 
 
 /**
@@ -212,10 +221,10 @@ void in(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-FORCE_INLINE void in()
-{
+FORCE_INLINE void
+in() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
     DDROF(_port) &= ~_pin;
 }
 
@@ -225,7 +234,8 @@ FORCE_INLINE void in()
  *
  * @param pin   The gpio::Pin to control
  */
-void out(gpio::Pin pin);
+void
+out(gpio::Pin pin);
 
 
 /**
@@ -234,10 +244,10 @@ void out(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-FORCE_INLINE void out()
-{
+FORCE_INLINE void
+out() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
     DDROF(_port) |= _pin;
 }
 
@@ -248,7 +258,8 @@ FORCE_INLINE void out()
  * @param pin   The gpio::Pin to control
  * @param set   zero = Low, non-zero = High
  */
-void set(gpio::Pin pin, uint8_t set);
+void
+set(gpio::Pin pin, uint8_t set);
 
 
 /**
@@ -258,11 +269,11 @@ void set(gpio::Pin pin, uint8_t set);
  * @param set   zero = Low, non-zero = High
  */
 template<gpio::Pin pin>
-void set(uint8_t set)
-{
-    if(set) {
+void
+set(uint8_t set) {
+    if (set) {
         high<pin>();
-    }else{
+    } else {
         low<pin>();
     }
 }
@@ -275,7 +286,8 @@ void set(uint8_t set)
  *
  * @param pin   The gpio::Pin to control
  */
-void toggle(gpio::Pin pin);
+void
+toggle(gpio::Pin pin);
 
 
 /**
@@ -286,14 +298,14 @@ void toggle(gpio::Pin pin);
  * @tparam pin  The gpio::Pin to control
  */
 template<gpio::Pin pin>
-void toggle()
-{
+void
+toggle() {
     uint8_t _port = pin / 8;
-    uint8_t _pin  = _BV(pin % 8);
+    uint8_t _pin = _BV(pin % 8);
 
-    if(PORTOF(_port) & _pin) {
+    if (PORTOF(_port) & _pin) {
         low<pin>();
-    }else{
+    } else {
         high<pin>();
     }
 }
@@ -302,4 +314,3 @@ void toggle()
 }
 
 #endif /* _savr_gpio_h_included_ */
-

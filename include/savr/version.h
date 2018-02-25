@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_version_h_included_
 #define _savr_version_h_included_
 
@@ -32,7 +32,9 @@
 #define SAVR_MAJOR   2  ///< Major version number
 #define SAVR_MINOR   0  ///< Minor version number
 #define SAVR_DEVEL
-#define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)  ///< Full version 16-bit word
+
+/// Full version 16-bit word
+#define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)
 
 #define SAVR_TARGET_STR     __xstr(MCU)
 #if defined(SAVR_DEVEL)

@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 #include <savr/crc.h>
 
@@ -26,14 +26,15 @@
  * @par Implementation Notes:
  */
 uint8_t
-savr::crc::crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly) {
-    while(length-->0) {
+savr::crc::crc_8(const uint8_t *data, size_t length, uint8_t crc,
+                 uint8_t poly) {
+    while (length-- > 0) {
         crc ^= *data++;
 
-        for(uint8_t ibit=0; ibit<8; ibit++) {
-            if(crc & 0x80) {
+        for (uint8_t ibit = 0; ibit < 8; ibit++) {
+            if (crc & 0x80) {
                 crc = (crc << 1) ^ poly;
-            }else{
+            } else {
                 crc <<= 1;
             }
         }
@@ -47,14 +48,15 @@ savr::crc::crc_8(const uint8_t * data, size_t length, uint8_t crc, uint8_t poly)
  * @par Implementation Notes:
  */
 uint16_t
-savr::crc::crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t poly) {
-    while(length-->0) {
-        crc ^= ((uint16_t)*data++) << 8;
+savr::crc::crc_16(const uint8_t *data, size_t length, uint16_t crc,
+                  uint16_t poly) {
+    while (length-- > 0) {
+        crc ^= ((uint16_t) *data++) << 8;
 
-        for(uint8_t ibit=0; ibit<8; ibit++) {
-            if(crc & 0x8000) {
+        for (uint8_t ibit = 0; ibit < 8; ibit++) {
+            if (crc & 0x8000) {
                 crc = (crc << 1) ^ poly;
-            }else{
+            } else {
                 crc <<= 1;
             }
         }
@@ -62,5 +64,3 @@ savr::crc::crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t po
     }
     return crc;
 }
-
-

@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_crc_h_included_
 #define _savr_crc_h_included_
 
@@ -57,7 +57,8 @@ namespace crc {
  * uint8_t result = CRC::crc_8(data, length, 0, 0x09 << 1) >> 1;
  *
  */
-uint8_t crc_8(const uint8_t * bytes, size_t length, uint8_t crc, uint8_t poly);
+uint8_t
+crc_8(const uint8_t *bytes, size_t length, uint8_t crc, uint8_t poly);
 
 
 /**
@@ -70,10 +71,10 @@ uint8_t crc_8(const uint8_t * bytes, size_t length, uint8_t crc, uint8_t poly);
  *
  * @return the resultant CRC (8bit)
  */
-uint16_t crc_16(const uint8_t * data, size_t length, uint16_t crc, uint16_t poly);
+uint16_t
+crc_16(const uint8_t *data, size_t length, uint16_t crc, uint16_t poly);
 
 }
 }
 
 #endif /* _savr_crc_h_included_ */
-

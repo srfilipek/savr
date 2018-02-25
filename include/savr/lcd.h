@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_lcd_h_included_
 #define _savr_lcd_h_included_
 
@@ -60,7 +60,8 @@ public:
      *
      * @param cursor Boolean true/false (true = show cursor)
      */
-    void set_cursor(bool cursor);
+    void
+    set_cursor(bool cursor);
 
 
     /**
@@ -68,7 +69,8 @@ public:
      *
      * @param blink Boolean true/false (true = blink)
      */
-    void set_blink(bool blink);
+    void
+    set_blink(bool blink);
 
 
     /**
@@ -76,7 +78,8 @@ public:
      *
      * @param on Boolean true/false (true = on)
      */
-    void set_display(bool on);
+    void
+    set_display(bool on);
 
 
     /**
@@ -84,7 +87,8 @@ public:
      *
      * @param string The null-terminated string to display
      */
-    void write_string(const char * string);
+    void
+    write_string(const char *string);
 
 
     /**
@@ -93,7 +97,8 @@ public:
      * @param byte  The byte to send
      * @param mode  RS line control
      */
-    void write_byte(uint8_t byte, uint8_t mode=0);
+    void
+    write_byte(uint8_t byte, uint8_t mode = 0);
 
 
     /**
@@ -101,7 +106,8 @@ public:
      *
      * @param cmd  The command byte to send
      */
-    inline void write_cmd(uint8_t cmd) {
+    inline void
+    write_cmd(uint8_t cmd) {
         write_byte(cmd);
     }
 
@@ -111,7 +117,8 @@ public:
      *
      * @param c  The character to write
      */
-    inline void write_char(char c) {
+    inline void
+    write_char(char c) {
         write_byte(c, 1);
     }
 
@@ -119,7 +126,8 @@ public:
     /**
      * Clear the display, cursor to home position
      */
-    inline void clear(void) {
+    inline void
+    clear(void) {
         write_cmd(0x01);
     }
 
@@ -127,7 +135,8 @@ public:
     /**
      * Set the cursor to the home position
      */
-    inline void home(void) {
+    inline void
+    home(void) {
         write_cmd(0x02);
     }
 
@@ -137,7 +146,8 @@ public:
      *
      * @param pos The DDRAM address
      */
-    inline void set_pos(uint8_t pos) {
+    inline void
+    set_pos(uint8_t pos) {
         write_cmd(0x80 | pos);
     }
 
@@ -147,7 +157,8 @@ public:
      *
      * @return The current cursor position
      */
-    inline uint8_t get_pos(void) {
+    inline uint8_t
+    get_pos(void) {
         return _get_byte() & ~READ_BUSYFLAG;
     }
 
@@ -158,37 +169,43 @@ private:
      * @param nib  Nibble (least significant 4 bits)
      * @param mode RS control
      */
-    void _write_nib(uint8_t nib, uint8_t mode=0);
+    void
+    _write_nib(uint8_t nib, uint8_t mode = 0);
 
 
     /**
      * Wait for the busy flag to not be set
      */
-    void _wait(void);
+    void
+    _wait(void);
 
 
     /**
      * Change data direction
      */
-    void _set_data_out(void);
+    void
+    _set_data_out(void);
 
 
     /**
      * Change data direction
      */
-    void _set_data_in(void);
+    void
+    _set_data_in(void);
 
 
     /**
      * Read a nibble from the data lines
      */
-    uint8_t _read_data_nibble(void);
+    uint8_t
+    _read_data_nibble(void);
 
 
     /**
      * Write a nibble to the data lines
      */
-    void _set_data_nibble(uint8_t nibble);
+    void
+    _set_data_nibble(uint8_t nibble);
 
 
     /**
@@ -196,7 +213,8 @@ private:
      *
      * @param mode  RS control. 0 for address/busy flag. 1 for data.
      */
-    uint8_t _get_byte(uint8_t mode = 0);
+    uint8_t
+    _get_byte(uint8_t mode = 0);
 
 
     uint8_t _entry_mode;
@@ -217,4 +235,3 @@ private:
 }
 
 #endif /* _savr_lcd_h_included_ */
-

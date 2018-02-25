@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_terminal_h_included_
 #define _savr_terminal_h_included_
 
@@ -55,9 +55,10 @@ static const uint8_t LINESIZE = 64;    ///< Line size for work/run()
  * @param commandList the list of supported commands
  * @param length the length of the commandList
  */
-void init(PGM_P message, PGM_P prompt,
-          const cmd::CommandList commandList,
-          size_t length);
+void
+init(PGM_P message, PGM_P prompt,
+     const cmd::CommandList commandList,
+     size_t length);
 
 
 /**
@@ -66,7 +67,8 @@ void init(PGM_P message, PGM_P prompt,
  * This continually gets lines from standard in and runs the
  * associated command, if any.
  */
-void run(void) __attribute__ ((noreturn));
+void
+run() __attribute__ ((noreturn));
 
 
 /**
@@ -78,7 +80,8 @@ void run(void) __attribute__ ((noreturn));
  * This can be used to provide a terminal interface while still performing
  * other tasks in the main execution loop.
  */
-void work(void);
+void
+work();
 
 
 /**
@@ -89,10 +92,10 @@ void work(void);
  * @param string the user supplied buffer to store the input line
  * @param max_length the maximum number of characters to read
  */
-void read_line(char * string, uint8_t max_length);
+void
+read_line(char *string, uint8_t max_length);
 
 }
 }
 
 #endif /* _savr_terminal_h_included_ */
-

@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #include <inttypes.h>
 #include <avr/sfr_defs.h>
 #include <avr/io.h>
@@ -106,19 +106,17 @@ static const SPIConfig CPP_PROGMEM reg_freq_cfg[] = {
     {_BV(SPR1)            ,          0},    // /64  ... 2^6
     {_BV(SPR1) | _BV(SPR0), _BV(SPI2X)},    // /128 ... 2^7
 };
-#define FREQ_CFG_SIZE sizeof(reg_freq_cfg)/sizeof(SPIConfig)
+#define FREQ_CFG_SIZE (sizeof(reg_freq_cfg) / sizeof(SPIConfig))
 
 
 void
-spi::ss_high(void)
-{
+spi::ss_high() {
     gpio::high(SPI_SS);
 }
 
 
 void
-spi::ss_low(void)
-{
+spi::ss_low() {
     gpio::low(SPI_SS);
 }
 
@@ -127,10 +125,9 @@ spi::ss_low(void)
  * @par Implementation Notes:
  */
 void
-spi::write_block(const uint8_t * input, size_t length)
-{
+spi::write_block(const uint8_t *input, size_t length) {
     size_t i = 0;
-    while(i < length)
+    while (i < length)
         spi::trx_byte(input[i++]);
 }
 
@@ -139,10 +136,9 @@ spi::write_block(const uint8_t * input, size_t length)
  * @par Implementation Notes:
  */
 void
-spi::read_block(uint8_t * input, size_t length, uint8_t filler)
-{
+spi::read_block(uint8_t *input, size_t length, uint8_t filler) {
     size_t i = 0;
-    while(i < length)
+    while (i < length)
         input[i++] = spi::trx_byte(filler);
 }
 
@@ -151,12 +147,11 @@ spi::read_block(uint8_t * input, size_t length, uint8_t filler)
  * @par Implementation Notes:
  */
 uint8_t
-spi::trx_byte(uint8_t input)
-{
+spi::trx_byte(uint8_t input) {
     uint8_t status;
 
     SPDR = input;
-    while( !(SPSR & _BV(SPIF)) ) ;
+    while (!(SPSR & _BV(SPIF)));
     status = SPDR;
 
     return status;
@@ -172,15 +167,14 @@ spi::trx_byte(uint8_t input)
  * Note that MSB is 7, LSB is 0
  */
 uint8_t
-highest_bit(uint8_t word)
-{
+highest_bit(uint8_t word) {
     uint8_t bit_count = 0;
 
-    if(word == 0) return 0;
+    if (word == 0) return 0;
 
-    while(word != 1) {
+    while (word != 1) {
         bit_count++;
-        word>>=1;
+        word >>= 1;
     }
     return bit_count;
 }
@@ -190,8 +184,7 @@ highest_bit(uint8_t word)
  * @par Implementation Notes:
  */
 void
-spi::init(uint32_t spiFreq)
-{
+spi::init(uint32_t spiFreq) {
     uint8_t div_exp;
 
     /**
@@ -213,12 +206,12 @@ spi::init(uint32_t spiFreq)
 
 
     // Round down divider and find 2^x (highest bit)
-    div_exp = highest_bit(static_cast<uint8_t>(F_CPU/spiFreq));
+    div_exp = highest_bit(static_cast<uint8_t>(F_CPU / spiFreq));
 
     // Bounds. div_exp to be subtracted by one in a few lines...
     // Sooo, our bounds are [1, FREQ_CFG_SIZE], not the normal [0, FREQ_CFG_SIZE-1] (both inclusive)
-    if(div_exp == 0) div_exp = 1;
-    if(div_exp > FREQ_CFG_SIZE) div_exp = FREQ_CFG_SIZE;
+    if (div_exp == 0) div_exp = 1;
+    if (div_exp > FREQ_CFG_SIZE) div_exp = FREQ_CFG_SIZE;
     div_exp--;
 
 
@@ -232,4 +225,3 @@ spi::init(uint32_t spiFreq)
 }
 
 #endif
-
