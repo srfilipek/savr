@@ -39,6 +39,8 @@
  * Helpful macros
  */
 #define ISAVR(x) defined(__AVR_ ## x ## __)
+#define FORCE_INLINE __attribute__((always_inline)) inline
+
 
 namespace savr {
 namespace utils {

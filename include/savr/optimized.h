@@ -35,6 +35,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <savr/utils.h>
+
 namespace savr {
 namespace opt {
 
@@ -48,7 +50,7 @@ namespace opt {
  * @param bit The bit number to set
  * @return A byte with the corresponding bit set
  */
-inline uint8_t
+FORCE_INLINE uint8_t
 bit_val(uint8_t bit)
 {
     uint8_t ret;

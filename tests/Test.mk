@@ -31,7 +31,7 @@ COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned
 
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++11 -fno-exceptions $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=gnu++14 -fno-exceptions $(INCLUDES)
 
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 

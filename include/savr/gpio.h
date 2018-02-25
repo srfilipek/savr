@@ -29,6 +29,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <savr/utils.h>
+
 namespace savr {
 namespace gpio {
 
@@ -36,7 +38,7 @@ namespace gpio {
  * This data structure must be defined here to allow the template functions to
  * reduce down to sbi/cbi/sbis/sbic instructions.
  */
-static volatile uint8_t * const PORT_BANKS[] = {
+volatile uint8_t * const PORT_BANKS[] = {
 #ifdef PORTA
         &PORTA,
 #endif
@@ -144,7 +146,7 @@ uint8_t get(gpio::Pin pin);
  * @return 0 if the pin is logic low, 1 if logic high
  */
 template<gpio::Pin pin>
-uint8_t get()
+FORCE_INLINE uint8_t get()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -166,7 +168,7 @@ void high(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-void high()
+FORCE_INLINE void high()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -188,7 +190,7 @@ void low(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-void low()
+FORCE_INLINE void low()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -210,7 +212,7 @@ void in(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-void in()
+FORCE_INLINE void in()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
@@ -232,7 +234,7 @@ void out(gpio::Pin pin);
  * @tparam pin   The gpio::Pin to control
  */
 template<gpio::Pin pin>
-void out()
+FORCE_INLINE void out()
 {
     uint8_t _port = pin / 8;
     uint8_t _pin  = _BV(pin % 8);
