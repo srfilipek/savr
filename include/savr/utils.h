@@ -46,6 +46,65 @@ namespace savr {
 namespace utils {
 
 /**
+ * Register manipulation helper for different bitfields.
+ *
+ * This provides compile-time constant generation help as well as runtime bit
+ * manipulation routines.
+ */
+template<uint32_t shift, uint32_t bits>
+class Bitfield {
+public:
+    static_assert((bits >= 1) && (bits <= 8), "Invalid bit size");
+    static_assert((shift >= 0) && (shift <= 7), "Invalid shift");
+
+    static constexpr uint8_t MASK = static_cast<uint8_t>((_BV(bits) - 1) << shift);
+    static constexpr uint8_t SHIFT = shift;
+
+    /**
+     * Return the value properly shifted and masked
+     *
+     * @param value Base value (lsb aligned)
+     * @return Shifted and masked value
+     */
+    static constexpr uint8_t set(uint8_t value) noexcept {
+        return (value << SHIFT) & MASK;
+    }
+
+    /**
+     * Return the base value from the raw register
+     *
+     * @param reg The register
+     * @return Masked register, shifted down to be lsb aligned
+     */
+    static constexpr uint8_t get(uint8_t reg) noexcept {
+        return (reg & MASK) >> SHIFT;
+    }
+
+    /**
+     * Update a register based on the value (lsb aligned from get())
+     *
+     * @param reg: Current register
+     * @param value: New value for the bitfield
+     * @return Updated register
+     */
+    static constexpr uint8_t value_update(uint8_t reg, uint8_t value) noexcept {
+        return (reg & ~MASK) | set(value);
+    }
+
+    /**
+     * Update a register value based on the raw bits (positioned from set())
+     *
+     * @param reg: Current register
+     * @param value: Masked and shifted value from set()
+     * @return Updated register
+     */
+    static constexpr uint8_t raw_update(uint8_t reg, uint8_t raw) noexcept {
+        return (reg & ~MASK) | raw;
+    }
+};
+
+
+/**
  * Prints a bunch of hex
  *
  * Prints each byte out in capital hex, zero padded, and
