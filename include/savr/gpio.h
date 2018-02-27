@@ -29,6 +29,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <avr/io.h>
+
 #include <savr/utils.h>
 
 namespace savr {
