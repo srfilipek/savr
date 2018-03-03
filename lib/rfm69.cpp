@@ -20,10 +20,12 @@
  THE SOFTWARE.
 *******************************************************************************/
 #include <stdio.h>
+#include <avr/pgmspace.h>
+
 #include <savr/gpio.h>
 #include <savr/spi.h>
 #include <savr/rfm69.h>
-#include <avr/pgmspace.h>
+#include <savr/optimized.h>
 
 using namespace savr;
 
@@ -153,7 +155,7 @@ rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
                       uint32_t freq_dev) {
     // If the freq_dev is not set, auto-set it based on a particular mod index
     if (freq_dev == 0) {
-        freq_dev = bitrate * (MODULATION_INDEX_TARGET / 2);
+        freq_dev = (bitrate * MODULATION_INDEX_TARGET) / 2;
     }
 
     // Datasheet has a hard minimum, plus some fudge
@@ -213,17 +215,17 @@ rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
     // A change in the center frequency will only be taken into account when the
     // least significant byte FrfLsb in RegFrfLsb is written.
     uint32_t center_freq_reg = center_freq / F_STEP;
-    write_reg(REG_FRF_MSB, (center_freq_reg >> 16) & 0xff);
-    write_reg(REG_FRF_MID, (center_freq_reg >> 8) & 0xff);
-    write_reg(REG_FRF_LSB, (center_freq_reg >> 0) & 0xff);
+    write_reg(REG_FRF_MSB, opt::byte_2(center_freq_reg));
+    write_reg(REG_FRF_MID, opt::byte_1(center_freq_reg));
+    write_reg(REG_FRF_LSB, opt::byte_0(center_freq_reg));
 
     uint16_t bitrate_reg = F_XOSC / bitrate;
-    write_reg(REG_BITRATE_MSB, (bitrate_reg >> 8) & 0xff);
-    write_reg(REG_BITRATE_LSB, (bitrate_reg >> 0) & 0xff);
+    write_reg(REG_BITRATE_MSB, opt::byte_1(bitrate_reg));
+    write_reg(REG_BITRATE_LSB, opt::byte_0(bitrate_reg));
 
     uint16_t freq_dev_reg = freq_dev / F_STEP;
-    write_reg(REG_FDEV_MSB, (freq_dev_reg >> 8) & 0xff);
-    write_reg(REG_FDEV_LSB, (freq_dev_reg >> 0) & 0xff);
+    write_reg(REG_FDEV_MSB, opt::byte_1(freq_dev_reg));
+    write_reg(REG_FDEV_LSB, opt::byte_0(freq_dev_reg));
 
     write_reg(REG_RX_BW, rxbw);
 #if defined(ENABLE_AFC)

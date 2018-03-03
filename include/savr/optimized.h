@@ -59,12 +59,95 @@ bit_val(uint8_t bit) {
         "1: lsl %0\n"
         "2: dec %1\n"
         "brpl 1b"
-    :"=a" (ret)
-    :"b"  (bit)
+    :"=r" (ret)
+    :"r"  (bit)
     );
     return ret;
 }
 
+/**
+ * Return the highest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_3(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %D1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the second to highest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_2(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %C1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the second to lowest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_1(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %B1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the lowest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_0(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %A1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the highest byte of a 16-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_1(uint16_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %B1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the lowest byte of a 16-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_0(uint16_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %A1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
 
 }
 }
