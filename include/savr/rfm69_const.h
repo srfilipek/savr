@@ -42,13 +42,13 @@ using savr::utils::Bitfield;
  */
 
 /// Oscillator frequency in Hz
-const uint32_t F_XOSC = 32000000uLL;
+constexpr float F_XOSC = 32000000.0;
 
 /// Frequency granularity: F_XOSC / 2^19
-const uint32_t F_STEP = F_XOSC / (static_cast<uint32_t>(1) << 19);
+constexpr float F_STEP = static_cast<float>(F_XOSC) / (static_cast<uint32_t>(1) << 19);
 
 /// Maximum frequency deviation setting (15bits x F_STEP)
-const uint32_t F_DEV_MAX = F_STEP * 0x3FFF;
+constexpr uint32_t F_DEV_MAX = static_cast<uint32_t>(F_STEP * 0x3FFF);
 
 
 /**

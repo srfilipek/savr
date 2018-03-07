@@ -20,6 +20,7 @@
  THE SOFTWARE.
 *******************************************************************************/
 #include <stdio.h>
+#include <math.h>
 #include <avr/pgmspace.h>
 
 #include <savr/gpio.h>
@@ -52,6 +53,29 @@ _common_trx(rfm69::Reg reg, uint8_t tx, bool write) {
 
     return res;
 }
+
+constexpr uint32_t _calc_frf_reg(uint32_t center_freq) {
+    auto frf = static_cast<uint32_t>(roundf(center_freq / rfm69::F_STEP));
+    return frf;
+}
+
+constexpr uint16_t _calc_bitrate_reg(uint32_t bitrate) {
+    return static_cast<uint16_t>(roundf(rfm69::F_XOSC / bitrate));
+}
+
+constexpr uint16_t _calc_fdev_reg(uint32_t freq_dev) {
+    return static_cast<uint16_t>(roundf(freq_dev / rfm69::F_STEP));
+}
+
+/// Ensure our calculations match expected values from the docs
+static_assert(_calc_frf_reg(915000000uL) == 0xe4c000);
+static_assert(_calc_bitrate_reg(1200) == 0x682b);
+static_assert(_calc_bitrate_reg(4800) == 0x1a0b);
+static_assert(_calc_bitrate_reg(76738uL) == 0x01a1);
+static_assert(_calc_bitrate_reg(200000uL) == 0x00a0);
+static_assert(_calc_bitrate_reg(300000uL) == 0x006b);
+static_assert(_calc_fdev_reg(5000) == 0x52);
+
 
 /**
  * The RSSI measurement during the last Rx
@@ -214,16 +238,16 @@ rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
 
     // A change in the center frequency will only be taken into account when the
     // least significant byte FrfLsb in RegFrfLsb is written.
-    uint32_t center_freq_reg = center_freq / F_STEP;
-    write_reg(REG_FRF_MSB, opt::byte_2(center_freq_reg));
-    write_reg(REG_FRF_MID, opt::byte_1(center_freq_reg));
-    write_reg(REG_FRF_LSB, opt::byte_0(center_freq_reg));
+    auto frf = _calc_frf_reg(center_freq);
+    write_reg(REG_FRF_MSB, opt::byte_2(frf));
+    write_reg(REG_FRF_MID, opt::byte_1(frf));
+    write_reg(REG_FRF_LSB, opt::byte_0(frf));
 
-    uint16_t bitrate_reg = F_XOSC / bitrate;
+    auto bitrate_reg = _calc_bitrate_reg(bitrate);
     write_reg(REG_BITRATE_MSB, opt::byte_1(bitrate_reg));
     write_reg(REG_BITRATE_LSB, opt::byte_0(bitrate_reg));
 
-    uint16_t freq_dev_reg = freq_dev / F_STEP;
+    auto freq_dev_reg = _calc_fdev_reg(freq_dev);
     write_reg(REG_FDEV_MSB, opt::byte_1(freq_dev_reg));
     write_reg(REG_FDEV_LSB, opt::byte_0(freq_dev_reg));
 
