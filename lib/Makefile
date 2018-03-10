@@ -23,7 +23,7 @@ COMMON  = -mmcu=$(MCU) -Wall -Wextra -Wno-expansion-to-defined -g -Os -funsigned
 INCLUDES += -I../include
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++14 -fno-exceptions $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=c++17 -fno-exceptions $(INCLUDES)
 
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 
