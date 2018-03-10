@@ -40,43 +40,91 @@ namespace gpio {
  * reduce down to sbi/cbi/sbis/sbic instructions.
  */
 volatile uint8_t *const PORT_BANKS[] = {
-#ifdef PORTA
+#if defined(PORTA)
     &PORTA,
 #endif
-#ifdef PORTB
+#if defined(PORTB)
     &PORTB,
 #endif
-#ifdef PORTC
+#if defined(PORTC)
     &PORTC,
 #endif
-#ifdef PORTD
+#if defined(PORTD)
     &PORTD,
 #endif
-#ifdef PORTE
+#if defined(PORTE)
     &PORTE,
 #endif
-#ifdef PORTF
+#if defined(PORTF)
     &PORTF,
 #endif
-#ifdef PORTG
+#if defined(PORTG)
     &PORTG,
 #endif
-#ifdef PORTH
+#if defined(PORTH)
     &PORTH,
 #endif
-#ifdef PORTJ
+#if defined(PORTJ)
     &PORTJ,
 #endif
-#ifdef PORTK
+#if defined(PORTK)
     &PORTK,
 #endif
-#ifdef PORTL
+#if defined(PORTL)
     &PORTL,
 #endif
 };
 
+/**
+ * This enumeration is an index into PORT_BANKS above.
+ */
+enum PortIdx : uint8_t {
+#if defined(PORTA)
+    PORTA_IDX,
+#endif
+#if defined(PORTB)
+    PORTB_IDX,
+#endif
+#if defined(PORTC)
+    PORTC_IDX,
+#endif
+#if defined(PORTD)
+    PORTD_IDX,
+#endif
+#if defined(PORTE)
+    PORTE_IDX,
+#endif
+#if defined(PORTF)
+    PORTF_IDX,
+#endif
+#if defined(PORTG)
+    PORTG_IDX,
+#endif
+#if defined(PORTH)
+    PORTH_IDX,
+#endif
+#if defined(PORTJ)
+    PORTJ_IDX,
+#endif
+#if defined(PORTK)
+    PORTK_IDX,
+#endif
+#if defined(PORTL)
+    PORTL_IDX,
+#endif
+};
 
-#define MAKEPINS(x) x##0, x##1, x##2, x##3, x##4, x##5, x##6, x##7
+#define MAKEPIN(x, y) (uint8_t)(((PORT##x##_IDX) << 4) | (y))
+
+#define MAKEPINS(x)\
+x##0 = MAKEPIN(x, 0),\
+x##1 = MAKEPIN(x, 1),\
+x##2 = MAKEPIN(x, 2),\
+x##3 = MAKEPIN(x, 3),\
+x##4 = MAKEPIN(x, 4),\
+x##5 = MAKEPIN(x, 5),\
+x##6 = MAKEPIN(x, 6),\
+x##7 = MAKEPIN(x, 7),
 
 /**
  * GPIO Pin Constants for the compiled system.
@@ -87,53 +135,60 @@ volatile uint8_t *const PORT_BANKS[] = {
  *
  * Examples are gpio::C3 or gpio::A0
  */
-typedef enum {
+enum Pin: uint8_t {
 #if defined(PORTA)
-    MAKEPINS(A),
+    MAKEPINS(A)
 #endif
 #if defined(PORTB)
-    MAKEPINS(B),
+    MAKEPINS(B)
 #endif
 #if defined(PORTC)
-    MAKEPINS(C),
+    MAKEPINS(C)
 #endif
 #if defined(PORTD)
-    MAKEPINS(D),
+    MAKEPINS(D)
 #endif
 #if defined(PORTE)
-    MAKEPINS(E),
+    MAKEPINS(E)
 #endif
 #if defined(PORTF)
-    MAKEPINS(F),
+    MAKEPINS(F)
 #endif
 #if defined(PORTG)
-    MAKEPINS(G),
+    MAKEPINS(G)
 #endif
 #if defined(PORTH)
-    MAKEPINS(H),
+    MAKEPINS(H)
 #endif
 #if defined(PORTJ)
-    MAKEPINS(J),
+    MAKEPINS(J)
 #endif
 #if defined(PORTK)
-    MAKEPINS(K),
+    MAKEPINS(K)
 #endif
 #if defined(PORTL)
-    MAKEPINS(L),
+    MAKEPINS(L)
 #endif
-    NONE,   ///< Do not pass into gpio::*() functions(!!), but use for your own boundary checks
-} Pin;
+    // Do not pass into gpio::*() functions(!!), but use for boundary checks
+    NONE,
+};
 
 
 /* Internal functions */
-inline volatile uint8_t &
-PORTOF(uint8_t x) { return (*(PORT_BANKS[(x)])); }
+inline volatile uint8_t *
+PORTOF(uint8_t x) {
+    return PORT_BANKS[x];
+}
 
-inline volatile uint8_t &
-DDROF(uint8_t x) { return (*(PORT_BANKS[(x)] - 1)); }
+inline volatile uint8_t *
+DDROF(uint8_t x) {
+    return PORT_BANKS[x] - 1;
+}
 
-inline volatile uint8_t &
-PINOF(uint8_t x) { return (*(PORT_BANKS[(x)] - 2)); }
+inline volatile uint8_t *
+PINOF(uint8_t x) {
+    return PORT_BANKS[(x)] - 2;
+}
 
 
 /**
@@ -155,9 +210,9 @@ get(gpio::Pin pin);
 template<gpio::Pin pin>
 FORCE_INLINE uint8_t
 get() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
-    return ((PINOF(_port) & _pin) ? 1 : 0);
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
+    return ((*PINOF(_port) & _pin) ? 1 : 0);
 }
 
 
@@ -178,9 +233,9 @@ high(gpio::Pin pin);
 template<gpio::Pin pin>
 FORCE_INLINE void
 high() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
-    PORTOF(_port) |= _pin;
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
+    *PORTOF(_port) |= _pin;
 }
 
 
@@ -201,9 +256,9 @@ low(gpio::Pin pin);
 template<gpio::Pin pin>
 FORCE_INLINE void
 low() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
-    PORTOF(_port) &= ~_pin;
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
+    *PORTOF(_port) &= ~_pin;
 }
 
 
@@ -224,9 +279,9 @@ in(gpio::Pin pin);
 template<gpio::Pin pin>
 FORCE_INLINE void
 in() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
-    DDROF(_port) &= ~_pin;
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
+    *DDROF(_port) &= ~_pin;
 }
 
 
@@ -247,9 +302,9 @@ out(gpio::Pin pin);
 template<gpio::Pin pin>
 FORCE_INLINE void
 out() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
-    DDROF(_port) |= _pin;
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
+    *DDROF(_port) |= _pin;
 }
 
 
@@ -301,10 +356,10 @@ toggle(gpio::Pin pin);
 template<gpio::Pin pin>
 void
 toggle() {
-    uint8_t _port = pin / 8;
-    uint8_t _pin = _BV(pin % 8);
+    uint8_t _port = pin >> 4;
+    uint8_t _pin = _BV(pin & 0xf);
 
-    if (PORTOF(_port) & _pin) {
+    if (*PORTOF(_port) & _pin) {
         low<pin>();
     } else {
         high<pin>();

@@ -65,6 +65,20 @@ bit_val(uint8_t bit) {
     return ret;
 }
 
+
+/**
+ * Use the SWAP instruction to swap nibbles
+ */
+FORCE_INLINE uint8_t
+swap_nibbles(uint8_t val) {
+    asm volatile (
+    "swap %0"
+    :"=r" (val)
+    :"0"  (val)
+    );
+    return val;
+}
+
 /**
  * Return the highest byte of a 32-bit integer
  */

@@ -46,10 +46,10 @@ gpio::set(gpio::Pin pin, uint8_t set) {
  */
 void
 gpio::toggle(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
 
-    if (PORTOF(_port) & _pin) {
+    if (*PORTOF(_port) & _pin) {
         low(pin);
     } else {
         high(pin);
@@ -62,9 +62,9 @@ gpio::toggle(gpio::Pin pin) {
  */
 uint8_t
 gpio::get(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
-    return ((PINOF(_port) & _pin) ? 1 : 0);
+    return ((*PINOF(_port) & _pin) ? 1 : 0);
 }
 
 
@@ -73,9 +73,9 @@ gpio::get(gpio::Pin pin) {
  */
 void
 gpio::high(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
-    PORTOF(_port) |= _pin;
+    *PORTOF(_port) |= _pin;
 }
 
 
@@ -84,9 +84,9 @@ gpio::high(gpio::Pin pin) {
  */
 void
 gpio::low(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
-    PORTOF(_port) &= ~_pin;
+    *PORTOF(_port) &= ~_pin;
 }
 
 
@@ -95,9 +95,9 @@ gpio::low(gpio::Pin pin) {
  */
 void
 gpio::in(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
-    DDROF(_port) &= ~_pin;
+    *DDROF(_port) &= ~_pin;
 }
 
 
@@ -106,7 +106,7 @@ gpio::in(gpio::Pin pin) {
  */
 void
 gpio::out(gpio::Pin pin) {
-    uint8_t _port = pin / 8;
+    uint8_t _port = opt::swap_nibbles(pin) & 0x0f;
     uint8_t _pin = opt::bit_val(pin % 8);
-    DDROF(_port) |= _pin;
+    *DDROF(_port) |= _pin;
 }
