@@ -91,8 +91,8 @@ tx_pdu(void *src, size_t length);
  *
  * If the packet is larger than MTU it will be truncated.
  */
-bool
-tx_pdu_arq(void *src, size_t length, size_t timeout, uint8_t retry);
+//bool
+//tx_pdu_arq(void *src, size_t length, size_t timeout, uint8_t retry);
 
 /**
  * Configure the FSK parameters.

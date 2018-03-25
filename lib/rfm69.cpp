@@ -150,11 +150,11 @@ rfm69::tx_pdu(void *src, size_t length) {
     set_mode(MODE_SLEEP, false);
 }
 
-bool
-rfm69::tx_pdu_arq(void *src, size_t length, size_t timeout,
-                  uint8_t retry) {
-    bool successful = false;
-
+//bool
+//rfm69::tx_pdu_arq(void *src, size_t length, size_t timeout,
+//                  uint8_t retry) {
+//    bool successful = false;
+//
 //    // Fill up the FIFO in sleep/stdby mode
 //    set_mode(MODE_STDBY, true);
 //    write_reg(REG_DIO_MAP_1, DIO0_PKT_TX_PACKET_SENT);
@@ -171,8 +171,8 @@ rfm69::tx_pdu_arq(void *src, size_t length, size_t timeout,
 //
 //    // Go back to sleep when done
 //    set_mode(MODE_SLEEP, false);
-    return successful;
-}
+//    return successful;
+//}
 
 void
 rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
