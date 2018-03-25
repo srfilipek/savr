@@ -11,6 +11,7 @@ that I knew, I decided it was best to host the code publicly for all.
 This library includes:
 
 * Pin-based GPIO interface
+* Millisecond clock
 * Interfaces for various buses:
   * SPI
   * SCI (UART)
@@ -19,16 +20,17 @@ This library includes:
 * SCI/UART binding to stdin and stdout
 * Terminal interface
   * Simple command interface
-  * Keeps track of command history with up/down arrow navigation
+  * Command history with up/down arrow navigation
 * Various Peripherals:
   * ST7066/HD44780 based character LCDs
-  * W5100 (Arduino ethernet shield, not fully developed)
   * SD Cards over SPI
   * DS18B2x and DS182x 1-Wire temp sensors
+  * RFM69 wireless module
 
 The library has been at least somewhat tested with the following:
 
 * ATmega328P (Arduino)
+* ATmega1284P
 * ATmega8
 * ATmega88
 * ATmega8515
@@ -120,8 +122,9 @@ allows for it to run on smaller, slower devices.
 
 ## Global objects ##
 There is no 'new' or 'delete' support. This means all objects must be globally
-created using static initialization, or have a global pointer to a persistent
-stack object.
+created using static initialization, have a global pointer to a persistent
+stack object, or simply have references or pointers passed around as function
+arguments.
 
 Static initialization:
 ```c++
@@ -160,6 +163,22 @@ int main(void) {
     }
 }
 ```
+
+Function argument (by reference):
+```c++
+foo(W1 &wire) {
+    wire.reset();
+    ...
+}
+
+...
+
+int main(void) {
+    W1 wire(gpio::C0);
+    foo(wire);
+}
+```
+
 # Hardware Tested Devices #
 The library has been tested with hardware in the loop (HIL) for:
   * ATmega328P (Arduino)
@@ -169,6 +188,7 @@ The library has been tested with hardware in the loop (HIL) for:
   * ATmega16
   * ATmega32
   * ATmega644P
+  * atmega1284p
 
 # Compilation Support #
 In addition to HIL testing many additional micros have been "compile tested".
