@@ -67,8 +67,8 @@ init(PGM_P message, PGM_P prompt,
  * This continually gets lines from standard in and runs the
  * associated command, if any.
  */
-void
-run() __attribute__ ((noreturn));
+[[noreturn]] void
+run();
 
 
 /**

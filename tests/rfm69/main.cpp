@@ -195,6 +195,18 @@ wrap_xmit_rssi(char *args) {
 }
 
 uint8_t
+wrap_xmit_rssi_ook(char *args) {
+
+    rfm69::write_reg(rfm69::REG_DATA_MODUL,
+                     rfm69::DATA_MODE_CONT_SYNC |
+                     rfm69::MOD_TYPE_OOK);
+
+    // This causes the preamble to be sent
+    rfm69::set_mode(rfm69::MODE_TX);
+    return 0;
+}
+
+uint8_t
 wrap_poll_rssi(char *args) {
 
     rfm69::write_reg(rfm69::REG_DATA_MODUL,
@@ -303,7 +315,7 @@ wrap_set_params(char *args) {
     current_arg = strtok_r(nullptr, " ", &token);
     auto center_freq = static_cast<uint32_t>(strtoul(current_arg, nullptr, 0));
     if(center_freq == 0) {
-        center_freq = 915000000uLL;
+        center_freq = 915000000uL;
     }
 
     current_arg = strtok_r(nullptr, " ", &token);
@@ -329,7 +341,8 @@ static cmd::CommandList cmd_list = {
     {"write-reg",   wrap_write_reg,     "Write radio register"},
     {"rx-test",     wrap_rx_test,       "Receive test (loop)"},
     {"rx-str",      wrap_rx_str,        "Receive a single string"},
-    {"xmit-rssi",   wrap_xmit_rssi,     "Send a tone for RSSI"},
+    {"xmit-rssi",   wrap_xmit_rssi,     "Send a tone for RSSI (FSK)"},
+    {"xmit-rssi-ook",wrap_xmit_rssi_ook,"Send a tone for RSSI (OOK)"},
     {"poll-rssi",   wrap_poll_rssi,     "Measure RSSI (loop)"},
     {"tx-test",     wrap_tx_test,       "Transmit test (loop)"},
     {"tx-str",      wrap_tx_str,        "Transmit a single string"},
@@ -338,7 +351,6 @@ static cmd::CommandList cmd_list = {
     {"set-power",   wrap_set_power,     "Set transmit power"},
     {"set-params",  wrap_set_params,    "Set the bitrate, center freq (opt.), and freq dev (opt.)"},
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
 // Terminal display
@@ -361,7 +373,8 @@ main() {
 
     rfm69::init(50000, 903141593uL);
 
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     gpio::out(gpio::D7);
     gpio::high(gpio::D7);

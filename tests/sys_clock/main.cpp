@@ -17,6 +17,7 @@
 #include <savr/terminal.h>
 #include <savr/clock.h>
 #include <savr/gpio.h>
+#include <savr/utils.h>
 
 #define enable_interrupts() sei()
 
@@ -37,45 +38,41 @@ tick(char* args)
  * Terminal command callbacks
  */
 static uint8_t
-tick_low(char* args)
+tick_byte(char* args)
 {
-    printf_P(PSTR("%u\n"), clock::ticks_low());
+    printf_P(PSTR("%u\n"), clock::ticks_byte());
     return 0;
 }
 
 /**
  * Terminal command callbacks
  */
-static uint8_t
+[[noreturn]] static uint8_t
 tock(char* args)
 {
     while(true) {
         printf_P(PSTR("%lu\n"), clock::ticks());
     }
-    return 0;
 }
 
 /**
  * Terminal command callbacks
  */
-static uint8_t
-tock_low(char* args)
+[[noreturn]] static uint8_t
+tock_byte(char* args)
 {
     while(true) {
-        printf_P(PSTR("%u\n"), clock::ticks_low());
+        printf_P(PSTR("%u\n"), clock::ticks_byte());
     }
-    return 0;
 }
 
 // Command list
 static cmd::CommandList cmd_list = {
     {"tick", tick, "Prints the number of ticks elapsed"},
     {"tock", tock, "Continually prints the number of ticks elapsed"},
-    {"tick-low", tick_low, "Prints the lowest byte of the number of ticks elapsed"},
-    {"tock-low", tock_low, "Continually prints the lowest byte of number of ticks elapsed"},
+    {"tick-byte", tick_byte, "Prints the lowest byte of the number of ticks elapsed"},
+    {"tock-byte", tock_byte, "Continually prints the lowest byte of number of ticks elapsed"},
 };
-
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
 // Terminal display
@@ -92,7 +89,8 @@ int main(void) {
 
     enable_interrupts();
 
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     // LED output for the pulse
     gpio::out<gpio::D7>();

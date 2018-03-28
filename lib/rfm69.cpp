@@ -26,6 +26,7 @@
 #include <savr/gpio.h>
 #include <savr/spi.h>
 #include <savr/rfm69.h>
+#include <savr/utils.h>
 #include <savr/optimized.h>
 
 using namespace savr;
@@ -205,10 +206,9 @@ rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
 
     // Find the table entry for the RxBw settings
     // Something something binary search is faster but bigger something
-    size_t idx = 0;
-    while (RXBW_FSK[idx].freq < min_rxbw &&
-           idx < (RXBW_FSK_SIZE - 1)) {
-        idx++;
+    size_t idx ;
+    for (idx = 0; idx < (utils::array_size(RXBW_FSK) - 1); ++idx) {
+        if (RXBW_FSK[idx].freq >= min_rxbw) break;
     }
     uint8_t rxbw = RXBW_FSK[idx].rxbw_val;
     printf_P(PSTR("RxBw act %lu: 0x%02x\n"), RXBW_FSK[idx].freq, rxbw);
@@ -227,9 +227,8 @@ rfm69::set_fsk_params(uint32_t bitrate, uint32_t center_freq,
     printf_P(PSTR("Min RxBwAfc: %lu\n"), min_rxbw_afc);
 
     // Since it's always >= min_rxbw, just continue the loop from the last idx
-    while (RXBW_FSK[idx].freq < min_rxbw_afc &&
-           idx < (RXBW_FSK_SIZE - 1)) {
-        idx++;
+    for (; idx < (utils::array_size(RXBW_FSK) - 1); ++idx) {
+        if (RXBW_FSK[idx].freq >= min_rxbw_afc) break;
     }
     uint8_t rxbw_afc = RXBW_FSK[idx].rxbw_val;
     printf_P(PSTR("RxBwAfc act %lu: 0x%02x\n"), RXBW_FSK[idx].freq,

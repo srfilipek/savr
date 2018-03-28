@@ -259,10 +259,7 @@ static cmd::CommandList cmd_list = {
     {"stop",            wrap_twi_stop,          "Bus Stop"},
     {"state",           wrap_twi_state,         "Get bus status byte"},
     {"pins",            wrap_pins,              "Print state of all GPIO pins"},
-
-
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
 
 
 // Terminal display
@@ -275,14 +272,15 @@ static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
  */
 int main(void) {
 
-    sci::init(38400);  // bps
+    sci::init(250000uL);  // bps
 
     // Enable internal pullups for the TWI bus
     twi::init(100000, true); // Bus freq in Hz
 
     enable_interrupts();
 
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     term::run();
 

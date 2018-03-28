@@ -108,7 +108,6 @@ static const RxBwConv RXBW_FSK[] = {
     {400000uL, rfm69::RX_BW_MANT_20 | rfm69::RX_BW_EXP_0 | rfm69::DEF_DCC_F},
     {500000uL, rfm69::RX_BW_MANT_16 | rfm69::RX_BW_EXP_0 | rfm69::DEF_DCC_F},
 };
-static const size_t RXBW_FSK_SIZE = sizeof(RXBW_FSK) / sizeof(RXBW_FSK[0]);
 
 /// Init register settings
 static const RegisterSetting INIT_REG[] = {

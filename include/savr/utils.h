@@ -105,6 +105,16 @@ public:
 
 
 /**
+ * Returns the size of the given array
+ */
+template <class T, size_t N>
+constexpr size_t array_size([[maybe_unused]] const T (&array)[N]) noexcept
+{
+    return N;
+}
+
+
+/**
  * Prints a bunch of hex
  *
  * Prints each byte out in capital hex, zero padded, and
