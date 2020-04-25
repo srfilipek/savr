@@ -56,7 +56,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
-.PHONY: clean all size load cleanload lib
+.PHONY: clean all size load load_isp cleanload lib info_isp
 .INTERMEDIATE: $(OBJECTS)
 
 ## Build
@@ -84,9 +84,11 @@ size: $(TARGET)
 lib:
 	$(MAKE) -C $(LIBDIR)
 
-## Program MCU
 load: $(TARGET:%.elf=%.hex)
 	$(shell avrdude -c arduino -P $(SERIAL_PORT) -p $(MCU) -U $<)
+
+load_isp: $(TARGET:%.elf=%.hex)
+	$(shell avrdude -cavrisp2 -Pusb -p $(MCU) -U $<)
 
 ## Clean target
 clean:
