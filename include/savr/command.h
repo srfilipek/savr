@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_command_h_included_
 #define _savr_command_h_included_
 
@@ -72,7 +72,8 @@ typedef const CommandDef *CommandListPtr;
  * @param commandList   List of supported commands
  * @param length        Number of commands in list
  */
-void init(const CommandList command_list, size_t length);
+void
+init(const CommandList command_list, size_t length);
 
 
 /**
@@ -82,10 +83,10 @@ void init(const CommandList command_list, size_t length);
  *
  * If the command is not found, a small help text is displayed
  */
-void run_command(char *line);
+void
+run_command(char *line);
 
 }
 }
 
 #endif /* _savr_command_h_included_ */
-

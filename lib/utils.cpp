@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 #include <ctype.h>
 #include <stdint.h>
@@ -31,19 +31,18 @@
 using namespace savr;
 
 static const char CPP_PROGMEM BYTEwPAD[] = "%02X ";
-static const char CPP_PROGMEM dPAD[]     = "  ";
+static const char CPP_PROGMEM dPAD[] = "  ";
 
 
 /**
  * @par Implementation notes:
  */
 void
-utils::print_hex(const void *data, size_t size)
-{
+utils::print_hex(const void *data, size_t size) {
 
-    const uint8_t *input = static_cast<const uint8_t *>(data);
+    auto *input = static_cast<const uint8_t *>(data);
 
-    for(size_t i=0; i<size; i++) {
+    for (size_t i = 0; i < size; i++) {
         printf_P(BYTEwPAD, input[i]);
     }
 
@@ -54,18 +53,18 @@ utils::print_hex(const void *data, size_t size)
  * @par Implementation notes:
  */
 void
-utils::print_block(const void *data, size_t size, uint32_t index, size_t width)
-{
+utils::print_block(const void *data, size_t size, uint32_t index,
+                   size_t width) {
 
-    const uint8_t *input = static_cast<const uint8_t *>(data);
+    auto *input = static_cast<const uint8_t *>(data);
 
-    for(size_t i=0; i<size; i+=width, index+=width) {
+    for (size_t i = 0; i < size; i += width, index += width) {
         printf_P(PSTR("0x%08lX:"), index);
         printf_P(dPAD);
 
-        for(size_t j=0; j<width; j++) {
-            if(i+j < size) {
-                printf_P(BYTEwPAD, input[i+j]);
+        for (size_t j = 0; j < width; j++) {
+            if (i + j < size) {
+                printf_P(BYTEwPAD, input[i + j]);
             } else {
                 fputs_P(PSTR("-- "), stdout);
             }
@@ -73,15 +72,15 @@ utils::print_block(const void *data, size_t size, uint32_t index, size_t width)
 
         printf_P(dPAD);
 
-        for(size_t j=0; j<width; j++) {
-            if(i+j < size) {
-                putchar((isprint(input[i+j]) ? input[i+j] : '.'));
+        for (size_t j = 0; j < width; j++) {
+            if (i + j < size) {
+                putchar((isprint(input[i + j]) ? input[i + j] : '.'));
             } else {
                 putchar('.');
             }
         }
         putchar('\n');
-        fflush(stdout); // Null op for avr-libc, included for copy/paste compatibility
+        fflush(
+            stdout); // Null op for avr-libc, included for copy/paste compatibility
     }
 }
-

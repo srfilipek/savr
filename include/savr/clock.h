@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright (C) 2015 by Stefan Filipek
+ Copyright (C) 2018 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -19,48 +19,56 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *******************************************************************************/
+#ifndef _savr_clock_h_included_
+#define _savr_clock_h_included_
 
-#include <savr/crc.h>
+#include <stddef.h>
+#include <stdint.h>
+
+namespace savr {
+namespace clock {
+
+// The goal is to get a tick every 1ms
+constexpr uint32_t TICKS_PER_SEC = 1000;
+
+// Rough clock scaling
+#if F_CPU >= 8000000
+constexpr uint32_t CLOCK_SCALE = 64;
+#elif F_CPU >= 4000000
+constexpr uint32_t CLOCK_SCALE = 32;
+#else
+constexpr uint32_t CLOCK_SCALE = 8;
+#endif
+
+constexpr uint32_t OCR_VALUE = F_CPU / CLOCK_SCALE / TICKS_PER_SEC;
+
+// Ensure our result didn't get rounded somewhere
+static_assert((OCR_VALUE * CLOCK_SCALE * TICKS_PER_SEC) == F_CPU,
+              "CPU frequency does not produce an integer counter");
 
 /**
- * @par Implementation Notes:
+ * Initialize the clock subsystem
  */
-uint8_t
-savr::crc::crc_8(const uint8_t *data, size_t length, uint8_t crc,
-                 uint8_t poly) {
-    while (length-- > 0) {
-        crc ^= *data++;
-
-        for (uint8_t ibit = 0; ibit < 8; ibit++) {
-            if (crc & 0x80) {
-                crc = (crc << 1) ^ poly;
-            } else {
-                crc <<= 1;
-            }
-        }
-
-    }
-    return crc;
-}
-
+void init();
 
 /**
- * @par Implementation Notes:
+ * Get the number of ticks elapsed so far
+ *
+ * @return System ticks (milliseconds)
  */
-uint16_t
-savr::crc::crc_16(const uint8_t *data, size_t length, uint16_t crc,
-                  uint16_t poly) {
-    while (length-- > 0) {
-        crc ^= ((uint16_t) *data++) << 8;
+uint32_t ticks();
 
-        for (uint8_t ibit = 0; ibit < 8; ibit++) {
-            if (crc & 0x8000) {
-                crc = (crc << 1) ^ poly;
-            } else {
-                crc <<= 1;
-            }
-        }
+/**
+ * Get the least significant byte of the number of ticks elapsed
+ *
+ * This is useful if you only need to delay for a short period of time and don't
+ * want to overhead of a 32bit integer and the associated interrupt management.
+ *
+ * @return Least significant byte of the system ticks (milliseconds)
+ */
+uint8_t ticks_byte();
 
-    }
-    return crc;
 }
+}
+
+#endif // _savr_clock_h_included_

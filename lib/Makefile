@@ -17,13 +17,13 @@ CXX         = avr-g++
 LSS_TARGET  = $(TARGET:%.a=%.lss)
 
 ## Options common to compile, link and assembly rules
-COMMON  = -mmcu=$(MCU) -Wall -Wextra -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -DF_CPU=$(F_CPU)UL
+COMMON  = -mmcu=$(MCU) -Wall -Wextra -Wno-expansion-to-defined -g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -DF_CPU=$(F_CPU)UL
 
 ## Include Directories
 INCLUDES += -I../include
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=c++17 -fno-exceptions $(INCLUDES)
 
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 

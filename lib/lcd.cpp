@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2011 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -59,7 +59,6 @@ using namespace savr;
 #define LCD_FUNCTION                    _BV(5)
 
 
-
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 
@@ -67,8 +66,7 @@ using namespace savr;
  * @par Implementation notes:
  */
 void
-LCD::_set_data_out(void)
-{
+LCD::_set_data_out() {
     gpio::low(_pin_d4);
     gpio::low(_pin_d5);
     gpio::low(_pin_d6);
@@ -84,8 +82,7 @@ LCD::_set_data_out(void)
  * @par Implementation notes:
  */
 void
-LCD::_set_data_in(void)
-{
+LCD::_set_data_in() {
     gpio::low(_pin_d4);
     gpio::low(_pin_d5);
     gpio::low(_pin_d6);
@@ -101,8 +98,7 @@ LCD::_set_data_in(void)
  * @par Implementation notes:
  */
 uint8_t
-LCD::_read_data_nibble(void)
-{
+LCD::_read_data_nibble() {
     uint8_t ret = 0;
     ret |= gpio::get(_pin_d7);
     ret <<= 1;
@@ -119,8 +115,7 @@ LCD::_read_data_nibble(void)
  * @par Implementation notes:
  */
 void
-LCD::_set_data_nibble(uint8_t nibble)
-{
+LCD::_set_data_nibble(uint8_t nibble) {
     gpio::set(_pin_d4, nibble & _BV(0));
     gpio::set(_pin_d5, nibble & _BV(1));
     gpio::set(_pin_d6, nibble & _BV(2));
@@ -128,23 +123,18 @@ LCD::_set_data_nibble(uint8_t nibble)
 }
 
 
-
 /**
  * @par Implementation notes:
  */
-void
-LCD::__LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
-            gpio::Pin rs, gpio::Pin rw, gpio::Pin e)
-{
-
-    _pin_d4 = d4;
-    _pin_d5 = d5;
-    _pin_d6 = d6;
-    _pin_d7 = d7;
-    _pin_rs = rs;
-    _pin_rw = rw;
-    _pin_e  = e;
-
+LCD::LCD(gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
+         gpio::Pin rs, gpio::Pin rw, gpio::Pin e) :
+    _pin_d4(d4),
+    _pin_d5(d5),
+    _pin_d6(d6),
+    _pin_d7(d7),
+    _pin_rw(rw),
+    _pin_e(e),
+    _pin_rs(rs) {
     gpio::out(_pin_e);
     gpio::out(_pin_rs);
     gpio::out(_pin_rw);
@@ -165,9 +155,13 @@ LCD::__LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
     _write_nib(0x02);
     _wait();
 
-    _function_set   = LCD_FUNCTION  | LCD_FUNCTION_2LINE | LCD_FUNCTION_5x8 | LCD_FUNCTION_4BIT;
-    _entry_mode     = LCD_ENTRYMODE | LCD_ENTRYMODE_INC | LCD_ENTRYMODE_DISPLAYSHIFT_OFF;
-    _display_ctrl   = LCD_DISPLAY   | LCD_DISPLAY_DISPLAY_ON | LCD_DISPLAY_BLINK_OFF | LCD_DISPLAY_CURSOR_OFF;
+    _function_set = LCD_FUNCTION | LCD_FUNCTION_2LINE | LCD_FUNCTION_5x8 |
+                    LCD_FUNCTION_4BIT;
+    _entry_mode =
+        LCD_ENTRYMODE | LCD_ENTRYMODE_INC | LCD_ENTRYMODE_DISPLAYSHIFT_OFF;
+    _display_ctrl =
+        LCD_DISPLAY | LCD_DISPLAY_DISPLAY_ON | LCD_DISPLAY_BLINK_OFF |
+        LCD_DISPLAY_CURSOR_OFF;
 
     write_cmd(_function_set);
     write_cmd(_entry_mode);
@@ -182,14 +176,13 @@ LCD::__LCD( gpio::Pin d4, gpio::Pin d5, gpio::Pin d6, gpio::Pin d7,
  * @par Implementation notes:
  */
 void
-LCD::set_cursor(bool cursor)
-{
-    if(cursor) {
+LCD::set_cursor(bool cursor) {
+    if (cursor) {
         _display_ctrl &= ~LCD_DISPLAY_CURSOR_OFF;
-        _display_ctrl |=  LCD_DISPLAY_CURSOR_ON;
-    }else{
+        _display_ctrl |= LCD_DISPLAY_CURSOR_ON;
+    } else {
         _display_ctrl &= ~LCD_DISPLAY_CURSOR_ON;
-        _display_ctrl |=  LCD_DISPLAY_CURSOR_OFF;
+        _display_ctrl |= LCD_DISPLAY_CURSOR_OFF;
     }
     write_cmd(_display_ctrl);
 }
@@ -199,14 +192,13 @@ LCD::set_cursor(bool cursor)
  * @par Implementation notes:
  */
 void
-LCD::set_blink(bool blink)
-{
-    if(blink) {
+LCD::set_blink(bool blink) {
+    if (blink) {
         _display_ctrl &= ~LCD_DISPLAY_BLINK_OFF;
-        _display_ctrl |=  LCD_DISPLAY_BLINK_ON;
-    }else{
+        _display_ctrl |= LCD_DISPLAY_BLINK_ON;
+    } else {
         _display_ctrl &= ~LCD_DISPLAY_BLINK_ON;
-        _display_ctrl |=  LCD_DISPLAY_BLINK_OFF;
+        _display_ctrl |= LCD_DISPLAY_BLINK_OFF;
     }
     write_cmd(_display_ctrl);
 }
@@ -216,14 +208,13 @@ LCD::set_blink(bool blink)
  * @par Implementation notes:
  */
 void
-LCD::set_display(bool on)
-{
-    if(on) {
+LCD::set_display(bool on) {
+    if (on) {
         _display_ctrl &= ~LCD_DISPLAY_DISPLAY_OFF;
-        _display_ctrl |=  LCD_DISPLAY_DISPLAY_ON;
-    }else{
+        _display_ctrl |= LCD_DISPLAY_DISPLAY_ON;
+    } else {
         _display_ctrl &= ~LCD_DISPLAY_DISPLAY_ON;
-        _display_ctrl |=  LCD_DISPLAY_DISPLAY_OFF;
+        _display_ctrl |= LCD_DISPLAY_DISPLAY_OFF;
     }
     write_cmd(_display_ctrl);
 }
@@ -233,14 +224,13 @@ LCD::set_display(bool on)
  * @par Implementation notes:
  */
 uint8_t
-LCD::_get_byte(uint8_t mode)
-{
+LCD::_get_byte(uint8_t mode) {
     uint8_t x;
 
     _set_data_in();
 
     gpio::high(_pin_rw);
-    if(mode) gpio::high(_pin_rs);
+    if (mode) gpio::high(_pin_rs);
 
 
     gpio::high(_pin_e);
@@ -266,11 +256,10 @@ LCD::_get_byte(uint8_t mode)
  * @par Implementation notes:
  */
 void
-LCD::write_byte(uint8_t byte, uint8_t mode)
-{
+LCD::write_byte(uint8_t byte, uint8_t mode) {
     _wait();
     _write_nib(byte >> 4, mode);
-    _write_nib(byte,      mode);
+    _write_nib(byte, mode);
 }
 
 
@@ -278,9 +267,8 @@ LCD::write_byte(uint8_t byte, uint8_t mode)
  * @par Implementation notes:
  */
 void
-LCD::write_string(const char * string)
-{
-    while(*string) {
+LCD::write_string(const char *string) {
+    while (*string) {
         write_char(*string++);
     }
 }
@@ -290,9 +278,8 @@ LCD::write_string(const char * string)
  * @par Implementation notes:
  */
 void
-LCD::_wait(void)
-{
-    while(_get_byte() & READ_BUSYFLAG) {
+LCD::_wait() {
+    while (_get_byte() & READ_BUSYFLAG) {
         // Nothing
     }
 }
@@ -302,14 +289,12 @@ LCD::_wait(void)
  * @par Implementation notes:
  */
 void
-LCD::_write_nib(uint8_t nib, uint8_t mode)
-{
+LCD::_write_nib(uint8_t nib, uint8_t mode) {
     gpio::high(_pin_e);
 
     _set_data_nibble(nib);
-    if(mode) gpio::high(_pin_rs);
+    if (mode) gpio::high(_pin_rs);
 
     gpio::low(_pin_e);
     gpio::low(_pin_rs);
 }
-

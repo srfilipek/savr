@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 /**
  * @file dstherm.cpp
@@ -41,14 +41,13 @@ static const uint8_t DS_RECALL_EEPROM   = 0xB8;
 static const uint8_t DS_READ_SUPPLY     = 0xB4;
 
 
-
 /**
  * @par Implementation notes:
  */
-void
-DSTherm::__DSTherm(const W1::Address &address)
-{
-    _address = address;
+DSTherm::DSTherm(W1 wire, const W1::Address &address) :
+    _wire(wire),
+    _address(address) {
+    // Empty
 }
 
 
@@ -56,22 +55,21 @@ DSTherm::__DSTherm(const W1::Address &address)
  * @par Implementation notes:
  */
 float
-DSTherm::get_temp(bool fahrenheit)
-{
-    uint16_t    temp;   // Raw
-    float       ftemp;  // Converted
+DSTherm::get_temp(bool fahrenheit) {
+    uint16_t temp;   // Raw
+    float ftemp;  // Converted
 
     // Bus setup
-    if(!wait_for_conversion()) return NAN;
-    if(!_wire.reset()) return NAN;
+    if (!wait_for_conversion()) return NAN;
+    if (!_wire.reset()) return NAN;
 
     // Select our device
     _wire.match_rom(_address);
     _wire.write_byte(DS_READ_SCRATCH);
 
     // Read only the first 2 bytes
-    temp  = _wire.read_byte();                  // LSB
-    temp |= ((uint16_t)_wire.read_byte() << 8); // MSB
+    temp = _wire.read_byte();                  // LSB
+    temp |= ((uint16_t) _wire.read_byte() << 8); // MSB
 
     // Stop transmission
     _wire.reset();
@@ -80,8 +78,8 @@ DSTherm::get_temp(bool fahrenheit)
     ftemp /= 16;    // Scale
 
     // Do a conversion to F if necessary
-    if(!fahrenheit) return ftemp;
-    return 1.8*ftemp + 32;
+    if (!fahrenheit) return ftemp;
+    return 1.8 * ftemp + 32;
 }
 
 
@@ -89,14 +87,13 @@ DSTherm::get_temp(bool fahrenheit)
  * @par Implementation notes:
  */
 bool
-DSTherm::wait_for_conversion(void)
-{
+DSTherm::wait_for_conversion() {
     size_t count = 0;
     static const size_t MAX_COUNT = 15000;  // 750ms max for a conversion
-                                            // (70us min in pure delay per bit read)
+    // (70us min in pure delay per bit read)
     // Wait for the therm to release the DQ line
-    while(_wire.read_bit() == 0) {
-        if(count++ > MAX_COUNT) {
+    while (_wire.read_bit() == 0) {
+        if (count++ > MAX_COUNT) {
             return false;
         }
     }
@@ -109,8 +106,7 @@ DSTherm::wait_for_conversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::conversion_done(void)
-{
+DSTherm::conversion_done() {
     // Wait for the therm to release the DQ line
     return _wire.read_bit() != 0;
 }
@@ -119,9 +115,8 @@ DSTherm::conversion_done(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::start_conversion(void)
-{
-    if(!_wire.reset()) return false;
+DSTherm::start_conversion() {
+    if (!_wire.reset()) return false;
 
     _wire.match_rom(_address);
     _wire.write_byte(DS_CONVERT);
@@ -133,12 +128,10 @@ DSTherm::start_conversion(void)
  * @par Implementation notes:
  */
 bool
-DSTherm::start_conversion_all(void)
-{
-    if(!_wire.reset()) return false;
+DSTherm::start_conversion_all() {
+    if (!_wire.reset()) return false;
 
     _wire.skip_rom();
     _wire.write_byte(DS_CONVERT);
     return true;
 }
-

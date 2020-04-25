@@ -1,5 +1,6 @@
 MCU     ?= atmega328p
 F_CPU   ?= 16000000
+SERIAL_PORT ?= /dev/ttyUSB0
 
 ifneq "$(MAKECMDGOALS)" "clean"
 ifndef MCU
@@ -19,11 +20,13 @@ TARGETS     = $(TARGET) $(TARGET:%.elf=%.lss) $(TARGET:%.elf=%.hex) $(TARGET:%.e
 
 ## Options common to compile, link and assembly rules
 LIBNAME     = savr_$(MCU)_$(F_CPU)
+LIBDIR		= ../../lib
+LIBFILE		= $(LIBDIR)/$(LIBNAME).a
 
 ## Include/lib Directories
 INCLUDES   += -I../../include
 LIBS       += -l$(LIBNAME)
-LIBDIRS    += -L../../lib
+LIBDIRS    += -L$(LIBDIR)
 
 ## Options common to compile, link and assembly rules
 ARCHFLAGS = -mmcu=$(MCU)
@@ -31,11 +34,11 @@ COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned
 
 
 ## Compile options common for all C compilation units.
-CXXFLAGS  = $(COMMON) -std=gnu++98 -fno-exceptions $(INCLUDES)
+CXXFLAGS  = $(COMMON) -std=c++17 -fno-exceptions $(INCLUDES)
 
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
 
-LDFLAGS   = $(ARCHFLAGS) -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
+LDFLAGS   = $(ARCHFLAGS) -Os -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
 
 ## Objects that must be built in order to link
 CINPUTS     = $(wildcard *.c)
@@ -53,7 +56,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
 
-.PHONY: clean all size load cleanload
+.PHONY: clean all size load load_isp cleanload lib info_isp
 .INTERMEDIATE: $(OBJECTS)
 
 ## Build
@@ -78,10 +81,14 @@ size: $(TARGET)
 	@echo
 	@avr-size -C -t --mcu=$(MCU) $(TARGET)
 
+lib:
+	$(MAKE) -C $(LIBDIR)
 
-## Program MCU
 load: $(TARGET:%.elf=%.hex)
-	$(shell avrdude -cavrisp2 -Pusb -p$(MCU) -U $<)
+	$(shell avrdude -c arduino -P $(SERIAL_PORT) -p $(MCU) -U $<)
+
+load_isp: $(TARGET:%.elf=%.hex)
+	$(shell avrdude -cavrisp2 -Pusb -p $(MCU) -U $<)
 
 ## Clean target
 clean:

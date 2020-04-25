@@ -47,8 +47,6 @@ static cmd::CommandList cmd_list = {
     {"write",    write_char,    "Write to the LCD"}
 };
 
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
-
 
 // Terminal display
 #define welcome_message PSTR("\nLCD Test\n")
@@ -60,7 +58,7 @@ static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
  */
 int main(void) {
 
-    sci::init(38400);  // bps
+    sci::init(250000uL);  // bps
 
     gpio::out(gpio::B1);
     gpio::low(gpio::B1);
@@ -76,7 +74,8 @@ int main(void) {
 
     enable_interrupts();
 
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     term::run();
 

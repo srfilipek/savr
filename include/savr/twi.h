@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_twi_h_included_
 #define _savr_twi_h_included_
 
@@ -32,15 +32,16 @@
 namespace savr {
 namespace twi {
 
-static const bool RW_READ   = true;
-static const bool RW_WRITE  = false;
+static const bool RW_READ = true;
+static const bool RW_WRITE = false;
 
 /**
  * Initialize the TWI subsystem without internal pull-ups
  *
  * @param outputFreq    The desired TWI bus frequency in Hz
  */
-void    init(uint32_t output_freq);
+void
+init(uint32_t output_freq);
 
 
 /**
@@ -51,13 +52,15 @@ void    init(uint32_t output_freq);
  *
  * If pullups is false, the SDA and SCL lines are left untouched.
  */
-void    init(uint32_t output_freq, bool pullups);
+void
+init(uint32_t output_freq, bool pullups);
 
 
 /**
  * Prints a textual description of the bus state
  */
-void    print_state(void);
+void
+print_state();
 
 
 /**
@@ -67,7 +70,8 @@ void    print_state(void);
  * @param read      True to read, false to write
  * @return 0 on success, non-zero on error
  */
-uint8_t address(uint8_t address, bool read);
+uint8_t
+address(uint8_t address, bool read);
 
 
 /**
@@ -75,7 +79,8 @@ uint8_t address(uint8_t address, bool read);
  *
  * @return The byte read
  */
-uint8_t get_ack(void);
+uint8_t
+get_ack();
 
 
 /**
@@ -83,7 +88,8 @@ uint8_t get_ack(void);
  *
  * @return The byte read
  */
-uint8_t get(void);
+uint8_t
+get();
 
 
 /**
@@ -91,7 +97,8 @@ uint8_t get(void);
  *
  * @param b     The byte to send
  */
-void    send(uint8_t b);
+void
+send(uint8_t b);
 
 
 /**
@@ -99,19 +106,22 @@ void    send(uint8_t b);
  *
  * @param b     The byte to send
  */
-void    send_async(uint8_t b);
+void
+send_async(uint8_t b);
 
 
 /**
  * Send bus Start
  */
-void    start(void);
+void
+start();
 
 
 /**
  * Send bus stop
  */
-void    stop(void);
+void
+stop();
 
 
 /**
@@ -121,15 +131,16 @@ void    stop(void);
  *
  * See util/twi.h from the avr-libc for a state enumeration
  */
-uint8_t state(void);
+uint8_t
+state();
 
 
 /**
  * Polling wait on the TWI bus
  */
 static inline void
-wait(void) {
-    while(!(TWCR & _BV(TWINT))) ;
+wait() {
+    while (!(TWCR & _BV(TWINT)));
 }
 
 }
@@ -137,4 +148,3 @@ wait(void) {
 
 #endif /* defined(TWBR) && defined(TWCR) */
 #endif /* _savr_twi_h_included_ */
-

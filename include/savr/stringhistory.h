@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_stringhistory_h_included_
 #define _savr_stringhistory_h_included_
 
@@ -58,7 +58,7 @@ namespace savr {
  * can quickly access, this will not break up a string too fill available
  * space, nor will it wrap a string around.
  */
-template <size_t MAX_SIZE>
+template<size_t MAX_SIZE>
 class StringHistory {
 
 public:
@@ -66,15 +66,14 @@ public:
     /**
      * Creates a string history object
      */
-    StringHistory() :
+    StringHistory() noexcept :
         _next(0),
-        _nav(0)
-    {
+        _nav(0) {
         memset(_history, 0, sizeof(_history));
     }
 
 
-    ~StringHistory() { }
+    ~StringHistory() {}
 
 
     /**
@@ -84,10 +83,10 @@ public:
      *
      * @param line  Null terminated string
      */
-    void add(const char* line)
-    {
-        size_t remaining    = MAX_SIZE - _next;     // Number of bytes in history that can be copied
-        size_t to_copy      = strlen(line) + 1;     // +1 for the NULL termination
+    void
+    add(const char *line) {
+        size_t remaining = MAX_SIZE - _next; // Number of bytes in history
+        size_t to_copy = strlen(line) + 1; // +1 for the NULL termination
 
         if (to_copy > MAX_SIZE) {
             to_copy = MAX_SIZE;
@@ -106,7 +105,7 @@ public:
 
 
         // Copy all but the NULL (to allow for special handling to remove overwritten strings)
-        while(to_copy --> 1) {
+        while (to_copy-- > 1) {
             _history[_next] = *line;
             line++;
             _next++;
@@ -114,14 +113,14 @@ public:
 
 
         // Make sure we clear out the rest of the string we may have been overwriting
-        char* nuller = &_history[_next];
-        while(*nuller != 0 && nuller <= &_history[MAX_SIZE-1]) {
+        char *nuller = &_history[_next];
+        while (*nuller != 0 && nuller <= &_history[MAX_SIZE - 1]) {
             *nuller = 0;
             nuller++;
         }
 
 
-        if(_next >= (MAX_SIZE-1)) {
+        if (_next >= (MAX_SIZE - 1)) {
             _next = 0;
         }
     }
@@ -134,22 +133,22 @@ public:
      *
      * This will wrap
      */
-    const char* newer(void)
-    {
-        if(_history[_nav] == 0) return NULL;
+    const char *
+    newer() {
+        if (_history[_nav] == 0) return nullptr;
 
         // Find the end of our current string
-        while(_history[_nav] != 0) {
+        while (_history[_nav] != 0) {
             _nav++;
         }
 
         // Find the start of the next string
-        while(_nav < MAX_SIZE && _history[_nav] == 0) {
+        while (_nav < MAX_SIZE && _history[_nav] == 0) {
             _nav++;
         }
 
         // There is always a string at position 0 (if we ended up at the end of our buffer)
-        if(_nav >= MAX_SIZE) {
+        if (_nav >= MAX_SIZE) {
             _nav = 0;
         }
 
@@ -164,26 +163,26 @@ public:
      *
      * This will wrap
      */
-    const char* older(void)
-    {
-        if(_history[_nav] == 0) return NULL;
+    const char *
+    older() {
+        if (_history[_nav] == 0) return nullptr;
 
         // _nav points to the older string already. Store, then go back for the next call
-        char* result = &_history[_nav];
+        char *result = &_history[_nav];
 
         // There is always a string starting at position 0 (if we get here). If we're at 0, wrap
-        if(_nav == 0) {
+        if (_nav == 0) {
             _nav = MAX_SIZE;
         }
         _nav--;
 
         // Find the tail of a string
-        while(_history[_nav] == 0) {
+        while (_history[_nav] == 0) {
             _nav--;
         }
 
         // Find the start of the string
-        while(_nav != 0 && _history[_nav-1] != 0) {
+        while (_nav != 0 && _history[_nav - 1] != 0) {
             _nav--;
         }
 
@@ -203,19 +202,28 @@ public:
 #endif
 
 
-
 private:
-    char    _history[MAX_SIZE];     // The buffer to use for history
+    /**
+     * The buffer to use for history
+     */
+    char _history[MAX_SIZE];
 
-    size_t  _next;                  // Next place to put a string
-                                    // Always points to a null character
+    /**
+     * Next place to put a string
+     *
+     * Always points to a null character
+     */
+    size_t _next;
 
-    size_t  _nav;                   // The user-state from newe(r|st) and olde(r|st)
-                                    // Always points to valid text, or NULL if there is no text
-                                    // Always points to the next string to be returned by older()
+    /**
+     * The user-state from newe(r|st) and olde(r|st)
+     *
+     * Always points to valid text, or NULL if there is no text
+     * Always points to the next string to be returned by older()
+     */
+    size_t _nav;
 
 };
 }
 
 #endif /* _savr_stringhistory_h_included_ */
-

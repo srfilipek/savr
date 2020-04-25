@@ -1,3 +1,11 @@
+# SAVR 2.1 #
+  * Move to C++17
+  * Adding RFM69 module library
+  * Adding millisecond system clock
+  * Slight optimization to runtime GPIO library
+  * Additional optimized routines for byte access and nibble swapping
+  * Additional template-based bitfield access
+
 # SAVR 2.0 #
   * Adding a CRC library for 7, 8, and 16-bit CRCs
   * Bugfix in the SCI library when used with bootloaders

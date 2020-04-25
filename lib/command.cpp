@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 
 /**
  * @file command.cpp
@@ -34,14 +34,17 @@
 
 using namespace savr;
 
-static void find_and_run(char *cmd, char *args);
-static void help(void);
+static void
+find_and_run(char *cmd, char *args);
 
-static cmd::CommandListPtr cmd_list = NULL;
+static void
+help();
 
-static size_t   cmd_length;
-static size_t   command_col_width;
-static char     formatter[32];
+static cmd::CommandListPtr cmd_list = nullptr;
+
+static size_t cmd_length;
+static size_t command_col_width;
+static char formatter[32];
 
 
 /**
@@ -53,8 +56,7 @@ static char     formatter[32];
  * @param length the length of the CommandList
  */
 void
-cmd::init(const cmd::CommandList command_list, size_t length)
-{
+cmd::init(const cmd::CommandList command_list, size_t length) {
     cmd_list = command_list;
     cmd_length = length;
 
@@ -80,10 +82,9 @@ cmd::init(const cmd::CommandList command_list, size_t length)
  * @param line a character pointer to the line to parse (and destroy)
  */
 void
-cmd::run_command(char *line)
-{
-    char *cmd   = line;
-    char *args  = line;
+cmd::run_command(char *line) {
+    char *cmd = line;
+    char *args = line;
 
     // Find the space delimiter between command and arguments
     while (*args != ' ' && *args)
@@ -118,8 +119,7 @@ cmd::run_command(char *line)
  * @param args a pointer to the argument string to pass to the command callback
  */
 void
-find_and_run(char *cmd, char *args)
-{
+find_and_run(char *cmd, char *args) {
     uint8_t found;
 
     // Linear search, but it's not that important... right?
@@ -146,16 +146,14 @@ find_and_run(char *cmd, char *args)
  * @brief Prints out a list of supported commands.
  */
 void
-help(void)
-{
+help() {
     // List out all available commands
     printf_P(PSTR("Available commands:\n"));
     for (size_t i = 0; i < cmd_length; i++) {
-        if (cmd_list[i].help_text == NULL) {
+        if (cmd_list[i].help_text == nullptr) {
             printf_P(PSTR("  %s\n"), cmd_list[i].command_name);
         } else {
             printf(formatter, cmd_list[i].command_name, cmd_list[i].help_text);
         }
     }
 }
-

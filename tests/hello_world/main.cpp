@@ -15,6 +15,7 @@
 #include <savr/cpp_pgmspace.h>
 #include <savr/sci.h>
 #include <savr/terminal.h>
+#include <savr/utils.h>
 
 #define enable_interrupts() sei()
 
@@ -37,8 +38,6 @@ static cmd::CommandList cmd_list = {
         {"echo", echo, "Prints the given argument string"},
 };
 
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
-
 
 // Terminal display
 #define welcome_message PSTR("Hello World Test\n")
@@ -50,11 +49,12 @@ static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
  */
 int main(void) {
 
-    sci::init(38400); // bps
+    sci::init(250000uL); // bps
 
     enable_interrupts();
 
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     term::run();
 

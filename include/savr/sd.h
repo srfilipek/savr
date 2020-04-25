@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_sd_h_included_
 #define _savr_sd_h_included_
 
@@ -53,7 +53,8 @@ namespace sd {
  *
  * @return 1 if sucessful, 0 otherwise
  */
-uint8_t   init(gpio::Pin ss);
+uint8_t
+init(gpio::Pin ss);
 
 
 /**
@@ -67,7 +68,8 @@ uint8_t   init(gpio::Pin ss);
  *
  * @return 1 if sucessful, 0 otherwise
  */
-uint8_t   read_block(uint32_t addr, uint8_t *data, size_t size);
+uint8_t
+read_block(uint32_t addr, uint8_t *data, size_t size);
 
 
 /**
@@ -82,7 +84,8 @@ uint8_t   read_block(uint32_t addr, uint8_t *data, size_t size);
  *
  * @return 1 if sucessful, 0 otherwise
  */
-uint8_t   write_block(uint32_t addr, const uint8_t *data, size_t size);
+uint8_t
+write_block(uint32_t addr, const uint8_t *data, size_t size);
 
 
 /**
@@ -96,10 +99,10 @@ uint8_t   write_block(uint32_t addr, const uint8_t *data, size_t size);
  *
  * @return 1 if sucessful, 0 otherwise
  */
-uint8_t   erase_block(uint32_t addr, uint32_t size);
+uint8_t
+erase_block(uint32_t addr, uint32_t size);
 
 }
 }
 
 #endif /* _savr_sd_h_included_ */
-

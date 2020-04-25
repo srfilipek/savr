@@ -57,8 +57,6 @@ static cmd::CommandList cmd_list = {
     {"scan", scan, NULL},
     {"sdinit", sdinit, NULL},
 };
-static const size_t cmd_length = sizeof(cmd_list) / sizeof(cmd::CommandDef);
-
 
 static const gpio::Pin SD_SS = gpio::B0;
 
@@ -69,7 +67,7 @@ static const gpio::Pin SD_SS = gpio::B0;
 int
 main(void) {
     // Setup UART
-    sci::init(38400);  // bps
+    sci::init(250000uL);  // bps
 
     // Setup the SPI interface
     spi::init(F_CPU/2);
@@ -78,7 +76,8 @@ main(void) {
     enable_interrupts();
 
     // Init UART terminal
-    term::init(welcome_message, prompt_string, cmd_list, cmd_length);
+    term::init(welcome_message, prompt_string,
+               cmd_list, utils::array_size(cmd_list));
 
     // Run the terminal
     term::run();

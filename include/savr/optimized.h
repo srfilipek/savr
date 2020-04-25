@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*******************************************************************************
  Copyright (C) 2015 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +18,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
-*********************************************************************************/
+*******************************************************************************/
 #ifndef _savr_optimized_h_included_
 #define _savr_optimized_h_included_
 
@@ -35,6 +35,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include <savr/utils.h>
+
 namespace savr {
 namespace opt {
 
@@ -48,25 +50,120 @@ namespace opt {
  * @param bit The bit number to set
  * @return A byte with the corresponding bit set
  */
-inline uint8_t
-bit_val(uint8_t bit)
-{
+FORCE_INLINE uint8_t
+bit_val(uint8_t bit) {
     uint8_t ret;
     asm volatile (
-            "ldi %0, 0x01\n"
-            "rjmp 2f\n"
-            "1: lsl %0\n"
-            "2: dec %1\n"
-            "brpl 1b"
-         :"=a" (ret)
-         :"b"  (bit)
+    "ldi %0, 0x01\n"
+        "rjmp 2f\n"
+        "1: lsl %0\n"
+        "2: dec %1\n"
+        "brpl 1b"
+    :"=r" (ret)
+    :"r"  (bit)
     );
     return ret;
 }
 
 
+/**
+ * Use the SWAP instruction to swap nibbles
+ */
+FORCE_INLINE uint8_t
+swap_nibbles(uint8_t val) {
+    asm volatile (
+    "swap %0"
+    :"=r" (val)
+    :"0"  (val)
+    );
+    return val;
+}
+
+/**
+ * Return the highest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_3(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %D1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the second to highest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_2(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %C1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the second to lowest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_1(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %B1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the lowest byte of a 32-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_0(uint32_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %A1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the highest byte of a 16-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_1(uint16_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %B1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
+/**
+ * Return the lowest byte of a 16-bit integer
+ */
+FORCE_INLINE uint8_t
+byte_0(uint16_t val) {
+    uint8_t ret;
+    asm volatile (
+    "mov %0, %A1"
+    :"=r" (ret)
+    :"r"  (val)
+    );
+    return ret;
+}
+
 }
 }
 
 #endif
-
