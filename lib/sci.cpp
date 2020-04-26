@@ -29,90 +29,11 @@
 #include <savr/queue.h>
 #include <savr/utils.h>
 
-using namespace savr;
-
-#if     ISAVR(ATmega8)      || \
-        ISAVR(ATmega16)     || \
-        ISAVR(ATmega32)
-    #define __BAUD_HIGH    UBRRH
-    #define __BAUD_LOW     UBRRL
-    #define __CTRLA        UCSRA
-    #define __CTRLB        UCSRB
-    #define __CTRLC        UCSRC
-    #define __CTRLB_UDRIE  UDRIE
-    #define __CTRLB_RXCIE  RXCIE
-    #define __CTRLB_RXEN   RXEN
-    #define __CTRLB_TXEN   TXEN
-    #define __CTRLC_ENABLE _BV(URSEL)
-    #define __CTRLC_UCSZ1  UCSZ1
-    #define __CTRLC_UCSZ0  UCSZ0
-    #define __DATAR        UDR
-    #define __RX_VECT      USART_RXC_vect
-    #define __TX_VECT      USART_UDRE_vect
-
-#elif   ISAVR(ATmega8515)
-    #define __BAUD_HIGH    UBRRH
-    #define __BAUD_LOW     UBRRL
-    #define __CTRLA        UCSRA
-    #define __CTRLB        UCSRB
-    #define __CTRLC        UCSRC
-    #define __CTRLB_UDRIE  UDRIE
-    #define __CTRLB_RXCIE  RXCIE
-    #define __CTRLB_RXEN   RXEN
-    #define __CTRLB_TXEN   TXEN
-    #define __CTRLC_ENABLE _BV(URSEL)
-    #define __CTRLC_UCSZ1  UCSZ1
-    #define __CTRLC_UCSZ0  UCSZ0
-    #define __DATAR        UDR
-    #define __RX_VECT      USART_RX_vect
-    #define __TX_VECT      USART_UDRE_vect
-
-#elif   ISAVR(ATmega48)     || ISAVR(ATmega88)      || ISAVR(ATmega168)     || \
-        ISAVR(ATmega48P)    || ISAVR(ATmega88P)     || ISAVR(ATmega168P)    || \
-        ISAVR(ATmega48PA)   || ISAVR(ATmega88PA)    || ISAVR(ATmega168PA)   || ISAVR(ATmega328P)
-    #define __BAUD_HIGH    UBRR0H
-    #define __BAUD_LOW     UBRR0L
-    #define __CTRLA        UCSR0A
-    #define __CTRLB        UCSR0B
-    #define __CTRLC        UCSR0C
-    #define __CTRLB_UDRIE  UDRIE0
-    #define __CTRLB_RXCIE  RXCIE0
-    #define __CTRLB_RXEN   RXEN0
-    #define __CTRLB_TXEN   TXEN0
-    #define __CTRLC_ENABLE 0
-    #define __CTRLC_UCSZ1  UCSZ01
-    #define __CTRLC_UCSZ0  UCSZ00
-    #define __DATAR        UDR0
-    #define __RX_VECT      USART_RX_vect
-    #define __TX_VECT      USART_UDRE_vect
-
-
-#elif   ISAVR(ATmega644)    || \
-        ISAVR(ATmega164P)   || ISAVR(ATmega324P)    || ISAVR(ATmega644P)    || \
-        ISAVR(ATmega164A)   || ISAVR(ATmega164PA)   || ISAVR(ATmega324A)    || ISAVR(ATmega324PA)   || \
-        ISAVR(ATmega644A)   || ISAVR(ATmega644PA)   || ISAVR(ATmega1284)    || ISAVR(ATmega1284P)
-    #define __BAUD_HIGH    UBRR0H
-    #define __BAUD_LOW     UBRR0L
-    #define __CTRLA        UCSR0A
-    #define __CTRLB        UCSR0B
-    #define __CTRLC        UCSR0C
-    #define __CTRLB_UDRIE  UDRIE0
-    #define __CTRLB_RXCIE  RXCIE0
-    #define __CTRLB_RXEN   RXEN0
-    #define __CTRLB_TXEN   TXEN0
-    #define __CTRLC_ENABLE 0
-    #define __CTRLC_UCSZ1  UCSZ01
-    #define __CTRLC_UCSZ0  UCSZ00
-    #define __DATAR        UDR0
-    #define __RX_VECT      USART0_RX_vect
-    #define __TX_VECT      USART0_UDRE_vect
-
-#else
-#warning Unsupported AVR target for SCI interface
-#define SAVR_NO_SCI
-#endif
+#include <savr/sci_defs.h>
 
 #ifndef SAVR_NO_SCI
+
+using namespace savr;
 
 static FILE my_stdout;
 static FILE my_stdin;
@@ -122,8 +43,6 @@ write_char(char, FILE *);
 
 static int
 read_char(FILE *);
-
-#define __GETBAUD(base, baud) ((base)/16/(baud)-1)
 
 typedef Queue<uint8_t, 8> IOBuffer;
 
