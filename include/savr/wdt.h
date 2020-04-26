@@ -57,7 +57,6 @@
 # endif
 #endif
 
-
 namespace savr {
 namespace wdt {
 

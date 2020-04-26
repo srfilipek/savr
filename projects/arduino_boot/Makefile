@@ -30,15 +30,15 @@ LIBDIRS    += -L$(LIBDIR)
 
 ## Options common to compile, link and assembly rules
 ARCHFLAGS = -mmcu=$(MCU)
-COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wl,-u,vfprintf -lprintf_flt -lm
+OPTFLAGS  = -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mrelax -ffreestanding
+COMMON    = $(ARCHFLAGS) -Wall -g -DMCU=$(MCU) -DF_CPU=$(F_CPU)UL $(OPTFLAGS)
 
 
 ## Compile options common for all C compilation units.
 CXXFLAGS  = $(COMMON) -std=c++17 -fno-exceptions $(INCLUDES)
-
 CFLAGS    = $(COMMON) -std=gnu99 $(INCLUDES)
-
-LDFLAGS   = $(ARCHFLAGS) -Os -Wl,-Map=$(DIRNAME).map,-u,vfprintf -lprintf_flt -lm
+SECTIONS  = -Wl,--section-start=.text=0x7800
+LDFLAGS   = $(ARCHFLAGS) -Os -Wl,--relax,-Map=$(DIRNAME).map -nostartfiles $(SECTIONS)
 
 ## Objects that must be built in order to link
 CINPUTS     = $(wildcard *.c)
@@ -85,7 +85,7 @@ lib:
 	$(MAKE) -C $(LIBDIR)
 
 load: $(TARGET:%.elf=%.hex)
-	$(shell avrdude -c arduino -B 115200 -P $(SERIAL_PORT) -p $(MCU) -U $<)
+	$(shell avrdude -c arduino -P $(SERIAL_PORT) -p $(MCU) -U $<)
 
 load_isp: $(TARGET:%.elf=%.hex)
 	$(shell avrdude -cavrisp2 -Pusb -p $(MCU) -U $<)
