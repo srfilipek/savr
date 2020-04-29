@@ -29,6 +29,8 @@
 #include <savr/stringhistory.h>
 #include <savr/sci.h>
 
+#if !defined(SAVR_NO_SCI)
+
 using namespace savr;
 
 #define BACKSPACE_CHAR  0x08
@@ -250,3 +252,4 @@ term::work() {
         }
     }
 }
+#endif

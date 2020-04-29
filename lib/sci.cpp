@@ -110,13 +110,13 @@ sci::size(FILE *stream) {
 void
 sci::init(uint32_t baud) {
     // Set Baud Rate.
-    auto brate = static_cast<uint16_t>(__GETBAUD(F_CPU, baud));
+    uint16_t brate = ubrr_setting(baud);
     __BAUD_HIGH = static_cast<uint8_t>(brate >> 8);
     __BAUD_LOW = static_cast<uint8_t>(brate);
 
     /* Frame Format - 8 data, no parity */
     /* NEED URSEL FOR MEGA16/32 */
-    __CTRLA = 0;
+    __CTRLA = _BV(__CTRLA_U2X);
     __CTRLC = __CTRLC_ENABLE | _BV(__CTRLC_UCSZ1) |
               _BV(__CTRLC_UCSZ0);// | _BV(UPM1) | _BV(UPM0);
 

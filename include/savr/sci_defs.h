@@ -41,6 +41,7 @@
     #define __CTRLA_FE     FE
     #define __CTRLA_DOR    DOR
     #define __CTRLA_UPE    UPE
+    #define __CTRLA_U2X    U2X
     #define __CTRLB_UDRIE  UDRIE
     #define __CTRLB_RXCIE  RXCIE
     #define __CTRLB_RXEN   RXEN
@@ -64,6 +65,7 @@
     #define __CTRLA_FE     FE
     #define __CTRLA_DOR    DOR
     #define __CTRLA_UPE    UPE
+    #define __CTRLA_U2X    U2X
     #define __CTRLB_UDRIE  UDRIE
     #define __CTRLB_RXCIE  RXCIE
     #define __CTRLB_RXEN   RXEN
@@ -89,6 +91,7 @@
     #define __CTRLA_FE     FE0
     #define __CTRLA_DOR    DOR0
     #define __CTRLA_UPE    UPE0
+    #define __CTRLA_U2X    U2X0
     #define __CTRLB_UDRIE  UDRIE0
     #define __CTRLB_RXCIE  RXCIE0
     #define __CTRLB_RXEN   RXEN0
@@ -116,6 +119,7 @@
     #define __CTRLA_FE     FE0
     #define __CTRLA_DOR    DOR0
     #define __CTRLA_UPE    UPE0
+    #define __CTRLA_U2X    U2X0
     #define __CTRLB_UDRIE  UDRIE0
     #define __CTRLB_RXCIE  RXCIE0
     #define __CTRLB_RXEN   RXEN0
@@ -131,7 +135,5 @@
 #warning Unsupported AVR target for SCI interface
 #define SAVR_NO_SCI
 #endif
-
-#define __GETBAUD(base, baud) ((base)/16/(baud)-1)
 
 #endif
