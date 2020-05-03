@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright (C) 2015 by Stefan Filipek
+ Copyright (C) 2020 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ crc_8(const uint8_t *bytes, size_t length, uint8_t crc, uint8_t poly);
 
 
 /**
- * A CRC 16 calculation
+ * A CRC-8 calculation, input is bit-reversed
  *
  * @param bytes a pointer to the source data
  * @param length the length of the source data
@@ -71,8 +71,64 @@ crc_8(const uint8_t *bytes, size_t length, uint8_t crc, uint8_t poly);
  *
  * @return the resultant CRC (8bit)
  */
+uint8_t
+crc_8_rev_in(const uint8_t *bytes, size_t length, uint8_t crc, uint8_t poly);
+
+
+/**
+ * A CRC-8 calculation, both input and output is bit-reversed
+ *
+ * @param bytes a pointer to the source data
+ * @param length the length of the source data
+ * @param starting crc (or previous for continuations)
+ * @param poly the polynomial to use (highest bit is assumed)
+ *
+ * @return the resultant CRC (8bit)
+ */
+uint8_t
+crc_8_rev_both(const uint8_t *bytes, size_t length, uint8_t crc, uint8_t poly);
+
+
+/**
+ * A CRC-16 calculation
+ *
+ * @param bytes a pointer to the source data
+ * @param length the length of the source data
+ * @param starting crc (or previous for continuations)
+ * @param poly the polynomial to use (highest bit is assumed)
+ *
+ * @return the resultant CRC
+ */
 uint16_t
 crc_16(const uint8_t *data, size_t length, uint16_t crc, uint16_t poly);
+
+
+/**
+ * A CRC-16 calculation, input is bit-reversed
+ *
+ * @param bytes a pointer to the source data
+ * @param length the length of the source data
+ * @param starting crc (or previous for continuations)
+ * @param poly the polynomial to use (highest bit is assumed)
+ *
+ * @return the resultant CRC
+ */
+uint16_t
+crc_16_rev_in(const uint8_t *data, size_t length, uint16_t crc, uint16_t poly);
+
+
+/**
+ * A CRC-16 calculation, both input and othput is bit-reversed
+ *
+ * @param bytes a pointer to the source data
+ * @param length the length of the source data
+ * @param starting crc (or previous for continuations)
+ * @param poly the polynomial to use (highest bit is assumed)
+ *
+ * @return the resultant CRC
+ */
+uint16_t
+crc_16_rev_both(const uint8_t *data, size_t length, uint16_t crc, uint16_t poly);
 
 }
 }
