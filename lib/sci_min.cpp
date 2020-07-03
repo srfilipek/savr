@@ -19,29 +19,44 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 *******************************************************************************/
-#ifndef _savr_version_h_included_
-#define _savr_version_h_included_
 
-/**
- * @file version.h
- */
-#define __str(s) #s
-#define __xstr(s) __str(s)
+#include <avr/io.h>
+#include <inttypes.h>
+
+#include <savr/sci.h>
+
+#ifndef SAVR_NO_SCI
+
+using namespace savr;
+
+char
+sci::min::get_char() {
+    for(;;) {
+        uint8_t status = __CTRLA;
+        // Wait for data
+        if ((status & _BV(__CTRLA_RXC)) == 0) {
+            continue;
+        }
+
+        // Reject errors
+        if (status & _BV(__CTRLA_FE)) {
+            (void)__DATAR;
+            continue;
+        }
+        break;
+    }
+
+    return __DATAR;
+}
 
 
-#define SAVR_MAJOR   2  ///< Major version number
-#define SAVR_MINOR   2  ///< Minor version number
-//#define SAVR_DEVEL
+void
+sci::min::put_char(char c) {
+    // Wait for space
+    while ((__CTRLA & _BV(__CTRLA_UDRE)) == 0) {
+    }
 
-/// Full version 16-bit word
-#define SAVR_VERSION (((uint16_t)SAVR_MAJOR << 8) | SAVR_MINOR)
+    __DATAR = c;
+}
 
-#define SAVR_TARGET_STR     __xstr(MCU)
-#if defined(SAVR_DEVEL)
-#define SAVR_VERSION_STR    __xstr(SAVR_MAJOR) "." __xstr(SAVR_MINOR) "-Dev"
-#else
-#define SAVR_VERSION_STR    __xstr(SAVR_MAJOR) "." __xstr(SAVR_MINOR)
 #endif
-
-#endif /* _savr_version_h_included_ */
-

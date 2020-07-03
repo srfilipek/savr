@@ -163,6 +163,39 @@ byte_0(uint16_t val) {
     return ret;
 }
 
+constexpr uint8_t
+bit_reverse(uint8_t x) {
+    x = (((x & 0xaa) >> 1) | ((x & 0x55) << 1));
+    x = (((x & 0xcc) >> 2) | ((x & 0x33) << 2));
+    x = (((x & 0xf0) >> 4) | ((x & 0x0f) << 4));
+    return x;
+}
+
+constexpr uint16_t
+bit_reverse(uint16_t x) {
+    x = (((x & 0xaaaa) >> 1) | ((x & 0x5555) << 1));
+    x = (((x & 0xcccc) >> 2) | ((x & 0x3333) << 2));
+    x = (((x & 0xf0f0) >> 4) | ((x & 0x0f0f) << 4));
+    x = (x >> 8) | (x << 8);
+    return x;
+}
+
+constexpr uint32_t
+bit_reverse(uint32_t x) {
+    x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+    x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+    x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+    x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+    x = (x >> 16) | (x << 16);
+    return x;
+}
+
+// Implementation checks
+static_assert(bit_reverse((uint8_t)0x31) == (uint8_t)0x8c);
+static_assert(bit_reverse((uint8_t)0xa5) == (uint8_t)0xa5);
+static_assert(bit_reverse((uint16_t)0x813a) == 0x5c81);
+static_assert(bit_reverse((uint32_t)0x0013a5ff) == 0xffa5c800);
+
 }
 }
 
