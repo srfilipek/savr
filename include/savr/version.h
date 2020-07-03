@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright (C) 2015 by Stefan Filipek
+ Copyright (C) 2020 by Stefan Filipek
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@
 
 
 #define SAVR_MAJOR   2  ///< Major version number
-#define SAVR_MINOR   0  ///< Minor version number
+#define SAVR_MINOR   2  ///< Minor version number
 #define SAVR_DEVEL
 
 /// Full version 16-bit word
